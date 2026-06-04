@@ -1,0 +1,745 @@
+/* ===========================================================
+   The Polyglot's Atlas — Japanese · Grammar instruments
+   Layered ON TOP of styles.css + aburaya.css.
+   The whole page lives in Aburaya night (dark = home); it reuses
+   the atlas vocabulary (plates, masthead, marginalia, gilt rules)
+   and adds three working instruments:
+     · the LOOM  — drag the pieces of a sentence; meaning holds
+     · the DIAL  — morph one verb through voice; watch roles flip
+     · the は/が SPOTLIGHT — topic vs. selection
+   =========================================================== */
+
+/* ---- page rhythm ---- */
+.gram-lede {
+  max-width: 760px;
+  font-family: var(--font-body);
+  font-size: 19px;
+  line-height: 1.66;
+  color: var(--ink);
+  margin: 0 0 10px;
+}
+.gram-lede .accent { color: var(--accent); font-style: italic; }
+.gram-sub {
+  max-width: 760px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 18px;
+  color: var(--ink-soft);
+  line-height: 1.55;
+  margin: 0 0 8px;
+}
+
+/* a "try this" instruction strip */
+.try-strip {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin: 4px 0 2px;
+}
+.try-strip .dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 10px 1px rgba(242,166,90,0.5);
+}
+
+/* =====================================================================
+   THE LOOM
+   ===================================================================== */
+.loom-stage {
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--plate-bg) 92%, #000) 0%, var(--plate-bg) 60%);
+  border: 1px solid var(--rule);
+  box-shadow: var(--abu-card-shadow), inset 0 0 0 1px rgba(168,132,47,0.10);
+  padding: 30px 34px 34px;
+  position: relative;
+  margin-top: 22px;
+}
+.loom-stage::before {
+  /* a faint gilt keyline inset — the lacquer tray trim */
+  content: "";
+  position: absolute; inset: 7px;
+  border: 1px solid rgba(168,132,47,0.16);
+  pointer-events: none;
+}
+
+/* specimen switcher */
+.specimen-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.specimen-row .lbl {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin-right: 4px;
+}
+.specimen-chip {
+  background: transparent;
+  border: 1px solid var(--rule);
+  color: var(--ink-soft);
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  padding: 7px 13px;
+  cursor: pointer;
+  transition: all 0.16s var(--ease-drift, ease);
+}
+.specimen-chip:hover {
+  border-color: var(--abu-card-border-hover);
+  background: var(--abu-hover-wash);
+  color: var(--ink);
+}
+.specimen-chip.active {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(219,179,92,0.10);
+  box-shadow: 0 0 18px -6px rgba(242,166,90,0.4);
+}
+.specimen-chip .jp {
+  font-family: var(--font-cjk-serif, "Noto Serif JP");
+  font-size: 13px;
+  margin-right: 7px;
+  letter-spacing: 0;
+}
+
+.loom-prompt {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 17px;
+  color: var(--ink-soft);
+  margin: 16px 0 22px;
+  line-height: 1.5;
+  max-width: 680px;
+}
+
+/* the track + predicate */
+.loom-line {
+  display: flex;
+  align-items: stretch;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.loom-track {
+  display: flex;
+  gap: 12px;
+  position: relative;
+  align-items: stretch;
+  min-height: 132px;
+  touch-action: none;
+}
+.loom-flow {
+  align-self: center;
+  font-family: var(--font-display);
+  font-size: 26px;
+  color: var(--accent-deep);
+  opacity: 0.75;
+  user-select: none;
+}
+
+/* a tile = one phrase carrying its particle */
+.loom-tile {
+  width: 136px;
+  box-sizing: border-box;
+  background: var(--paper-deep);
+  border: 1px solid var(--rule);
+  border-top: 2px solid var(--role-color, var(--rule));
+  padding: 12px 12px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  cursor: grab;
+  user-select: none;
+  position: relative;
+  transition: transform 0.2s var(--ease-drift, cubic-bezier(.2,.7,.2,1)),
+              box-shadow 0.18s, border-color 0.18s, background 0.18s;
+  will-change: transform;
+}
+.loom-tile:hover {
+  background: color-mix(in srgb, var(--paper-deep) 86%, var(--accent));
+  border-color: var(--abu-card-border-hover);
+  box-shadow: 0 0 26px -10px rgba(242,166,90,0.5);
+}
+.loom-tile.dragging {
+  cursor: grabbing;
+  z-index: 30;
+  transition: none;
+  box-shadow: 0 18px 40px -14px rgba(0,0,0,0.7), 0 0 34px -8px rgba(242,166,90,0.45);
+  border-color: var(--accent);
+}
+.loom-tile .role-tag {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--role-color, var(--ink-faded));
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  min-height: 12px;
+}
+.loom-tile .role-tag::before {
+  content: "";
+  width: 5px; height: 5px; border-radius: 50%;
+  background: var(--role-color, var(--ink-faded));
+}
+.loom-tile .tile-main {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-top: 2px;
+}
+.loom-tile .jp {
+  font-family: var(--font-cjk-serif, "Noto Serif JP");
+  font-size: 30px;
+  line-height: 1.1;
+  color: var(--ink);
+  font-weight: 500;
+}
+.loom-tile .reading {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.06em;
+  color: var(--ink-faded);
+  min-height: 14px;
+}
+.loom-tile .gloss {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--ink-soft);
+  line-height: 1.25;
+}
+
+/* the particle chip — clickable when swappable */
+.loom-particle {
+  font-family: var(--font-cjk-serif, "Noto Serif JP");
+  font-size: 25px;
+  line-height: 1;
+  color: var(--role-color, var(--accent));
+  font-weight: 600;
+  align-self: baseline;
+}
+.loom-particle.swappable {
+  cursor: pointer;
+  border-bottom: 1.5px dotted var(--role-color, var(--accent));
+  padding: 0 1px 1px;
+  transition: filter 0.15s;
+}
+.loom-particle.swappable:hover {
+  filter: brightness(1.25) drop-shadow(0 0 6px rgba(242,166,90,0.6));
+}
+.loom-particle.swappable::after {
+  content: "⇅";
+  font-family: var(--font-mono);
+  font-size: 10px;
+  vertical-align: super;
+  margin-left: 1px;
+  opacity: 0.6;
+}
+
+/* the predicate — the bath at the end of the hall: anchored, ceremonious */
+.loom-predicate {
+  width: 150px;
+  box-sizing: border-box;
+  background:
+    linear-gradient(180deg, color-mix(in srgb, var(--signal) 18%, var(--paper-deep)) 0%, var(--paper-deep) 70%);
+  border: 1px solid var(--gilt-line);
+  box-shadow: inset 0 0 0 2px var(--paper-deep), inset 0 0 0 3px rgba(168,132,47,0.4);
+  padding: 12px 14px 13px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  position: relative;
+  align-self: stretch;
+  cursor: not-allowed;
+}
+.loom-predicate.shake { animation: anchor-shake 0.42s var(--ease-drift, ease); }
+@keyframes anchor-shake {
+  0%,100% { transform: translateX(0); }
+  20% { transform: translateX(-3px); }
+  45% { transform: translateX(3px); }
+  70% { transform: translateX(-2px); }
+}
+.loom-predicate .role-tag {
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--accent);
+  display: flex; align-items: center; gap: 5px;
+}
+.loom-predicate .role-tag::before {
+  content: "湯";
+  font-family: var(--font-cjk-serif, "Noto Serif JP");
+  font-size: 11px;
+}
+.loom-predicate .jp {
+  font-family: var(--font-cjk-serif, "Noto Serif JP");
+  font-size: 30px;
+  line-height: 1.1;
+  color: var(--ink);
+  font-weight: 500;
+}
+.loom-predicate .reading {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--ink-faded);
+  min-height: 14px;
+}
+.loom-predicate .gloss {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+
+/* the live reading-out (English) */
+.loom-gloss-bar {
+  margin-top: 26px;
+  padding: 18px 22px;
+  border-top: 1px solid var(--gilt-line);
+  display: grid;
+  grid-template-columns: auto 1fr;
+  gap: 20px;
+  align-items: baseline;
+}
+.loom-gloss-bar .glabel {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  white-space: nowrap;
+  padding-top: 6px;
+}
+.loom-gloss-bar .gloss-en {
+  font-family: var(--font-display);
+  font-size: 27px;
+  line-height: 1.25;
+  color: var(--ink);
+  font-weight: 400;
+  text-wrap: balance;
+  transition: opacity 0.28s var(--ease-enter, ease);
+}
+.loom-gloss-bar .gloss-en.invalid { color: var(--ink-faded); font-style: italic; }
+.loom-gloss-bar .gloss-en .doer { color: var(--signal-lit); font-style: italic; }
+.loom-gloss-bar .gloss-en .done { color: var(--st-active, #6E8E5E); font-style: italic; }
+.loom-gloss-bar .nuance {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--ink-faded);
+  margin-top: 7px;
+}
+.loom-gloss-bar .nuance b { color: var(--accent); font-style: normal; font-weight: 500; }
+
+/* eureka — a lantern note that lights when you discover something */
+.lantern-note {
+  margin-top: 22px;
+  border: 1px solid var(--gilt-line);
+  background:
+    radial-gradient(120% 160% at 0% 0%, rgba(242,166,90,0.10) 0%, transparent 60%),
+    var(--paper-deep);
+  padding: 15px 18px 16px 46px;
+  position: relative;
+  box-shadow: 0 0 30px -12px rgba(242,166,90,0.4);
+  opacity: 0;
+  transform: translateY(6px);
+  transition: opacity 0.42s var(--ease-enter, ease), transform 0.42s var(--ease-enter, ease);
+}
+.lantern-note.lit { opacity: 1; transform: translateY(0); }
+.lantern-note::before {
+  content: "灯";
+  position: absolute;
+  left: 16px; top: 15px;
+  font-family: var(--font-cjk-serif, "Noto Serif JP");
+  font-size: 19px;
+  color: var(--accent);
+  text-shadow: 0 0 12px rgba(242,166,90,0.7);
+}
+.lantern-note .head {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 5px;
+}
+.lantern-note .body {
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.lantern-note .body b { color: var(--accent); font-weight: 600; }
+
+/* small controls row under the loom */
+.loom-controls {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin-top: 22px;
+  flex-wrap: wrap;
+}
+.mini-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  user-select: none;
+}
+.mini-toggle .box {
+  width: 30px; height: 16px;
+  border: 1px solid var(--rule);
+  background: var(--paper-deep);
+  position: relative;
+  transition: all 0.16s;
+  flex: none;
+}
+.mini-toggle .box::after {
+  content: "";
+  position: absolute;
+  top: 1px; left: 1px;
+  width: 12px; height: 12px;
+  background: var(--ink-faded);
+  transition: transform 0.18s var(--ease-drift, ease), background 0.18s;
+}
+.mini-toggle.on .box { border-color: var(--accent); background: rgba(219,179,92,0.12); }
+.mini-toggle.on .box::after { transform: translateX(14px); background: var(--accent); }
+.text-btn {
+  background: none; border: none; cursor: pointer;
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink-faded); padding: 4px 0;
+  transition: color 0.15s;
+}
+.text-btn:hover { color: var(--accent); }
+
+/* role legend strip */
+.role-legend {
+  display: flex; flex-wrap: wrap; gap: 16px;
+  margin-top: 4px;
+  font-family: var(--font-mono);
+  font-size: 9.5px; letter-spacing: 0.12em; text-transform: uppercase;
+}
+.role-legend .item { display: inline-flex; align-items: center; gap: 6px; color: var(--ink-faded); }
+.role-legend .swatch {
+  font-family: var(--font-cjk-serif, "Noto Serif JP");
+  font-size: 15px; letter-spacing: 0;
+}
+
+/* =====================================================================
+   THE VERB DIAL
+   ===================================================================== */
+.dial-stage {
+  background: var(--plate-bg);
+  border: 1px solid var(--rule);
+  box-shadow: var(--abu-card-shadow);
+  padding: 30px 34px 34px;
+  margin-top: 22px;
+  position: relative;
+}
+.dial-track {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  margin: 8px 0 30px;
+  position: relative;
+  border-top: 1px solid var(--rule);
+}
+.dial-stop {
+  background: none; border: none; cursor: pointer;
+  padding: 20px 8px 14px;
+  text-align: center;
+  position: relative;
+  transition: all 0.18s;
+  border-right: 1px solid var(--rule-soft);
+}
+.dial-stop:last-child { border-right: none; }
+.dial-stop::before {
+  /* the notch on the rail */
+  content: "";
+  position: absolute;
+  top: -6px; left: 50%; transform: translateX(-50%);
+  width: 11px; height: 11px; border-radius: 50%;
+  background: var(--paper-deep);
+  border: 1px solid var(--rule);
+  transition: all 0.2s var(--ease-drift, ease);
+}
+.dial-stop:hover::before { border-color: var(--accent); }
+.dial-stop.active::before {
+  background: var(--accent);
+  border-color: var(--accent);
+  box-shadow: 0 0 16px 2px rgba(242,166,90,0.7);
+}
+.dial-stop .vlabel-jp {
+  font-family: var(--font-cjk-serif, "Noto Serif JP");
+  font-size: 18px;
+  color: var(--ink-soft);
+  transition: color 0.18s;
+}
+.dial-stop .vlabel-en {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  margin-top: 5px;
+}
+.dial-stop.active .vlabel-jp { color: var(--accent); font-weight: 600; }
+.dial-stop.active .vlabel-en { color: var(--ink-soft); }
+
+.dial-readout {
+  display: grid;
+  grid-template-columns: 1.1fr 0.9fr;
+  gap: 40px;
+  align-items: center;
+}
+@media (max-width: 820px) { .dial-readout { grid-template-columns: 1fr; gap: 28px; } }
+
+.dial-form .form-jp {
+  font-family: var(--font-cjk-serif, "Noto Serif JP");
+  font-size: 40px;
+  line-height: 1.2;
+  color: var(--ink);
+  font-weight: 500;
+}
+.dial-form .form-jp .stem { color: var(--ink-soft); }
+.dial-form .form-jp .infl { color: var(--accent); }
+.dial-form .form-reading {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.05em;
+  color: var(--ink-faded);
+  margin-top: 8px;
+}
+.dial-form .sentence-jp {
+  font-family: var(--font-cjk-serif, "Noto Serif JP");
+  font-size: 22px;
+  line-height: 1.6;
+  color: var(--ink);
+  margin-top: 22px;
+  padding-top: 18px;
+  border-top: 1px dotted var(--rule-soft);
+}
+.dial-form .sentence-en {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 19px;
+  color: var(--ink-soft);
+  line-height: 1.4;
+  margin-top: 10px;
+}
+
+/* the actor diagram — who acts on whom */
+.actor-box {
+  background: var(--paper-deep);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-md, 8px);
+  padding: 24px 22px 22px;
+}
+.actor-box .actor-head {
+  font-family: var(--font-mono);
+  font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--ink-faded); margin-bottom: 18px; text-align: center;
+}
+.actor-stage {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 8px;
+}
+.actor {
+  text-align: center;
+  transition: all 0.3s var(--ease-drift, ease);
+}
+.actor .figure {
+  width: 56px; height: 56px;
+  margin: 0 auto 8px;
+  border-radius: 50%;
+  display: grid; place-items: center;
+  font-family: var(--font-cjk-serif, "Noto Serif JP");
+  font-size: 22px;
+  border: 1px solid var(--rule);
+  background: var(--plate-bg);
+  color: var(--ink-soft);
+  transition: all 0.3s var(--ease-drift, ease);
+}
+.actor.subject .figure {
+  border-color: var(--accent);
+  color: var(--accent);
+  background: rgba(219,179,92,0.10);
+  box-shadow: 0 0 22px -6px rgba(242,166,90,0.6);
+}
+.actor .who {
+  font-family: var(--font-display);
+  font-size: 17px; color: var(--ink);
+}
+.actor .role {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--ink-faded); margin-top: 3px;
+}
+.actor.subject .role { color: var(--accent); }
+.actor-arrow {
+  position: relative;
+  min-width: 64px;
+  height: 30px;
+  display: grid; place-items: center;
+}
+.actor-arrow svg { width: 100%; height: 100%; overflow: visible; }
+.actor-arrow .verb-tag {
+  position: absolute;
+  top: -16px; left: 50%; transform: translateX(-50%);
+  font-family: var(--font-cjk-serif, "Noto Serif JP");
+  font-size: 13px; color: var(--ink-soft); white-space: nowrap;
+}
+.actor-note {
+  margin-top: 20px;
+  font-family: var(--font-body);
+  font-size: 14.5px; line-height: 1.5;
+  color: var(--ink-soft); font-style: italic;
+  text-align: center;
+}
+.actor-note b { color: var(--accent); font-style: normal; }
+
+/* =====================================================================
+   は / が SPOTLIGHT
+   ===================================================================== */
+.spot-stage {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  margin-top: 22px;
+  border: 1px solid var(--rule);
+  box-shadow: var(--abu-card-shadow);
+  overflow: hidden;
+}
+@media (max-width: 760px) { .spot-stage { grid-template-columns: 1fr; } }
+.spot-half {
+  padding: 28px 30px 30px;
+  cursor: pointer;
+  transition: background 0.2s;
+  position: relative;
+  background: var(--plate-bg);
+}
+.spot-half:first-child { border-right: 1px solid var(--rule); }
+@media (max-width: 760px) {
+  .spot-half:first-child { border-right: none; border-bottom: 1px solid var(--rule); }
+}
+.spot-half:hover { background: color-mix(in srgb, var(--plate-bg) 88%, var(--accent)); }
+.spot-half.active {
+  background:
+    radial-gradient(120% 120% at 50% 0%, rgba(242,166,90,0.10) 0%, transparent 70%),
+    var(--plate-bg);
+}
+.spot-half.active::before {
+  content: "";
+  position: absolute; left: 0; right: 0; top: 0; height: 2px;
+  background: var(--accent);
+  box-shadow: 0 0 16px 1px rgba(242,166,90,0.6);
+}
+.spot-particle {
+  font-family: var(--font-cjk-serif, "Noto Serif JP");
+  font-size: 64px; line-height: 1;
+  color: var(--ink-faded);
+  transition: color 0.2s, text-shadow 0.2s;
+}
+.spot-half.active .spot-particle {
+  color: var(--accent);
+  text-shadow: 0 0 24px rgba(242,166,90,0.5);
+}
+.spot-half .spot-name {
+  font-family: var(--font-mono);
+  font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase;
+  color: var(--ink-faded); margin: 12px 0 16px;
+}
+.spot-half.active .spot-name { color: var(--ink-soft); }
+.spot-sentence {
+  font-family: var(--font-cjk-serif, "Noto Serif JP");
+  font-size: 28px; line-height: 1.5; color: var(--ink);
+}
+.spot-sentence .mark { color: var(--accent); font-weight: 600; }
+.spot-q {
+  font-family: var(--font-display);
+  font-style: italic; font-size: 17px;
+  color: var(--ink-soft); margin-top: 16px; line-height: 1.4;
+}
+.spot-en {
+  font-family: var(--font-body);
+  font-size: 16px; color: var(--ink); margin-top: 14px; line-height: 1.55;
+}
+.spot-en b { color: var(--accent); }
+
+.spot-rule {
+  margin-top: 22px;
+  font-family: var(--font-display);
+  font-size: 20px; font-style: italic;
+  color: var(--ink-soft); line-height: 1.5; max-width: 720px;
+}
+.spot-rule b { color: var(--accent); font-style: normal; font-weight: 500; }
+
+/* advanced footnote — the double-subject */
+.double-subject {
+  margin-top: 24px;
+  border-left: 2px solid var(--signal);
+  padding: 4px 0 4px 22px;
+}
+.double-subject .ds-jp {
+  font-family: var(--font-cjk-serif, "Noto Serif JP");
+  font-size: 26px; color: var(--ink); line-height: 1.5;
+}
+.double-subject .ds-jp .topic { color: var(--accent); }
+.double-subject .ds-jp .subj { color: var(--signal-lit); }
+.double-subject .ds-note {
+  font-family: var(--font-body);
+  font-size: 15px; line-height: 1.55; color: var(--ink-soft);
+  margin-top: 8px; max-width: 620px;
+}
+.double-subject .ds-note .topic { color: var(--accent); font-style: italic; }
+.double-subject .ds-note .subj { color: var(--signal-lit); font-style: italic; }
+
+/* section dividers between instruments */
+.instr-head {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 18px; align-items: baseline;
+  margin: 64px 0 4px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--ink);
+}
+.instr-head .no {
+  font-family: var(--font-display);
+  font-style: italic; font-size: 18px; color: var(--ink-soft);
+}
+.instr-head h2 { font-family: var(--font-display); font-size: 32px; font-weight: 500; }
+.instr-head .latin {
+  font-family: var(--font-display); font-style: italic;
+  color: var(--ink-soft); font-size: 16px;
+}
+
+@media (max-width: 720px) {
+  .loom-tile { width: 124px; }
+  .loom-tile .jp { font-size: 25px; }
+  .loom-predicate { width: 138px; }
+  .loom-gloss-bar { grid-template-columns: 1fr; gap: 8px; }
+  .loom-gloss-bar .gloss-en { font-size: 22px; }
+}

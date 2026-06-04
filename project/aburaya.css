@@ -1,0 +1,296 @@
+/* ===========================================================
+   The Polyglot's Atlas — ABURAYA (油屋) skin
+   Loaded AFTER styles.css as an override layer.
+   Re-reads the same variable + class vocabulary the antiquarian
+   edition uses, and re-pigments it in the bath-house language:
+     · night canvas (canonical) + daylight counterpart
+     · gouache grain, lantern glow instead of warm shadow
+     · matte GOLD carries gilt emphasis (glyphs, illuminated initials,
+       rules of ceremony); VERMILION lacquer is reserved as a signal
+       surface (the proficiency shape, quote bars, seals).
+   Dark is home; Day is the true daytime moment (not a washed inversion).
+   =========================================================== */
+
+@import url('https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,400..700;1,9..144,400..600&family=Newsreader:ital,opsz,wght@0,6..72,400..600;1,6..72,400..500&family=Spline+Sans+Mono:wght@400..600&family=Noto+Serif+JP:wght@400..700&display=swap');
+
+/* =====================================================================
+   1. NIGHT — canonical tokens (override styles.css :root)
+   ===================================================================== */
+:root {
+  /* Material surfaces */
+  --paper:        #11151D;   /* night-900 — the sky canvas / page */
+  --paper-deep:   #161B26;   /* night-800 */
+  --paper-shadow: rgba(0,0,0,0.55);
+  --plate-bg:     #1E2531;   /* night-700 — lacquer tray */
+  --plate-shadow: rgba(0,0,0,0.55);
+
+  /* Text — warm rice-paper, never pure white */
+  --ink:        #ECE4D6;     /* warm-100 */
+  --ink-soft:   #C7BCA9;     /* warm-300 */
+  --ink-faded:  #8B8275;     /* warm-500 */
+
+  /* Rules — hairline cool ink */
+  --rule:       #36404F;     /* night-500 */
+  --rule-soft:  color-mix(in srgb, #36404F 60%, transparent);
+
+  /* GOLD is the emphasis color used as text: glyphs, illuminated initials,
+     active marks, gilt rules. Matte leaf — passes AA on night. */
+  --accent:      #DBB35C;    /* gold-400 */
+  --accent-deep: #A8842F;    /* gold-600 */
+  --highlight:   #E8C878;    /* gold-300 */
+
+  /* VERMILION lacquer — signal surface only, never body text */
+  --signal:     #B23A2E;     /* vermilion-500 */
+  --signal-lit: #D9533F;     /* vermilion-300 */
+  --gilt-line:  rgba(168,132,47,0.55);   /* gold-600 keyline */
+  --amber:      #F2A65A;
+
+  /* Faces */
+  --font-display: 'Fraunces', 'Noto Serif JP', Georgia, serif;
+  --font-body:    'Newsreader', 'Noto Serif JP', Georgia, serif;
+  --font-mono:    'Spline Sans Mono', ui-monospace, monospace;
+  --font-script:  'Fraunces', 'Noto Serif JP', serif;
+
+  /* ── Material tokens flipped per hour (depth principle lives here) ── */
+  --abu-canvas:
+    radial-gradient(120% 92% at 50% 0%, #1b2330 0%, #11151D 58%),
+    radial-gradient(62% 48% at 50% 32%, rgba(242,166,90,0.055) 0%, transparent 72%),
+    #11151D;
+  --abu-body-bg: #0C0F15;
+
+  --abu-roofline: linear-gradient(180deg, #1C1715 0%, #14100F 100%);
+  --abu-roofline-border: var(--gilt-line);
+  --abu-roofline-shadow: 0 1px 0 rgba(201,162,75,0.10), 0 14px 36px -18px rgba(0,0,0,0.85);
+
+  --abu-card-shadow: 0 1px 0 rgba(0,0,0,0.45), 0 12px 30px -18px rgba(0,0,0,0.7);
+  --abu-card-shadow-hover:
+    0 0 0 1px var(--gilt-line), 0 16px 40px -16px rgba(0,0,0,0.7),
+    0 0 30px -6px rgba(242,166,90,0.20);
+  --abu-card-border-hover: rgba(168,132,47,0.65);
+
+  --abu-drawer-bg: linear-gradient(180deg, #1E2531 0%, #161B26 32%);
+  --abu-drawer-shadow: -30px 0 64px -22px rgba(0,0,0,0.72), -1px 0 34px -12px rgba(242,166,90,0.12);
+  --abu-scrim: rgba(8,7,5,0.62);
+
+  --abu-hover-wash:   rgba(242,166,90,0.06);   /* amber lantern wash */
+  --abu-current-wash: rgba(178,58,46,0.12);    /* lacquer wash */
+  --abu-focus-ring:   0 0 0 4px rgba(242,166,90,0.30);
+
+  /* status pigments */
+  --st-deep:       var(--accent);
+  --st-active:     #6E8E5E;   /* moss */
+  --st-maintained: #C9A24B;   /* gold-500 */
+  --st-vacated:    var(--ink-faded);
+  --st-travel:     #A9CBE4;   /* sky */
+}
+
+/* =====================================================================
+   2. DAYLIGHT — the daytime counterpart (data-theme="day")
+   ===================================================================== */
+[data-theme="day"] {
+  --paper:        #F6EFE3;   /* paper-50 */
+  --paper-deep:   #E3D7C3;   /* paper-200 */
+  --paper-shadow: rgba(74,56,38,0.16);
+  --plate-bg:     #FBFDFE;   /* cloud — raised tray in sun */
+  --plate-shadow: rgba(74,56,38,0.18);
+
+  --ink:        #211A17;     /* ink-900 */
+  --ink-soft:   #5C5044;     /* ink-600 */
+  --ink-faded:  #877A6A;     /* ink-400 */
+
+  --rule:       #CDBBA0;     /* clay-300 */
+  --rule-soft:  color-mix(in srgb, #CDBBA0 70%, transparent);
+
+  --accent:      #A8842F;    /* gold-600 — darker gilt for paper contrast */
+  --accent-deep: #6E5538;    /* timber */
+  --highlight:   #C9A24B;
+
+  --signal:     #B23A2E;
+  --signal-lit: #92322A;
+  --gilt-line:  rgba(168,132,47,0.6);
+  --amber:      #F2A65A;
+
+  --abu-canvas:
+    radial-gradient(120% 70% at 50% 0%, rgba(194,220,239,0.55) 0%, transparent 46%),
+    radial-gradient(90% 60% at 80% 102%, rgba(110,85,56,0.06) 0%, transparent 60%),
+    #F6EFE3;
+  --abu-body-bg: #EAE1D2;
+
+  --abu-roofline: linear-gradient(180deg, #FBFDFE 0%, #F0E7D8 100%);
+  --abu-roofline-border: var(--gilt-line);
+  --abu-roofline-shadow: 0 1px 0 rgba(255,255,255,0.6), 0 7px 16px -10px rgba(74,56,38,0.30);
+
+  --abu-card-shadow: 0 1px 0 rgba(255,255,255,0.55), 2px 6px 16px -10px rgba(74,56,38,0.22);
+  --abu-card-shadow-hover: 0 1px 0 rgba(255,255,255,0.6), 4px 12px 26px -10px rgba(74,56,38,0.28);
+  --abu-card-border-hover: rgba(168,132,47,0.7);
+
+  --abu-drawer-bg: linear-gradient(180deg, #FBFDFE 0%, #F6EFE3 28%);
+  --abu-drawer-shadow: -22px 0 52px -20px rgba(74,56,38,0.34);
+  --abu-scrim: rgba(74,56,38,0.34);
+
+  --abu-hover-wash:   rgba(178,58,46,0.05);
+  --abu-current-wash: rgba(178,58,46,0.07);
+  --abu-focus-ring:   0 0 0 4px rgba(201,162,75,0.32);
+
+  --st-deep:       var(--accent);
+  --st-active:     #587A48;
+  --st-maintained: #6E5538;
+  --st-vacated:    var(--ink-faded);
+  --st-travel:     #2A5078;
+}
+
+/* =====================================================================
+   3. CANVAS, GRAIN & DEPTH
+   ===================================================================== */
+html, body { background: var(--abu-body-bg); }
+
+.atlas-shell { background: var(--abu-canvas); }
+
+/* Gouache grain — light noise softly-lit on night; warm multiply by day */
+.atlas-shell::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.95  0 0 0 0 0.86  0 0 0 0 0.72  0 0 0 0.7 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity: var(--grain-opacity, 0.05);
+  mix-blend-mode: soft-light;
+}
+[data-theme="day"] .atlas-shell::before {
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='280' height='280'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.30  0 0 0 0 0.20  0 0 0 0 0.10  0 0 0 0.13 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+  opacity: var(--grain-opacity, 0.4);
+  mix-blend-mode: multiply;
+}
+
+/* Foxing → faint rising haze + lantern glints at night; soft clouds by day */
+.atlas-shell::after {
+  background:
+    radial-gradient(circle at 18% 26%, rgba(242,166,90,0.05) 0%, transparent 4%),
+    radial-gradient(circle at 86% 16%, rgba(242,166,90,0.045) 0%, transparent 3%),
+    radial-gradient(ellipse 60% 40% at 50% 104%, rgba(242,166,90,0.06) 0%, transparent 60%);
+}
+[data-theme="day"] .atlas-shell::after {
+  background:
+    radial-gradient(circle at 14% 28%, rgba(255,255,255,0.5) 0%, transparent 5%),
+    radial-gradient(circle at 82% 14%, rgba(255,255,255,0.45) 0%, transparent 4%),
+    radial-gradient(circle at 50% 6%, rgba(255,255,255,0.4) 0%, transparent 8%);
+}
+
+/* =====================================================================
+   4. TYPE — Fraunces optical display, gilt amp
+   ===================================================================== */
+h1, h2, h3, h4,
+.folio-num, .folio-title-block h1, .drawer h2, .placeholder h2 {
+  font-optical-sizing: auto;
+}
+.folio-title-block h1, .drawer h2, .placeholder h2 {
+  font-variation-settings: 'opsz' 110, 'SOFT' 16, 'WONK' 0;
+  font-weight: 560;
+  letter-spacing: -0.012em;
+}
+.binding-title { letter-spacing: 0.30em; }
+.binding-title .amp { color: var(--accent); }
+
+/* =====================================================================
+   5. ROOFLINE, DRAWER, SCRIM — architecture
+   ===================================================================== */
+.binding {
+  background: var(--abu-roofline);
+  border-bottom: 1px solid var(--abu-roofline-border);
+  box-shadow: var(--abu-roofline-shadow);
+}
+.drawer {
+  background: var(--abu-drawer-bg);
+  border-left: 1px solid var(--abu-roofline-border);
+  box-shadow: var(--abu-drawer-shadow);
+}
+.drawer-scrim { background: var(--abu-scrim); }
+
+/* Strong section underlines become quiet hairlines (gilt is rationed) */
+.folio-mast, .encounter-mast {
+  border-bottom: 1.5px solid var(--gilt-line);
+}
+.folio-mast::after, .encounter-mast::after { display: none; }
+.plate-header, .index-block h3, .biblio-col h4, .drawer h3, .t4-section-header {
+  border-bottom-color: var(--rule);
+}
+.marginalia h4 { border-bottom-color: var(--gilt-line); }
+.drawer .modality-status-line { border-color: var(--gilt-line); }
+
+/* =====================================================================
+   6. SEALS — wax + gilt
+   ===================================================================== */
+.stamp {
+  color: var(--accent);
+  border: 1px solid var(--gilt-line);
+  background: rgba(178,58,46,0.16);
+  border-radius: 0;
+}
+.stamp.double {
+  box-shadow: inset 0 0 0 2px var(--plate-bg), inset 0 0 0 3px var(--gilt-line);
+}
+
+/* =====================================================================
+   7. LACQUER SIGNALS — vermilion reserved for these surfaces
+   ===================================================================== */
+.spider-poly {
+  fill: var(--signal);
+  fill-opacity: 0.20;
+  stroke: var(--signal-lit);
+  stroke-width: 1.8;
+}
+.spider-node { fill: var(--paper); stroke: var(--signal-lit); }
+.spider-node:hover, .spider-node.active { fill: var(--signal-lit); }
+.spider-ring.solid { stroke: var(--gilt-line); }
+
+.plate-prose blockquote { border-left-color: var(--signal); }
+
+/* =====================================================================
+   8. PLATES AS LACQUER TRAYS — glow, not shadow
+   ===================================================================== */
+.t4-card, .t4-detail { box-shadow: var(--abu-card-shadow); }
+.t4-card:hover {
+  box-shadow: var(--abu-card-shadow-hover);
+  border-color: var(--abu-card-border-hover);
+}
+
+/* Lantern hover washes */
+.index-row:hover, .encounter:hover { background: var(--abu-hover-wash); }
+.signposts .current-row { background: var(--abu-current-wash); }
+
+/* =====================================================================
+   9. STATUS PIGMENTS
+   ===================================================================== */
+.status-pill.deep       { color: var(--st-deep); }
+.status-pill.active     { color: var(--st-active); }
+.status-pill.maintained { color: var(--st-maintained); }
+.status-pill.vacated    { color: var(--st-vacated); }
+.status-pill.travel     { color: var(--st-travel); }
+
+/* =====================================================================
+   10. IPA & data tables — surfaces + lacquer highlight
+   ===================================================================== */
+.ipa-table th, .ipa-table td { border-color: var(--rule); }
+.ipa-table td { background: var(--paper-deep); }
+.ipa-table th, .ipa-table .row-label { background: var(--plate-bg); color: var(--ink-soft); }
+.ipa-table td.ipa-cell:hover { background: rgba(242,166,90,0.09); }
+.ipa-table td.ipa-cell.highlighted {
+  background: rgba(178,58,46,0.22);
+  color: var(--accent);
+}
+
+/* Cartographic ornaments toggle */
+[data-ornaments="off"] .ornament-svg { display: none; }
+
+/* =====================================================================
+   11. FOCUS — lantern-glow ring with static outline fallback
+   ===================================================================== */
+button:focus-visible,
+.t4-card:focus-visible,
+.index-row:focus-visible,
+[tabindex]:focus-visible,
+a:focus-visible {
+  outline: 1px solid var(--accent);
+  outline-offset: 2px;
+  box-shadow: var(--abu-focus-ring);
+  border-radius: 1px;
+}
+@media (prefers-reduced-motion: reduce) {
+  button:focus-visible, .t4-card:focus-visible { box-shadow: none; }
+}
