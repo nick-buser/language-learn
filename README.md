@@ -31,6 +31,7 @@ Default route is `#/ko/grammar` — Korean is the active study.
 | **동사 · verb forge** (`#/ko/verbs`) | **The forge** — vowel-harmony conjugation (6 verbs × present/past/future) showing the bright/dark/하 fork and every fusion. **The register dial** — the four speech levels (합쇼체/해요체/해체/해라체) on one sentence, with a 2×2 formality×politeness map, social-distance scene, K-drama field notes, and an independent **-시-** subject-honor toggle. **안 & 못 spotlight** — the two negations: will vs. ability. |
 | **조사 · particle cabinet** (`#/ko/particles`) | The particle deep dive — 33 particles in five pigment-coded drawers (skeleton case particles · place/time/direction · pairing & comparing · the focus set · the social set), one uniform card each: forms + 받침 fitting rule, Japanese twin, specimen sentence (hangul/RR/bridge/EN), why-it-matters, and trap footnotes. **The cabinet** — clickable index, chip → scroll-and-flash to card. **에 vs 에서 spotlight** — the に/で border. **The stack** — particle compounding: delimiters 는/도/만 *stack* after adverbial particles (에는 = には) but *replace* case particles (를+는 → 는, mirroring ✗をは), with live JP mirror equations, a ready-made stack catalogue (엔/에선/만이/께서는…), and contraction notes (난/널/전). |
 | **한자어 · cognate bridge** (`#/ko/cognates`) | Sino-Japanese ↔ Sino-Korean. **The sound bridge** — the six final-consonant correspondences (-く/-き↔ㄱ, -つ/-ち↔ㄹ, long -う↔ㅂ, long vowel↔ㅇ, ん↔ㄴ *and* ㅁ), each with specimen characters and the Middle-Chinese why, plus an initials drawer (g/k↔h, b↔m, the vanishing 人). **The cognate ledger** — the dictionary pilot: 16 hand-checked entries (hanja, hangul+RR, kana+romaji, per-character rule derivation, specimen sentence), badged *true twin / skewed sense / false friend* (工夫, 愛人, 八方美人); rule chips link back into the bridge. The ledger's schema is the contract for the future dictionary backend — see `docs/vocabulary-plan.md`. |
+| **어휘 · word bank** (`#/ko/vocab`) | The vocabulary system's first working face (plan phases 3+5, interface-first). **The holdings ledger** — the bank as a table: census strip (stacked coverage bar over unseen/met/learning/known, each account a click-to-filter chip), full-text search across hangul/RR/gloss/kanji, stratum (한자어·고유어·외래어) and POS filter chips with counts, sortable columns, expandable rows with the specimen sentence, usage note, hanja and SRS facts. Opening an unseen word files it as *met* — browsing builds the record. **The review drawer** — the quiet SRS: due queue over the learning set, bare-headword card fronts, full dictionary backs (reading, gloss, JP bridge with cognate/loan/equivalent badge, specimen), four grade buttons that print the interval each would buy, space/1–4 keyboard play, seven-day due forecast, session receipt. Words graduate to *known* at a 21-day interval. State: `localStorage` `atlas.ko.vocab.v1` (and `atlas.ja.vocab.v1`), shaped as the future backend payload. Data: `koreanVocab.js`, 38 hand-checked entries across the three strata. |
 | **여정 · fluency roadmap** (`#/ko/roadmap`) | The long road — capacity-phased roadmap to fluency, charted deep through B1 and honestly unmapped beyond. **The trail** — five Sino-named waymarks (관문 sound gate · 생존 survival kit · 연결 connected sentence · 자립 independence · 원경 far ranges), each a lantern that fills as its checklist completes, over CEFR/TOPIK reference rails (mileposts beside the road, not the road). **The waymark dossiers** — per-phase deep charts across six strands (어휘·문법·발음·듣기·읽기·말글): can-do goal-posts, explanations with JP-bridge notes, ~95 persisted checkboxes, an effort-mix panel (steady/listener/reader splits) and a pace dial (weeks-of-walking math, JP-transfer discount included). **The practice ledger** — seven habits with 14-day lamp-dot strips + streaks, and the weekly reckoning (check-in journal). First persistent state in the atlas: `localStorage` `atlas.ko.roadmap.v1`, the pilot for per-learner backend state. Content grounded in `project/uploads/files (5)/korean_approach.md`. |
 
 ### 日本語 Japanese (maintained)
@@ -38,6 +39,7 @@ Default route is `#/ko/grammar` — Korean is the active study.
 | Folio | Instruments |
 |---|---|
 | **文法 · grammar engine** (`#/ja/grammar`) | **The loom** — particles carry roles, order carries emphasis. **The verb dial** — 食べる through plain/passive/causative/causative-passive, tracking 私. **は & が spotlight** — topic vs. selection, plus 象は鼻が長い. |
+| **語彙 · word bank** (`#/ja/vocab`) | The same two vocabulary instruments as `#/ko/vocab` (they're language-blind), maintenance-flavored: 18-entry pilot bank stratified 漢語/和語/外来語 — the mirror of Korean's 한자어/고유어/외래어 — with kana+romaji as the readings layer and no bridge column. State: `atlas.ja.vocab.v1`. |
 
 ## Content conventions
 
@@ -66,7 +68,9 @@ src/
     KoreanVerbs.jsx        ko folio — verb forge
     KoreanParticles.jsx    ko folio — particle cabinet
     KoreanCognates.jsx     ko folio — cognate bridge
+    KoreanVocab.jsx        ko folio — word bank
     KoreanRoadmap.jsx      ko folio — fluency roadmap
+    JapaneseVocab.jsx      ja folio — word bank
   components/
     LoomInstrument.jsx     ja loom
     VerbDial.jsx           ja voice dial
@@ -89,6 +93,11 @@ src/
       WaymarkDossier.jsx   ko per-phase deep chart (strands, checklists, effort mix)
       PracticeLedger.jsx   ko habit dots + weekly check-in journal
       useRoadmapStore.js   ko progress persistence (localStorage; backend-shaped)
+    vocab/                 language-blind vocabulary instruments (fed by per-lang data)
+      WordLedger.jsx       the holdings ledger — census, search, filters, sortable table
+      ReviewDrawer.jsx     the review drawer — due queue, flip cards, four grades
+      useVocabStore.js     per-word state: unseen/met/learning/known (localStorage per lang)
+      srs.js               the SM-2-ish day scheduler (pure functions + interval previews)
   data/
     grammarData.js         ja content
     koreanData.js          ko content (hangul + RR + JP bridges, hand-checked)
@@ -97,6 +106,9 @@ src/
                            dictionary API (docs/vocabulary-plan.md)
     koreanRoadmap.js       ko fluency roadmap — waymarks, strands, checklists, mixes,
                            habits (built against korean_approach.md)
+    koreanVocab.js         ko word bank — 38 entries across 한자어/고유어/외래어, the
+                           generalized dictionary schema (VocabEntry) + lang config
+    japaneseVocab.js       ja word bank — 18 entries across 漢語/和語/外来語, same schema
   styles/
     base.css               atlas/codex structure (binding, folios, plates, nav)
     aburaya.css            Aburaya skin — tokens + dark/day themes (canonical: dark)
@@ -105,6 +117,7 @@ src/
     particles.css          particle cabinet (index, cards, stack)
     cognates.css           cognate bridge (rule panel, specimen crossings, ledger cards)
     roadmap.css            fluency roadmap (trail & lanterns, dossiers, habit ledger)
+    vocab.css              word bank (census, ledger table, review drawer & grade bar)
 docs/
   vocabulary-plan.md       the five-phase vocabulary acquisition roadmap
 ```

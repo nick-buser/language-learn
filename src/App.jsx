@@ -4,7 +4,9 @@ import KoreanGrammar from './pages/KoreanGrammar.jsx'
 import KoreanVerbs from './pages/KoreanVerbs.jsx'
 import KoreanParticles from './pages/KoreanParticles.jsx'
 import KoreanCognates from './pages/KoreanCognates.jsx'
+import KoreanVocab from './pages/KoreanVocab.jsx'
 import KoreanRoadmap from './pages/KoreanRoadmap.jsx'
+import JapaneseVocab from './pages/JapaneseVocab.jsx'
 import './styles/base.css'
 import './styles/aburaya.css'
 import './styles/grammar.css'
@@ -12,6 +14,7 @@ import './styles/korean.css'
 import './styles/particles.css'
 import './styles/cognates.css'
 import './styles/roadmap.css'
+import './styles/vocab.css'
 
 // Two-level atlas: language → folio pages within it.
 const LANGS = [
@@ -22,6 +25,7 @@ const LANGS = [
       { id: 'verbs',     glyph: '동사', label: 'verb forge',       component: KoreanVerbs },
       { id: 'particles', glyph: '조사', label: 'particle cabinet', component: KoreanParticles },
       { id: 'cognates',  glyph: '한자어', label: 'cognate bridge',  component: KoreanCognates },
+      { id: 'vocab',     glyph: '어휘', label: 'word bank',        component: KoreanVocab },
       { id: 'roadmap',   glyph: '여정', label: 'fluency roadmap',  component: KoreanRoadmap },
     ],
   },
@@ -29,6 +33,7 @@ const LANGS = [
     id: 'ja', glyph: '日本語', name: 'Japanese', metaGlyph: '文法', font: 'var(--font-cjk-serif)',
     pages: [
       { id: 'grammar', glyph: '文法', label: 'grammar engine', component: JapaneseGrammar },
+      { id: 'vocab',   glyph: '語彙', label: 'word bank',      component: JapaneseVocab },
     ],
   },
 ]

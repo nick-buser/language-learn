@@ -50,6 +50,13 @@ Track what the learner actually knows.
 - Starts as localStorage keyed to the same schema; graduates to the backend with the
   dictionary. Every later feature (reading, SRS) reads and writes this state.
 
+*Status 2026-06: piloted, interface-first, in the word bank folios (`#/ko/vocab`,
+`#/ja/vocab`). The holdings ledger (`WordLedger`) is the browsing/triage face over a
+hardcoded exemplar bank (`koreanVocab.js` / `japaneseVocab.js` — the generalized
+VocabEntry schema); `useVocabStore` holds the four-state taxonomy in localStorage
+(`atlas.<lang>.vocab.v1`). Still pending from this phase: source-of-acquisition beyond
+ledger/review (arrives with reading), backend persistence (arrives with phase 2).*
+
 ### 4. Extensive reading
 
 Comprehensible input tuned to the known-vocabulary set.
@@ -69,9 +76,18 @@ Review, kept deliberately boring.
   with their harvested context sentences, hangul + RR + JP bridge per the house conventions.
 - No gamification chrome — it's a drawer in the atlas, not an app within the app.
 
+*Status 2026-06: piloted in the same word bank folios (`ReviewDrawer` + `srs.js`):
+day-granular SM-2-ish (four grades, one ease factor), interval previews on the grade
+buttons, 21-day graduation to known, seven-day due forecast, session receipt. Cards
+carry the bank's specimen sentences for now; harvested context sentences arrive with
+phase 4.*
+
 ## Sequencing notes
 
 - Phase 1 stands alone and is pure frontend — no blockers.
+- Phases 3 and 5 jumped the queue (2026-06) as frontend pilots over exemplar banks —
+  the word bank folios. This inverts the written order deliberately: the instruments
+  define the payloads the phase-2 backend must serve, not the other way round.
 - Phases 2–3 land together (the DB serves both); 4 and 5 depend on 3.
 - At every phase the **schema is the contract**: instruments built against exemplar data
   modules must survive the swap to the API unchanged.
