@@ -30,6 +30,7 @@ Default route is `#/ko/grammar` — Korean is the active study.
 | **문법 · grammar engine** (`#/ko/grammar`) | **The loom** — drag particle-tagged phrases; word order is free, the verb anchors the end. **The gate** — 받침 (batchim) particle allomorphy: pick a noun, watch 은/는·이/가·을/를·과/와·(으)로 re-tailor themselves, with jamo decomposition and liaison romanization. **은/는 & 이/가 spotlight** — topic vs. selection, with the elephant sentence (코끼리는 코가 길어요 / 象は鼻が長い) aligned in both languages. |
 | **동사 · verb forge** (`#/ko/verbs`) | **The forge** — vowel-harmony conjugation (6 verbs × present/past/future) showing the bright/dark/하 fork and every fusion. **The register dial** — the four speech levels (합쇼체/해요체/해체/해라체) on one sentence, with a 2×2 formality×politeness map, social-distance scene, K-drama field notes, and an independent **-시-** subject-honor toggle. **안 & 못 spotlight** — the two negations: will vs. ability. |
 | **조사 · particle cabinet** (`#/ko/particles`) | The particle deep dive — 33 particles in five pigment-coded drawers (skeleton case particles · place/time/direction · pairing & comparing · the focus set · the social set), one uniform card each: forms + 받침 fitting rule, Japanese twin, specimen sentence (hangul/RR/bridge/EN), why-it-matters, and trap footnotes. **The cabinet** — clickable index, chip → scroll-and-flash to card. **에 vs 에서 spotlight** — the に/で border. **The stack** — particle compounding: delimiters 는/도/만 *stack* after adverbial particles (에는 = には) but *replace* case particles (를+는 → 는, mirroring ✗をは), with live JP mirror equations, a ready-made stack catalogue (엔/에선/만이/께서는…), and contraction notes (난/널/전). |
+| **한자어 · cognate bridge** (`#/ko/cognates`) | Sino-Japanese ↔ Sino-Korean. **The sound bridge** — the six final-consonant correspondences (-く/-き↔ㄱ, -つ/-ち↔ㄹ, long -う↔ㅂ, long vowel↔ㅇ, ん↔ㄴ *and* ㅁ), each with specimen characters and the Middle-Chinese why, plus an initials drawer (g/k↔h, b↔m, the vanishing 人). **The cognate ledger** — the dictionary pilot: 16 hand-checked entries (hanja, hangul+RR, kana+romaji, per-character rule derivation, specimen sentence), badged *true twin / skewed sense / false friend* (工夫, 愛人, 八方美人); rule chips link back into the bridge. The ledger's schema is the contract for the future dictionary backend — see `docs/vocabulary-plan.md`. |
 
 ### 日本語 Japanese (maintained)
 
@@ -46,8 +47,9 @@ Default route is `#/ko/grammar` — Korean is the active study.
   mapping is real (는↔は, 를↔を, -았↔た, 해요체↔です/ます, -시-↔尊敬語…). The **日本語 bridge**
   toggle (Korean pages only) hides them for self-testing.
 - Eureka notes fire once per discovery per visit; "for the next plate" marginalia at the bottom
-  of each folio is the roadmap of planned instruments (numbers & counters, the on'yomi↔Sino-Korean
-  sound bridge, 있다/없다, connectives, the irregular drawer, full sentence-type paradigms…).
+  of each folio is the roadmap of planned instruments (numbers & counters, 있다/없다, connectives,
+  the irregular drawer, full sentence-type paradigms, the vocabulary system of
+  `docs/vocabulary-plan.md`…).
 - Linguistic content lives in data modules (`src/data/`), separate from the instrument mechanics
   (`src/components/`), so new specimens/verbs/nouns are data edits, not component surgery.
 
@@ -62,6 +64,7 @@ src/
     KoreanGrammar.jsx      ko folio — grammar engine
     KoreanVerbs.jsx        ko folio — verb forge
     KoreanParticles.jsx    ko folio — particle cabinet
+    KoreanCognates.jsx     ko folio — cognate bridge
   components/
     LoomInstrument.jsx     ja loom
     VerbDial.jsx           ja voice dial
@@ -77,16 +80,24 @@ src/
       ParticleCard.jsx     ko one-particle plate (uniform anatomy)
       EEseoSpotlight.jsx   ko 에 vs 에서
       ParticleStack.jsx    ko particle compounding (holds vs yields)
+      SoundBridge.jsx      ko on'yomi ↔ Sino-Korean finals (rule table as instrument)
+      CognateLedger.jsx    ko cognate browser (filters + eureka — the dictionary pilot)
+      CognateCard.jsx      ko one-cognate plate (uniform anatomy, rule-chip links)
   data/
     grammarData.js         ja content
     koreanData.js          ko content (hangul + RR + JP bridges, hand-checked)
     koreanParticles.js     ko particle cabinet content (33 cards + stack data)
+    koreanCognates.js      ko cognate bridge content — schema piloted for the future
+                           dictionary API (docs/vocabulary-plan.md)
   styles/
     base.css               atlas/codex structure (binding, folios, plates, nav)
     aburaya.css            Aburaya skin — tokens + dark/day themes (canonical: dark)
     grammar.css            shared instrument vocabulary (loom, dial, spotlight, lantern notes)
     korean.css             Korean instruments (gate, forge, register) + .kr type
     particles.css          particle cabinet (index, cards, stack)
+    cognates.css           cognate bridge (rule panel, specimen crossings, ledger cards)
+docs/
+  vocabulary-plan.md       the five-phase vocabulary acquisition roadmap
 ```
 
 ## Design system

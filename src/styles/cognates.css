@@ -1,0 +1,364 @@
+/* ===========================================================
+   The Polyglot's Atlas — Korean · the cognate bridge (한자어)
+   I — the sound bridge (rule table as instrument)
+   II — the cognate ledger (the dictionary pilot)
+   Tokens from aburaya.css; instrument vocabulary from grammar.css.
+   =========================================================== */
+
+/* =====================================================================
+   I — THE SOUND BRIDGE
+   ===================================================================== */
+.bridge-stage {
+  margin-top: 26px;
+  position: relative;
+}
+
+.br-chip.active {
+  border-color: var(--rule-c, var(--accent));
+  color: var(--ink);
+}
+.br-chip .kr {
+  font-size: 15px;
+  color: var(--rule-c, var(--accent));
+  margin-right: 7px;
+}
+
+.br-panel {
+  margin-top: 20px;
+  background: var(--paper-deep);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--rule-c, var(--accent));
+  box-shadow: var(--abu-card-shadow);
+  padding: 20px 24px 24px;
+  animation: br-settle var(--dur-base) var(--ease-enter) both;
+}
+@keyframes br-settle {
+  from { opacity: 0; transform: translateY(5px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+/* the correspondence equation */
+.br-eq {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  flex-wrap: wrap;
+  border-bottom: 1px dotted var(--rule-soft);
+  padding-bottom: 12px;
+}
+.br-eq-ja {
+  font-family: var(--font-cjk-serif);
+  font-size: 23px;
+  color: var(--ink);
+}
+.br-eq-arrow {
+  color: var(--rule-c, var(--accent));
+  font-size: 17px;
+}
+.br-eq-ko {
+  font-size: 25px;
+  font-weight: 600;
+  color: var(--rule-c, var(--accent));
+}
+.br-eq-name {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 15.5px;
+  color: var(--ink-soft);
+}
+.br-eq-mc {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+
+.br-body {
+  font-family: var(--font-body);
+  font-size: 15.5px;
+  line-height: 1.6;
+  color: var(--ink-soft);
+  margin-top: 12px;
+  max-width: 760px;
+}
+.br-body b { color: var(--ink); font-weight: 600; }
+
+/* specimen crossings */
+.br-specimens {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 20px;
+}
+@media (max-width: 880px) { .br-specimens { grid-template-columns: repeat(2, 1fr); } }
+
+.br-spec {
+  border: 1px solid var(--rule-soft);
+  background: color-mix(in srgb, var(--plate-bg) 70%, transparent);
+  padding: 14px 12px 12px;
+  text-align: center;
+  animation: br-settle var(--dur-base) var(--ease-enter) both;
+}
+.br-spec-hanja {
+  font-family: var(--font-cjk-serif);
+  font-size: 36px;
+  line-height: 1.15;
+  color: var(--ink);
+}
+.br-spec-cross {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-top: 9px;
+}
+.br-side { display: flex; flex-direction: column; gap: 2px; min-width: 0; }
+.br-kana {
+  font-family: var(--font-cjk-serif);
+  font-size: 16.5px;
+  color: var(--ink-soft);
+}
+.br-hangul {
+  font-size: 18px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.br-arrow {
+  color: var(--rule-c, var(--accent));
+  font-size: 13px;
+  flex: none;
+}
+.br-rr {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.05em;
+  color: var(--ink-faded);
+}
+.br-tail {
+  font-weight: 600;
+  font-style: normal;
+  color: var(--rule-c, var(--accent));
+}
+.br-spec-gloss {
+  margin-top: 8px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 12.5px;
+  color: var(--ink-faded);
+}
+
+.br-initials { margin-top: 26px; }
+
+/* =====================================================================
+   II — THE COGNATE LEDGER
+   ===================================================================== */
+.ledger-stage { margin-top: 26px; }
+
+.cg-filter-chip .cg-count {
+  margin-left: 8px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  color: var(--ink-faded);
+}
+.cg-filter-chip.active {
+  border-color: var(--cog, var(--accent));
+  color: var(--ink);
+}
+
+.cgcard-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+  align-items: start;
+  margin-top: 20px;
+}
+@media (max-width: 880px) { .cgcard-grid { grid-template-columns: 1fr; } }
+
+.cgcard {
+  background: var(--paper-deep);
+  border: 1px solid var(--rule);
+  border-left: 3px solid var(--cog, var(--accent));
+  box-shadow: var(--abu-card-shadow);
+  padding: 18px 22px 20px;
+  scroll-margin-top: 140px;
+}
+
+.cg-head {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+}
+.cg-hanja {
+  font-family: var(--font-cjk-serif);
+  font-size: 34px;
+  line-height: 1.15;
+  color: var(--ink);
+  white-space: nowrap;
+}
+.cg-id { flex: 1; min-width: 0; }
+.cg-kr {
+  font-size: 20px;
+  font-weight: 600;
+  color: var(--ink);
+}
+.cg-kr-rr {
+  margin-left: 9px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.06em;
+  color: var(--ink-faded);
+}
+.cg-ja { margin-top: 2px; }
+.cg-ja .jp {
+  font-family: var(--font-cjk-serif);
+  font-size: 14.5px;
+  color: var(--ink-soft);
+}
+.cg-ja::before {
+  content: "日 ";
+  font-family: var(--font-cjk-serif);
+  font-size: 9px;
+  color: var(--accent-deep);
+  vertical-align: 2px;
+}
+.cg-ja-rr {
+  margin-left: 8px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--ink-faded);
+}
+.cg-en {
+  margin-top: 3px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+.cg-badge {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--cog, var(--accent));
+  border: 1px solid color-mix(in srgb, var(--cog, var(--accent)) 55%, transparent);
+  padding: 4px 9px 5px;
+}
+
+/* per-character derivation — the toll receipt */
+.cg-derive {
+  margin-top: 14px;
+  padding: 10px 0 11px;
+  border-top: 1px dotted var(--rule-soft);
+  border-bottom: 1px dotted var(--rule-soft);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 22px;
+}
+.cg-char {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+}
+.cg-char-hanja {
+  font-family: var(--font-cjk-serif);
+  font-size: 16px;
+  color: var(--ink);
+}
+.cg-char-ja {
+  font-family: var(--font-cjk-serif);
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+.cg-char-arrow { font-size: 11px; color: var(--ink-faded); }
+.cg-char-ko { font-size: 14.5px; font-weight: 600; color: var(--ink); }
+.cg-char-rr {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  color: var(--ink-faded);
+}
+.cg-rule-chip {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--rule-c, var(--accent));
+  background: none;
+  border: 1px solid color-mix(in srgb, var(--rule-c, var(--accent)) 50%, transparent);
+  padding: 1px 6px 2px;
+  cursor: pointer;
+  transition: all var(--dur-quick) var(--ease-drift);
+}
+.cg-rule-chip:hover {
+  border-color: var(--rule-c, var(--accent));
+  box-shadow: 0 0 14px -6px var(--rule-c, var(--accent));
+}
+.cg-ini-chip {
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  color: var(--ink-faded);
+  border: 1px dotted var(--rule-soft);
+  padding: 1px 6px 2px;
+}
+
+/* specimen sentence — same anatomy as the particle cards */
+.cg-ex {
+  margin: 14px 0 0;
+  padding: 0;
+}
+.cg-ex-kr {
+  font-size: 18px;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.cg-ex-kr m {
+  font-style: normal;
+  color: var(--cog, var(--accent));
+  font-weight: 600;
+}
+.cg-ex-rr {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  letter-spacing: 0.04em;
+  color: var(--ink-faded);
+  margin-top: 3px;
+}
+.cg-ex-jp {
+  margin-top: 7px;
+}
+.cg-ex-jp::before {
+  content: "日 ";
+  font-family: var(--font-cjk-serif);
+  font-size: 9px;
+  color: var(--accent-deep);
+  vertical-align: 2px;
+}
+.cg-ex-jp .jp {
+  font-family: var(--font-cjk-serif);
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+.cg-ex-jp .jp-rr {
+  margin-left: 9px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  color: var(--ink-faded);
+}
+.cg-ex-en {
+  margin-top: 6px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 13.5px;
+  color: var(--ink-soft);
+}
+
+.cg-note {
+  margin-top: 13px;
+  border-top: 1px dotted var(--rule-soft);
+  padding-top: 10px;
+}
+.cg-note .fn-body { font-size: 13.5px; }
+.cg-note .fn-body b { color: var(--ink); font-weight: 600; }

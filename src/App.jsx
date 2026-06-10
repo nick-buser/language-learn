@@ -3,11 +3,13 @@ import JapaneseGrammar from './pages/JapaneseGrammar.jsx'
 import KoreanGrammar from './pages/KoreanGrammar.jsx'
 import KoreanVerbs from './pages/KoreanVerbs.jsx'
 import KoreanParticles from './pages/KoreanParticles.jsx'
+import KoreanCognates from './pages/KoreanCognates.jsx'
 import './styles/base.css'
 import './styles/aburaya.css'
 import './styles/grammar.css'
 import './styles/korean.css'
 import './styles/particles.css'
+import './styles/cognates.css'
 
 // Two-level atlas: language → folio pages within it.
 const LANGS = [
@@ -17,6 +19,7 @@ const LANGS = [
       { id: 'grammar',   glyph: '문법', label: 'grammar engine',   component: KoreanGrammar },
       { id: 'verbs',     glyph: '동사', label: 'verb forge',       component: KoreanVerbs },
       { id: 'particles', glyph: '조사', label: 'particle cabinet', component: KoreanParticles },
+      { id: 'cognates',  glyph: '한자어', label: 'cognate bridge',  component: KoreanCognates },
     ],
   },
   {

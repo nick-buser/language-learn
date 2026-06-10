@@ -197,9 +197,9 @@ export default function KoreanParticles({ showReadings, showJp }) {
               not particles, and they replace the て-form economy wholesale.
             </div>
             <div className="note">
-              <span className="date">the sound bridge</span>
-              学校 → がっこう → 학교. The on’yomi-to-Sino-Korean shift table (k↔g, ts↔ch, final
-              ん↔ㄴ/ㅁ) — an afternoon of patterns that unlocks thousands of words you already own.
+              <span className="date">the sound bridge — delivered</span>
+              学校 → がっこう → 학교: now a folio of its own. See <b>한자어 · the cognate
+              bridge</b> — the shift table, plus the first page of the dictionary-to-be.
             </div>
             <div className="note">
               <span className="date">wh × cabinet</span>
