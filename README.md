@@ -1,25 +1,109 @@
-# CODING AGENTS: READ THIS FIRST
+# The Polyglot's Atlas — Grammar Instruments
 
-This is a **handoff bundle** from Claude Design (claude.ai/design).
+Interactive grammar "instruments" for language study, built as a Vite + React app in the
+**Aburaya** design language (lantern-lit bath-house: matte gouache, gilt keylines, dark-is-home).
+Not lessons — working machines: drag a sentence apart, turn a register dial, swap a particle,
+and the grammar answers back.
 
-A user mocked up designs in HTML/CSS/JS using an AI design tool, then exported this bundle so a coding agent can implement the designs for real.
+The aspiration is Tufte-grade didactics: every pixel and interaction should earn its place by
+making a grammatical idea *felt* rather than stated. Discovery is rewarded with "lantern notes"
+(eureka panels) that light up the first time you trip over the insight.
 
-## What you should do — IMPORTANT
+## Running it
 
-**Read the chat transcripts first.** There are 3 chat transcript(s) in `chats/`. The transcripts show the full back-and-forth between the user and the design assistant — they tell you **what the user actually wants** and **where they landed** after iterating. Don't skip them. The final HTML files are the output, but the chat is where the intent lives.
+```sh
+npm install
+npm run dev      # local dev server
+npm run build    # production build to dist/
+```
 
-**Read `project/The Grammar Engine - Japanese.html` in full.** The user had this file open when they triggered the handoff, so it's almost certainly the primary design they want built. Read it top to bottom — don't skim. Then **follow its imports**: open every file it pulls in (shared components, CSS, scripts) so you understand how the pieces fit together before you start implementing.
+## The atlas — two-level navigation
 
-**If anything is ambiguous, ask the user to confirm before you start implementing.** It's much cheaper to clarify scope up front than to build the wrong thing.
+Hash-routed: **language → folio (page)**. e.g. `#/ko/grammar`, `#/ko/verbs`, `#/ko/particles`, `#/ja/grammar`.
+The binding (top bar) selects the language; the sub-strip below it selects the folio.
+Default route is `#/ko/grammar` — Korean is the active study.
 
-## About the design files
+### 한국어 Korean (active study — beginner, leaning hard on Japanese transfer)
 
-The design medium is **HTML/CSS/JS** — these are prototypes, not production code. Your job is to **recreate them pixel-perfectly** in whatever technology makes sense for the target codebase (React, Vue, native, whatever fits). Match the visual output; don't copy the prototype's internal structure unless it happens to fit.
+| Folio | Instruments |
+|---|---|
+| **문법 · grammar engine** (`#/ko/grammar`) | **The loom** — drag particle-tagged phrases; word order is free, the verb anchors the end. **The gate** — 받침 (batchim) particle allomorphy: pick a noun, watch 은/는·이/가·을/를·과/와·(으)로 re-tailor themselves, with jamo decomposition and liaison romanization. **은/는 & 이/가 spotlight** — topic vs. selection, with the elephant sentence (코끼리는 코가 길어요 / 象は鼻が長い) aligned in both languages. |
+| **동사 · verb forge** (`#/ko/verbs`) | **The forge** — vowel-harmony conjugation (6 verbs × present/past/future) showing the bright/dark/하 fork and every fusion. **The register dial** — the four speech levels (합쇼체/해요체/해체/해라체) on one sentence, with a 2×2 formality×politeness map, social-distance scene, K-drama field notes, and an independent **-시-** subject-honor toggle. **안 & 못 spotlight** — the two negations: will vs. ability. |
+| **조사 · particle cabinet** (`#/ko/particles`) | The particle deep dive — 33 particles in five pigment-coded drawers (skeleton case particles · place/time/direction · pairing & comparing · the focus set · the social set), one uniform card each: forms + 받침 fitting rule, Japanese twin, specimen sentence (hangul/RR/bridge/EN), why-it-matters, and trap footnotes. **The cabinet** — clickable index, chip → scroll-and-flash to card. **에 vs 에서 spotlight** — the に/で border. **The stack** — particle compounding: delimiters 는/도/만 *stack* after adverbial particles (에는 = には) but *replace* case particles (를+는 → 는, mirroring ✗をは), with live JP mirror equations, a ready-made stack catalogue (엔/에선/만이/께서는…), and contraction notes (난/널/전). |
 
-**Don't render these files in a browser or take screenshots unless the user asks you to.** Everything you need — dimensions, colors, layout rules — is spelled out in the source. Read the HTML and CSS directly; a screenshot won't tell you anything they don't.
+### 日本語 Japanese (maintained)
 
-## Bundle contents
+| Folio | Instruments |
+|---|---|
+| **文法 · grammar engine** (`#/ja/grammar`) | **The loom** — particles carry roles, order carries emphasis. **The verb dial** — 食べる through plain/passive/causative/causative-passive, tracking 私. **は & が spotlight** — topic vs. selection, plus 象は鼻が長い. |
 
-- `README.md` — this file
-- `chats/` — conversation transcripts (read these!)
-- `project/` — the `language-lab` project files (HTML prototypes, assets, components)
+## Content conventions
+
+- **Korean always carries both scripts**: hangul + Revised Romanization, with romanizations
+  written to reflect pronunciation (합니다 → *hamnida*, 책이 → *chae-gi* with the liaison
+  consonant marked). The **readings** toggle in the binding hides/shows them.
+- **Japanese bridges**: Korean instruments show the corresponding Japanese form wherever the
+  mapping is real (는↔は, 를↔を, -았↔た, 해요체↔です/ます, -시-↔尊敬語…). The **日本語 bridge**
+  toggle (Korean pages only) hides them for self-testing.
+- Eureka notes fire once per discovery per visit; "for the next plate" marginalia at the bottom
+  of each folio is the roadmap of planned instruments (numbers & counters, the on'yomi↔Sino-Korean
+  sound bridge, 있다/없다, connectives, the irregular drawer, full sentence-type paradigms…).
+- Linguistic content lives in data modules (`src/data/`), separate from the instrument mechanics
+  (`src/components/`), so new specimens/verbs/nouns are data edits, not component surgery.
+
+## Project structure
+
+```
+src/
+  main.jsx                 entry
+  App.jsx                  shell: binding, two-level nav, hash router, global toggles
+  pages/
+    JapaneseGrammar.jsx    ja folio — grammar engine
+    KoreanGrammar.jsx      ko folio — grammar engine
+    KoreanVerbs.jsx        ko folio — verb forge
+    KoreanParticles.jsx    ko folio — particle cabinet
+  components/
+    LoomInstrument.jsx     ja loom
+    VerbDial.jsx           ja voice dial
+    HagaSpotlight.jsx      ja は/が
+    korean/
+      KoLoom.jsx           ko loom (with batchim-aware particle swaps)
+      BatchimGate.jsx      ko particle allomorphy + jamo decomposition
+      NeunGaSpotlight.jsx  ko 은/는 vs 이/가
+      VerbForge.jsx        ko vowel-harmony conjugation
+      RegisterDial.jsx     ko speech levels × subject honor
+      AnMotSpotlight.jsx   ko 안 vs 못
+      ParticleCabinet.jsx  ko particle index (drawers + chips → scroll)
+      ParticleCard.jsx     ko one-particle plate (uniform anatomy)
+      EEseoSpotlight.jsx   ko 에 vs 에서
+      ParticleStack.jsx    ko particle compounding (holds vs yields)
+  data/
+    grammarData.js         ja content
+    koreanData.js          ko content (hangul + RR + JP bridges, hand-checked)
+    koreanParticles.js     ko particle cabinet content (33 cards + stack data)
+  styles/
+    base.css               atlas/codex structure (binding, folios, plates, nav)
+    aburaya.css            Aburaya skin — tokens + dark/day themes (canonical: dark)
+    grammar.css            shared instrument vocabulary (loom, dial, spotlight, lantern notes)
+    korean.css             Korean instruments (gate, forge, register) + .kr type
+    particles.css          particle cabinet (index, cards, stack)
+```
+
+## Design system
+
+The canonical Aburaya design system lives in **`design_system.zip`**
+(`aburaya-design-system/project/colors_and_type.css` is the token source of truth; the README
+inside covers philosophy, motion, and the kitsch guardrails). The tokens consumed by this app
+are codified in `src/styles/aburaya.css`. Headline rules: dark mode is home; gold is matte and
+rationed; red is surface/signal, never body text; elevation at night is glow, not shadow; motion
+drifts and settles, never bounces; no emoji — meaningful glyphs are real CJK/hangul characters.
+
+Korean type is **Noto Serif KR** (`--font-kr-serif`, `.kr` class), the brush-DNA sibling of the
+Japanese Noto Serif JP.
+
+## Provenance
+
+`project/` and `chats/` are the original Claude Design handoff bundle (prototypes + transcripts)
+that seeded the Japanese grammar engine, kept for reference — including
+`project/uploads/files (5)/korean_approach.md`, the Korean study roadmap these folios are built
+against. The HTML files in `project/` are design prototypes, not the app.
