@@ -1,0 +1,650 @@
+/* ===========================================================
+   The long road (여정) — fluency roadmap instruments
+   I  the trail        — waymark lanterns over CEFR/TOPIK rails
+   II the dossiers     — six strands, goal-posts, checkboxes, mixes
+   III the practice ledger — habit dots & the weekly reckoning
+   All pigments are tokens; lamps glow, never shadow.
+   =========================================================== */
+
+/* ── shared column template: rail label + five waymarks ── */
+.trail-cols {
+  display: grid;
+  grid-template-columns: 56px repeat(5, 1fr);
+  gap: 8px;
+  align-items: stretch;
+}
+
+.trail-stage { margin-top: 18px; }
+
+/* ── the path ── */
+.trail-grid { position: relative; margin-top: 22px; }
+.trail-grid::before {
+  content: '';
+  position: absolute;
+  top: 54px;
+  left: calc(56px + 10%);
+  right: 6%;
+  border-top: 1px dashed var(--gilt-line);
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+.trail-station {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  padding: 10px 6px 12px;
+  background: transparent;
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
+  cursor: pointer;
+  color: var(--ink-soft);
+  font-family: var(--font-body);
+  transition: border-color var(--dur-base) var(--ease-drift),
+              background var(--dur-base) var(--ease-drift);
+}
+.trail-station:hover { background: var(--abu-hover-wash); }
+.trail-station.active {
+  border-color: var(--gilt-line);
+  background: var(--abu-hover-wash);
+}
+
+.trail-station .st-no {
+  font-family: var(--font-display);
+  font-size: 0.7rem;
+  letter-spacing: 0.18em;
+  color: var(--ink-faded);
+}
+
+/* the lantern — fills from the bottom as marks are made */
+.lantern {
+  position: relative;
+  width: 40px;
+  height: 52px;
+  margin-top: 2px;
+  border: 1px solid var(--gilt-line);
+  border-radius: 50% 50% 42% 42% / 60% 60% 36% 36%;
+  background: var(--paper-deep);
+  overflow: hidden;
+  transition: box-shadow var(--dur-slow) var(--ease-drift);
+}
+.lantern .flame {
+  position: absolute;
+  inset: auto 0 0 0;
+  background: linear-gradient(180deg, var(--highlight) 0%, var(--accent-deep) 100%);
+  opacity: 0.9;
+  transition: height var(--dur-slow) var(--ease-drift);
+}
+.lantern.lit { box-shadow: 0 0 20px -4px rgba(242, 166, 90, 0.45); }
+.lantern.unmapped {
+  border-style: dashed;
+  opacity: 0.55;
+}
+
+.trail-station .st-count {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  color: var(--ink-faded);
+}
+.trail-station .st-glyph {
+  font-size: 1.25rem;
+  color: var(--ink);
+  margin-top: 2px;
+}
+.trail-station.active .st-glyph { color: var(--accent); }
+.trail-station .st-rr {
+  font-style: italic;
+  font-size: 0.72rem;
+  color: var(--ink-faded);
+}
+.trail-station .st-name {
+  font-size: 0.78rem;
+  text-align: center;
+  line-height: 1.25;
+}
+
+/* ── the rails — exam mileposts beside the road ── */
+.trail-rail { margin-top: 8px; }
+.rail-tag {
+  align-self: center;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  text-align: right;
+  padding-right: 6px;
+}
+.rail-cell {
+  text-align: center;
+  font-size: 0.72rem;
+  color: var(--ink-faded);
+  border-top: 1px solid var(--rule-soft);
+  padding-top: 6px;
+}
+.trail-foot {
+  margin-top: 12px;
+  font-size: 0.78rem;
+  font-style: italic;
+  color: var(--ink-faded);
+  text-align: center;
+}
+
+/* ── the caption — the selected waymark, spoken ── */
+.trail-caption {
+  margin-top: 22px;
+  padding: 16px 20px;
+  background: var(--plate-bg);
+  border: 1px solid var(--rule);
+  border-left: 2px solid var(--gilt-line);
+  border-radius: var(--radius-sm);
+}
+.trail-caption .cap-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.trail-caption .cap-head .kr { font-size: 1.3rem; color: var(--accent); }
+.trail-caption .cap-rr { font-style: italic; color: var(--ink-faded); font-size: 0.85rem; }
+.trail-caption .cap-name {
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  color: var(--ink);
+}
+.cap-hanja {
+  margin-left: auto;
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: var(--font-cjk-serif);
+  font-size: 1.05rem;
+  color: var(--ink-faded);
+  transition: color var(--dur-quick) var(--ease-drift);
+}
+.cap-hanja:hover { color: var(--accent); }
+.trail-caption .cap-capacity {
+  margin: 10px 0 12px;
+  font-size: 0.95rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.cap-meta { display: flex; flex-wrap: wrap; gap: 8px; }
+.cap-chip {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-faded);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  padding: 3px 8px;
+  white-space: nowrap;
+}
+.cap-chip.gold { color: var(--accent); border-color: var(--gilt-line); }
+
+/* ===========================================================
+   II — the waymark dossiers
+   =========================================================== */
+.dossier-stage { margin-top: 18px; }
+
+.dossier-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+.d-title { display: flex; align-items: center; gap: 14px; }
+.d-glyph { font-size: 2rem; color: var(--accent); }
+.d-name-block { display: flex; flex-direction: column; gap: 2px; }
+.d-name {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  color: var(--ink);
+}
+.d-sub { font-size: 0.8rem; color: var(--ink-faded); }
+.d-sub .d-ja { font-style: normal; }
+.d-meta { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+
+.dossier-gates {
+  margin-top: 16px;
+  padding: 14px 18px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  background: var(--paper-deep);
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.gate-line { display: flex; gap: 12px; align-items: baseline; }
+.gate-lbl {
+  flex: 0 0 168px;
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  text-align: right;
+}
+.gate-lbl.open { color: var(--accent); }
+.gate-text { font-size: 0.9rem; color: var(--ink-soft); line-height: 1.55; }
+.d-signpost {
+  margin-top: 2px;
+  padding-left: 180px;
+  font-size: 0.8rem;
+  font-style: italic;
+  color: var(--ink-faded);
+}
+.d-kit {
+  padding-left: 180px;
+  font-size: 0.8rem;
+  color: var(--ink-faded);
+}
+.d-kit .kit-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-right: 8px;
+  color: var(--accent-deep);
+}
+
+/* ── strands ── */
+.strand-list {
+  margin-top: 22px;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18px;
+}
+.strand {
+  background: var(--plate-bg);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-md);
+  padding: 16px 18px 14px;
+  box-shadow: var(--abu-card-shadow);
+}
+.strand-head {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  border-bottom: 1px solid var(--rule-soft);
+  padding-bottom: 8px;
+}
+.s-dot {
+  width: 9px; height: 9px;
+  border-radius: 50%;
+  align-self: center;
+  flex: none;
+}
+.strand-head .s-glyph { font-size: 1.05rem; color: var(--ink); }
+.strand-head .s-rr { font-style: italic; font-size: 0.74rem; color: var(--ink-faded); }
+.strand-head .s-en {
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.strand-head .s-count {
+  margin-left: auto;
+  font-family: var(--font-mono);
+  font-size: 0.68rem;
+  color: var(--accent);
+}
+.s-cando {
+  margin: 10px 0 6px;
+  font-style: italic;
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--ink);
+}
+.s-body {
+  font-size: 0.84rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.s-body b, .rm-text b { color: var(--accent); font-weight: 600; }
+.s-bridge {
+  margin-top: 10px;
+  padding: 8px 12px;
+  border-left: 2px solid var(--gilt-line);
+  background: var(--abu-hover-wash);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+.s-bridge .s-bridge-tag {
+  font-family: var(--font-cjk-serif);
+  font-size: 0.7rem;
+  color: var(--accent);
+  margin-right: 8px;
+}
+.s-bridge i { color: var(--ink); }
+
+.s-items { margin-top: 12px; display: flex; flex-direction: column; gap: 7px; }
+.rm-item {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  font-size: 0.83rem;
+  line-height: 1.55;
+  color: var(--ink-soft);
+}
+.rm-check {
+  flex: none;
+  width: 15px; height: 15px;
+  align-self: flex-start;
+  margin-top: 3px;
+  background: transparent;
+  border: 1px solid var(--rule);
+  border-radius: 3px;
+  cursor: pointer;
+  transition: background var(--dur-base) var(--ease-drift),
+              border-color var(--dur-base) var(--ease-drift),
+              box-shadow var(--dur-base) var(--ease-drift);
+}
+.rm-check:hover { border-color: var(--accent-deep); }
+.rm-item.done .rm-check {
+  background: var(--accent);
+  border-color: var(--accent-deep);
+  box-shadow: 0 0 10px -2px rgba(242, 166, 90, 0.5);
+}
+.rm-item.done .rm-text { color: var(--ink-faded); }
+.rm-when {
+  margin-left: auto;
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 0.6rem;
+  color: var(--accent-deep);
+  white-space: nowrap;
+}
+
+/* ── the effort panel ── */
+.mix-panel {
+  margin-top: 22px;
+  padding: 18px 20px;
+  background: var(--plate-bg);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-md);
+}
+.mix-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.mix-head h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 560;
+  color: var(--ink);
+}
+.mix-profiles { display: flex; gap: 8px; flex-wrap: wrap; }
+.mix-default {
+  margin-left: 5px;
+  font-size: 0.6rem;
+  color: var(--accent-deep);
+  letter-spacing: 0.06em;
+}
+.mix-bar {
+  margin-top: 14px;
+  display: flex;
+  height: 24px;
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  overflow: hidden;
+  background: var(--paper-deep);
+}
+.mix-seg {
+  height: 100%;
+  opacity: 0.85;
+  transition: width var(--dur-slow) var(--ease-drift);
+}
+.mix-legend {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 16px;
+}
+.mix-key {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.76rem;
+  color: var(--ink-soft);
+}
+.mix-key .s-dot { width: 8px; height: 8px; }
+.mix-why {
+  margin: 12px 0 0;
+  font-size: 0.82rem;
+  font-style: italic;
+  line-height: 1.6;
+  color: var(--ink-faded);
+}
+.pace-row {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--rule-soft);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.pace-lbl {
+  font-family: var(--font-mono);
+  font-size: 0.64rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.pace-math { font-size: 0.82rem; color: var(--ink-soft); }
+.pace-math b { color: var(--accent); font-weight: 600; }
+
+/* ── the far ranges — the unmapped panel ── */
+.dossier-far {
+  margin-top: 22px;
+  padding: 20px 22px;
+  border: 1px dashed var(--gilt-line);
+  border-radius: var(--radius-md);
+  background: var(--paper-deep);
+}
+.dossier-far > p {
+  margin: 0 0 16px;
+  font-size: 0.9rem;
+  line-height: 1.65;
+  color: var(--ink-soft);
+}
+.dossier-far b { color: var(--accent); font-weight: 600; }
+.far-landmarks {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.far-landmark {
+  padding: 12px 14px;
+  background: var(--plate-bg);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+}
+.fl-head { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.fl-head .kr { font-size: 1.05rem; color: var(--accent); }
+.fl-head i { font-size: 0.74rem; color: var(--ink-faded); }
+.fl-head .fl-en {
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.far-landmark p {
+  margin: 8px 0 0;
+  font-size: 0.8rem;
+  line-height: 1.6;
+  color: var(--ink-soft);
+}
+
+/* ===========================================================
+   III — the practice ledger
+   =========================================================== */
+.practice-stage { margin-top: 18px; }
+
+.habit-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 16px;
+}
+.habit {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  padding: 12px 16px;
+  background: var(--plate-bg);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-md);
+}
+.h-name { flex: 1 1 50%; min-width: 0; }
+.h-title { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.h-title .h-kr { font-size: 1.05rem; color: var(--ink); }
+.h-title .h-rr { font-style: italic; font-size: 0.72rem; color: var(--ink-faded); }
+.h-title .h-en { font-size: 0.84rem; color: var(--ink-soft); }
+.h-meta {
+  margin-top: 2px;
+  font-family: var(--font-mono);
+  font-size: 0.62rem;
+  letter-spacing: 0.04em;
+  color: var(--ink-faded);
+}
+.h-meta .kr { font-size: 0.72rem; }
+.h-why {
+  margin-top: 4px;
+  font-size: 0.74rem;
+  font-style: italic;
+  color: var(--ink-faded);
+  line-height: 1.5;
+}
+.h-track { flex: 0 0 auto; text-align: right; }
+.h-dots { display: flex; gap: 5px; }
+.h-dot {
+  width: 13px; height: 13px;
+  padding: 0;
+  border: 1px solid var(--rule);
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+  transition: background var(--dur-base) var(--ease-drift),
+              border-color var(--dur-base) var(--ease-drift),
+              box-shadow var(--dur-base) var(--ease-drift);
+}
+.h-dot:hover { border-color: var(--accent-deep); }
+.h-dot.lit {
+  background: var(--accent);
+  border-color: var(--accent-deep);
+  box-shadow: 0 0 8px -1px rgba(242, 166, 90, 0.5);
+}
+.h-dot.today { border-color: var(--accent); }
+.h-dot.today:not(.lit) { box-shadow: inset 0 0 0 2px var(--abu-hover-wash); }
+.h-streak {
+  margin-top: 6px;
+  font-size: 0.68rem;
+  font-style: italic;
+  color: var(--accent);
+}
+
+/* ── the weekly reckoning ── */
+.checkin-panel {
+  margin-top: 24px;
+  padding: 18px 20px;
+  border: 1px solid var(--rule);
+  border-left: 2px solid var(--gilt-line);
+  border-radius: var(--radius-sm);
+  background: var(--paper-deep);
+}
+.ck-head h3 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: 1rem;
+  font-weight: 560;
+  color: var(--ink);
+}
+.ck-head h3 .kr { color: var(--accent); margin-right: 6px; }
+.ck-head h3 i { font-size: 0.8rem; color: var(--ink-faded); font-weight: 400; }
+.ck-sub { margin-top: 4px; font-size: 0.78rem; font-style: italic; color: var(--ink-faded); }
+.ck-form {
+  margin-top: 14px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.ck-phases { display: flex; gap: 6px; }
+.ck-phases .specimen-chip .kr { font-size: 0.85rem; }
+.ck-note {
+  flex: 1 1 240px;
+  background: var(--plate-bg);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  padding: 8px 12px;
+  font-family: var(--font-body);
+  font-size: 0.84rem;
+  color: var(--ink);
+}
+.ck-note::placeholder { color: var(--ink-faded); font-style: italic; }
+.ck-note:focus {
+  outline: none;
+  border-color: var(--accent-deep);
+  box-shadow: var(--abu-focus-ring);
+}
+.ck-log { flex: none; }
+.ck-entries {
+  margin-top: 16px;
+  border-top: 1px solid var(--rule-soft);
+  padding-top: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.ck-entry {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  font-size: 0.8rem;
+  color: var(--ink-soft);
+}
+.ck-entry .ck-date {
+  flex: none;
+  font-family: var(--font-mono);
+  font-size: 0.66rem;
+  color: var(--ink-faded);
+}
+.ck-entry .ck-phase { flex: none; color: var(--accent); font-size: 0.85rem; }
+.ck-entry .ck-text { font-style: italic; }
+.ck-more { font-size: 0.7rem; color: var(--ink-faded); font-style: italic; }
+
+/* ===========================================================
+   small folios — the road on a narrow page
+   =========================================================== */
+@media (max-width: 760px) {
+  .trail-cols { grid-template-columns: 36px repeat(5, 1fr); gap: 4px; }
+  .trail-grid::before { left: calc(36px + 10%); }
+  .trail-station { padding: 8px 2px 10px; }
+  .trail-station .st-name { font-size: 0.66rem; }
+  .trail-station .st-rr { display: none; }
+  .lantern { width: 30px; height: 40px; }
+  .rail-cell { font-size: 0.6rem; }
+
+  .strand-list { grid-template-columns: 1fr; }
+  .far-landmarks { grid-template-columns: 1fr; }
+
+  .gate-line { flex-direction: column; gap: 2px; }
+  .gate-lbl { flex: none; text-align: left; }
+  .d-signpost, .d-kit { padding-left: 0; }
+
+  .habit { flex-direction: column; align-items: flex-start; gap: 10px; }
+  .h-track { text-align: left; }
+}
