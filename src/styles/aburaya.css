@@ -37,11 +37,26 @@
   --gilt-line:  rgba(168,132,47,0.55);   /* gold-600 keyline */
   --amber:      #F2A65A;
 
-  /* Faces */
-  --font-display: 'Fraunces', 'Noto Serif JP', Georgia, serif;
-  --font-body:    'Newsreader', 'Noto Serif JP', Georgia, serif;
+  /* Faces — Noto Serif KR sits behind JP so hangul in prose/headings
+     falls through to the brush-DNA sibling, never the system font. */
+  --font-display: 'Fraunces', 'Noto Serif JP', 'Noto Serif KR', Georgia, serif;
+  --font-body:    'Newsreader', 'Noto Serif JP', 'Noto Serif KR', Georgia, serif;
   --font-mono:    'Spline Sans Mono', ui-monospace, monospace;
-  --font-script:  'Fraunces', 'Noto Serif JP', serif;
+  --font-script:  'Fraunces', 'Noto Serif JP', 'Noto Serif KR', serif;
+  --font-cjk-serif: 'Noto Serif JP', serif;
+  --font-kr-serif:  'Noto Serif KR', 'Noto Serif JP', serif;
+
+  /* Primitives from the Aburaya DS brief (colors_and_type.css) — codified
+     here so instrument styles stop relying on var() fallbacks. */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --ease-drift: cubic-bezier(0.32, 0.08, 0.24, 1);
+  --ease-enter: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-exit:  cubic-bezier(0.3, 0, 0.8, 0.15);
+  --dur-quick: 160ms;
+  --dur-base:  320ms;
+  --dur-slow:  480ms;
 
   /* ── Material tokens flipped per hour (depth principle lives here) ── */
   --abu-canvas:
