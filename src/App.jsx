@@ -1,36 +1,85 @@
-import React, { useState } from 'react'
-import LoomInstrument from './components/LoomInstrument.jsx'
-import VerbDial from './components/VerbDial.jsx'
-import HagaSpotlight from './components/HagaSpotlight.jsx'
+import React, { useEffect, useState } from 'react'
+import JapaneseGrammar from './pages/JapaneseGrammar.jsx'
+import KoreanGrammar from './pages/KoreanGrammar.jsx'
+import KoreanVerbs from './pages/KoreanVerbs.jsx'
+import KoreanParticles from './pages/KoreanParticles.jsx'
 import './styles/base.css'
 import './styles/aburaya.css'
 import './styles/grammar.css'
+import './styles/korean.css'
+import './styles/particles.css'
 
-function GrammarColophon() {
-  return (
-    <div className="colophon">
-      <div className="ornament">⟡ 文法 ⟡</div>
-      The Polyglot's Atlas · Japanese folio · the grammar engine<br />
-      drawn in the Aburaya hand · drag · turn · tap — the grammar answers back
-    </div>
-  )
+// Two-level atlas: language → folio pages within it.
+const LANGS = [
+  {
+    id: 'ko', glyph: '한국어', name: 'Korean', metaGlyph: '문법', font: 'var(--font-kr-serif)',
+    pages: [
+      { id: 'grammar',   glyph: '문법', label: 'grammar engine',   component: KoreanGrammar },
+      { id: 'verbs',     glyph: '동사', label: 'verb forge',       component: KoreanVerbs },
+      { id: 'particles', glyph: '조사', label: 'particle cabinet', component: KoreanParticles },
+    ],
+  },
+  {
+    id: 'ja', glyph: '日本語', name: 'Japanese', metaGlyph: '文法', font: 'var(--font-cjk-serif)',
+    pages: [
+      { id: 'grammar', glyph: '文法', label: 'grammar engine', component: JapaneseGrammar },
+    ],
+  },
+]
+
+const DEFAULT_ROUTE = 'ko/grammar'
+
+function parseHash() {
+  if (typeof window === 'undefined') return DEFAULT_ROUTE
+  return window.location.hash.replace(/^#\/?/, '').replace(/\/+$/, '') || DEFAULT_ROUTE
 }
 
 export default function App() {
+  const [route, setRoute] = useState(parseHash)
   const [showReadings, setShowReadings] = useState(true)
+  const [showJp, setShowJp] = useState(true)
+
+  useEffect(() => {
+    const onHash = () => setRoute(parseHash())
+    window.addEventListener('hashchange', onHash)
+    return () => window.removeEventListener('hashchange', onHash)
+  }, [])
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') window.scrollTo(0, 0)
+  }, [route])
+
+  const [langId, pageId] = route.split('/')
+  const lang = LANGS.find(l => l.id === langId) || LANGS[0]
+  const page = lang.pages.find(p => p.id === pageId) || lang.pages[0]
+  const Page = page.component
+
+  const nav = (l, p) => {
+    if (typeof window !== 'undefined') window.location.hash = '#/' + l + '/' + p
+  }
 
   return (
     <div className="atlas-shell">
-      {/* Binding — roofline nav */}
+      {/* Binding — roofline nav: languages above, folios below */}
       <div className="binding">
         <div className="binding-inner">
-          <span className="binding-title">
+          <span className="binding-title" onClick={() => nav(lang.id, lang.pages[0].id)}>
             The Polyglot's<span className="amp">&amp;</span>Atlas
           </span>
-          <nav className="binding-nav" aria-label="Primary">
-            <button>Atlas</button>
-            <span className="sep">·</span>
-            <button className="active">Grammar</button>
+          <nav className="binding-nav lang-nav" aria-label="Language">
+            {LANGS.map((l, k) => (
+              <React.Fragment key={l.id}>
+                {k > 0 && <span className="sep">·</span>}
+                <button
+                  className={l.id === lang.id ? 'active' : ''}
+                  aria-current={l.id === lang.id ? 'true' : undefined}
+                  onClick={() => nav(l.id, l.pages[0].id)}
+                >
+                  <span className="lang-glyph" style={{ fontFamily: l.font }}>{l.glyph}</span>
+                  {l.name}
+                </button>
+              </React.Fragment>
+            ))}
           </nav>
           <div className="binding-meta" style={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-end', gap: 18 }}>
             <span
@@ -43,131 +92,45 @@ export default function App() {
               <span className="box"></span>
               readings
             </span>
-            <span style={{ fontFamily: 'var(--font-cjk-serif)' }}>文法</span>
+            {lang.id === 'ko' && (
+              <span
+                className={'mini-toggle' + (showJp ? ' on' : '')}
+                style={{ cursor: 'pointer' }}
+                onClick={() => setShowJp(v => !v)}
+                role="switch"
+                aria-checked={showJp}
+              >
+                <span className="box"></span>
+                <span style={{ fontFamily: 'var(--font-cjk-serif)', letterSpacing: 0, marginRight: 4 }}>日本語</span>
+                bridge
+              </span>
+            )}
+            <span style={{ fontFamily: lang.font }}>{lang.metaGlyph}</span>
           </div>
         </div>
+
+        {/* Level two — folios within the language */}
+        <nav className="subnav" data-lang={lang.id} aria-label={lang.name + ' folios'}>
+          <div className="subnav-inner">
+            <span className="subnav-label">{lang.name} · folios</span>
+            {lang.pages.map(p => (
+              <button
+                key={p.id}
+                className={'subnav-page' + (p.id === page.id ? ' active' : '')}
+                aria-current={p.id === page.id ? 'page' : undefined}
+                onClick={() => nav(lang.id, p.id)}
+              >
+                <span className="glyph">{p.glyph}</span>
+                {p.label}
+              </button>
+            ))}
+            <span className="subnav-more">more plates to come — see the marginalia</span>
+          </div>
+        </nav>
       </div>
 
       <main className="atlas-content">
-        <div className="page" data-screen-label="Japanese — Grammar engine">
-
-          {/* Masthead */}
-          <header className="folio-mast">
-            <div className="folio-num">文</div>
-            <div className="folio-title-block">
-              <h1>
-                <span className="glyph">文法</span>
-                The grammar engine
-              </h1>
-              <div className="latin">machina grammatica · how a Japanese sentence holds together</div>
-            </div>
-            <div className="stamp-block">
-              <div className="stamp double">Working Instrument</div>
-              <div className="smallcaps" style={{ marginTop: 10 }}>
-                drag · turn · tap
-              </div>
-            </div>
-          </header>
-
-          {/* Lede */}
-          <p className="gram-lede">
-            Japanese grammar is the part of this language that is already <span className="accent">done</span> —
-            built deep enough to parse complex prose once the vocabulary is known. This plate is not a
-            grammar to <i>learn</i>; it is one to <i>play with</i>, until three patterns stop being rules
-            and start being obvious.
-          </p>
-          <p className="gram-sub">
-            The whole of it rests on one move that English never makes: a Japanese sentence marks each
-            phrase with a <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>particle</b> —
-            a tiny role-tag — so word order is freed to do other work, and the verb is left to close the sentence.
-          </p>
-
-          {/* INSTRUMENT I — the loom */}
-          <div className="instr-head">
-            <div className="no">I</div>
-            <h2>The loom</h2>
-            <div className="latin">助詞 · roles, not order</div>
-          </div>
-          <div className="try-strip">
-            <span className="dot"></span> grab a tile and move it — watch the meaning stay put
-          </div>
-          <LoomInstrument showReadings={showReadings} />
-
-          {/* INSTRUMENT II — the dial */}
-          <div className="instr-head">
-            <div className="no">II</div>
-            <h2>The verb dial</h2>
-            <div className="latin">態 · the same 私, four roles</div>
-          </div>
-          <p className="gram-sub" style={{ marginBottom: 0 }}>
-            The causative-passive — 〜させられる — is the form that tangles fluent speakers mid-sentence.
-            It untangles the moment you stop translating and watch where{' '}
-            <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>私</b> stands.
-          </p>
-          <div className="try-strip">
-            <span className="dot"></span> turn the dial left to right — follow 私
-          </div>
-          <VerbDial />
-
-          {/* INSTRUMENT III — は / が */}
-          <div className="instr-head">
-            <div className="no">III</div>
-            <h2>は &amp; が — the spotlight</h2>
-            <div className="latin">主題と主語 · topic vs. selection</div>
-          </div>
-          <div className="try-strip">
-            <span className="dot"></span> tap each side — one particle apart
-          </div>
-          <HagaSpotlight />
-
-          {/* Closing marginalia */}
-          <section className="plate" style={{ marginTop: 64 }}>
-            <div className="plate-header">
-              <div className="plate-no">coda</div>
-              <h2>What the instruments are really showing</h2>
-              <div className="latin">nota in margine · the field note</div>
-            </div>
-            <div className="plate-two">
-              <div className="plate-prose">
-                <p className="lead">
-                  Three toys, one idea. Japanese hands meaning to <em>particles</em>, and in return it
-                  gives away the things English clings to — fixed word order, and an early verb.
-                </p>
-                <p>
-                  Once that trade is felt rather than memorised, the rest of the grammar reads as
-                  consequence. Free order is why a writer can hold a subject in suspense for a whole
-                  paragraph. Head-final is why a Japanese sentence can keep you waiting — and why the
-                  last syllable can overturn everything before it. And は against が is simply the
-                  question of whether you are naming the topic or choosing the one.
-                </p>
-                <blockquote>
-                  Grammar stops being the wall and becomes the floor — the thing you stand on to reach
-                  the vocabulary above it.
-                </blockquote>
-              </div>
-              <aside className="marginalia">
-                <h4>For the next plate</h4>
-                <div className="note">
-                  <span className="date">conditionals</span>
-                  ば / たら / と / なら — four ways to say "if," each failing in its own situation. A loom
-                  of its own.
-                </div>
-                <div className="note">
-                  <span className="date">aspect</span>
-                  ている / てある / ておく / てしまう — what an action <i>leaves behind</i>. Best shown as a
-                  single sentence morphing through each.
-                </div>
-                <div className="note">
-                  <span className="date">keigo</span>
-                  尊敬語 / 謙譲語 / 丁寧語 — register as grammar, not vocabulary. A dial that raises and
-                  lowers the whole sentence by social distance.
-                </div>
-              </aside>
-            </div>
-          </section>
-
-          <GrammarColophon />
-        </div>
+        <Page key={route} showReadings={showReadings} showJp={showJp} />
       </main>
     </div>
   )

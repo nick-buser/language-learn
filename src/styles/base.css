@@ -240,6 +240,90 @@ a:hover { text-decoration: underline; text-underline-offset: 3px; }
   text-align: right;
 }
 
+/* ===== Two-level nav: languages in the binding, folios in a sub-strip ===== */
+.binding-nav.lang-nav button {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+}
+.lang-nav .lang-glyph {
+  font-size: 13.5px;
+  letter-spacing: 0.02em;
+  text-transform: none;
+}
+
+.subnav {
+  border-top: 1px solid var(--rule-soft);
+}
+.subnav-inner {
+  max-width: 1480px;
+  margin: 0 auto;
+  padding: 4px 36px;
+  display: flex;
+  align-items: baseline;
+  gap: 2px;
+  flex-wrap: wrap;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+.subnav-label {
+  color: var(--ink-faded);
+  opacity: 0.75;
+  margin-right: 16px;
+  font-size: 9px;
+}
+.subnav-page {
+  background: none;
+  border: none;
+  font: inherit;
+  letter-spacing: inherit;
+  text-transform: inherit;
+  color: var(--ink-faded);
+  padding: 7px 13px;
+  cursor: pointer;
+  position: relative;
+  transition: color 0.15s;
+  display: inline-flex;
+  align-items: baseline;
+  gap: 7px;
+}
+.subnav-page:hover { color: var(--ink); }
+.subnav-page.active { color: var(--accent); }
+.subnav-page.active::after {
+  content: "";
+  position: absolute;
+  left: 13px; right: 13px;
+  bottom: 3px;
+  height: 1px;
+  background: var(--accent);
+}
+.subnav-page .glyph {
+  font-family: var(--font-kr-serif);
+  font-size: 12.5px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.subnav[data-lang="ja"] .subnav-page .glyph {
+  font-family: var(--font-cjk-serif);
+}
+.subnav-more {
+  margin-left: auto;
+  color: var(--ink-faded);
+  opacity: 0.6;
+  font-size: 9px;
+  letter-spacing: 0.14em;
+  font-style: italic;
+  text-transform: none;
+  font-family: var(--font-display);
+  font-size: 12px;
+}
+@media (max-width: 880px) {
+  .subnav-more { display: none; }
+  .subnav-inner { padding: 2px 20px; }
+}
+
 /* ===== Page layout ===== */
 .page {
   max-width: 1480px;
