@@ -388,3 +388,273 @@
   .wb-col-tags, .wb-band, .wb-bridge { display: none; }
   .wb-detail { grid-template-columns: 1fr; }
 }
+
+/* =====================================================================
+   II — THE REVIEW DRAWER
+   ===================================================================== */
+.rv-stage { margin-top: 26px; }
+
+.kbd-hint {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+  border: 1px dotted var(--rule-soft);
+  padding: 2px 8px 3px;
+  margin-left: 6px;
+  white-space: nowrap;
+}
+
+/* the counter — due line + forecast */
+.rv-top {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 14px 28px;
+  margin-top: 18px;
+  padding-bottom: 12px;
+  border-bottom: 1px dotted var(--rule-soft);
+}
+.rv-counts {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 15px;
+  color: var(--ink-soft);
+}
+.rv-counts .big {
+  font-style: normal;
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--accent);
+  margin-right: 4px;
+}
+.rv-counts .new { color: var(--amber); }
+.rv-counts .dim { font-size: 13px; color: var(--ink-faded); }
+
+.rv-forecast {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+}
+.rv-forecast .col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 3px;
+}
+.rv-forecast .bar {
+  width: 14px;
+  background: var(--accent-deep);
+  transition: height var(--dur-base) var(--ease-drift);
+}
+.rv-forecast .lbl {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink-faded);
+}
+
+/* idle / done states */
+.rv-idle, .rv-done {
+  margin-top: 26px;
+  padding: 40px 28px;
+  text-align: center;
+  border: 1px dashed var(--rule);
+  background: color-mix(in srgb, var(--paper-deep) 70%, transparent);
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 15.5px;
+  color: var(--ink-soft);
+}
+.rv-idle b, .rv-done b { font-style: normal; color: var(--accent); font-weight: 500; }
+.rv-done .head { font-size: 19px; color: var(--ink); }
+.rv-done .receipt {
+  margin-top: 12px;
+  font-family: var(--font-mono);
+  font-style: normal;
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.rv-done .next {
+  margin-top: 8px;
+  font-size: 13px;
+  color: var(--ink-faded);
+}
+
+/* the card */
+.rv-deck {
+  margin-top: 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.rv-card {
+  width: min(620px, 100%);
+  min-height: 240px;
+  background: var(--paper-deep);
+  border: 1px solid var(--rule);
+  border-top: 2px solid var(--gilt-line);
+  box-shadow: var(--abu-card-shadow);
+  padding: 16px 30px 26px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  animation: rv-settle var(--dur-base) var(--ease-enter) both;
+}
+.rv-card.front { cursor: pointer; justify-content: center; }
+.rv-card.front:hover { border-color: var(--abu-card-border-hover); box-shadow: var(--abu-card-shadow-hover); }
+@keyframes rv-settle {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.rv-meta {
+  align-self: stretch;
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  font-family: var(--font-mono);
+  font-size: 8.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.rv-meta .new { color: var(--amber); }
+.rv-meta .lapses { color: var(--signal-lit); }
+
+.rv-head {
+  margin-top: 26px;
+  font-size: 44px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--ink);
+}
+.rv-head.small { margin-top: 10px; font-size: 30px; }
+.rv-pos {
+  margin-top: 10px;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.rv-turn {
+  margin-top: 26px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink-faded);
+}
+
+.rv-reading {
+  margin-top: 6px;
+  font-family: var(--font-mono);
+  font-size: 11.5px;
+  letter-spacing: 0.05em;
+  color: var(--ink-soft);
+}
+.rv-reading .kana { font-size: 14px; letter-spacing: 0; }
+.rv-reading .hanja { font-family: var(--font-cjk-serif); font-size: 14px; color: var(--ink-faded); }
+.rv-gloss {
+  margin-top: 10px;
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 17px;
+  color: var(--ink);
+}
+
+.rv-bridge {
+  display: flex;
+  align-items: baseline;
+  gap: 9px;
+  margin-top: 12px;
+}
+.rv-bridge::before {
+  content: "日";
+  font-family: var(--font-cjk-serif);
+  font-size: 9px;
+  color: var(--accent-deep);
+}
+.rv-bridge .jp { font-family: var(--font-cjk-serif); font-size: 16px; color: var(--ink-soft); }
+.rv-bridge .kana { font-family: var(--font-cjk-serif); font-size: 12px; color: var(--ink-faded); }
+.rv-bridge .rr { font-family: var(--font-mono); font-size: 9.5px; color: var(--ink-faded); }
+.rv-bridge .kind {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--accent);
+  border: 1px dotted color-mix(in srgb, var(--accent) 45%, transparent);
+  padding: 1px 5px 2px;
+}
+
+.rv-ex {
+  margin-top: 18px;
+  padding-top: 14px;
+  border-top: 1px dotted var(--rule-soft);
+  align-self: stretch;
+}
+.rv-note {
+  margin-top: 13px;
+  padding-top: 10px;
+  border-top: 1px dotted var(--rule-soft);
+  align-self: stretch;
+  text-align: left;
+}
+.rv-note .fn-body { font-size: 13px; }
+
+/* the grade bar — four prices */
+.rv-grades {
+  width: min(620px, 100%);
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 10px;
+  margin-top: 14px;
+  animation: rv-settle var(--dur-base) var(--ease-enter) both;
+}
+.rv-grade {
+  background: var(--paper-deep);
+  border: 1px solid var(--rule);
+  border-bottom: 2px solid color-mix(in srgb, var(--gr) 55%, transparent);
+  padding: 9px 6px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  cursor: pointer;
+  transition: all var(--dur-quick) var(--ease-drift);
+}
+.rv-grade:hover {
+  border-color: var(--gr);
+  box-shadow: 0 0 18px -9px var(--gr);
+}
+.rv-grade .key {
+  font-family: var(--font-mono);
+  font-size: 8px;
+  color: var(--ink-faded);
+  border: 1px solid var(--rule-soft);
+  padding: 0 5px 1px;
+}
+.rv-grade .lab {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--gr);
+}
+.rv-grade .when {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 12px;
+  color: var(--ink-soft);
+}
+
+@media (max-width: 640px) {
+  .rv-grades { grid-template-columns: repeat(2, 1fr); }
+  .rv-head { font-size: 34px; }
+}
