@@ -6,6 +6,7 @@ import KoreanParticles from './pages/KoreanParticles.jsx'
 import KoreanCognates from './pages/KoreanCognates.jsx'
 import KoreanVocab from './pages/KoreanVocab.jsx'
 import KoreanSong from './pages/KoreanSong.jsx'
+import KoreanCustom from './pages/KoreanCustom.jsx'
 import KoreanRoadmap from './pages/KoreanRoadmap.jsx'
 import JapaneseVocab from './pages/JapaneseVocab.jsx'
 import './styles/base.css'
@@ -29,6 +30,7 @@ const LANGS = [
       { id: 'cognates',  glyph: '한자어', label: 'cognate bridge',  component: KoreanCognates },
       { id: 'vocab',     glyph: '어휘', label: 'word bank',        component: KoreanVocab },
       { id: 'song',      glyph: '노래', label: 'the song',         component: KoreanSong },
+      { id: 'custom',    glyph: '자작', label: 'custom',           component: KoreanCustom },
       { id: 'roadmap',   glyph: '여정', label: 'fluency roadmap',  component: KoreanRoadmap },
     ],
   },

@@ -124,7 +124,7 @@ export default function LyricBand({ song, transport, showReadings, showJp }) {
                   return (
                     <span key={si} className={'lyric-syl' + (lit ? ' lit' : '') + (past ? ' past' : '')}>
                       <span className="han">{s.han}</span>
-                      {showReadings && <span className="rr">{s.rr}</span>}
+                      {showReadings && s.rr && <span className="rr">{s.rr}</span>}
                     </span>
                   );
                 })}
@@ -134,19 +134,21 @@ export default function LyricBand({ song, transport, showReadings, showJp }) {
         )}
       </div>
 
-      {/* ── the now-gloss ── */}
-      <div className="lyric-now">
-        <span className="glabel">
-          meaning
-          {active.line?.kind && active.line.kind !== 'sung' && (
-            <span className="line-kind">{active.line.kind}</span>
-          )}
-        </span>
-        <div>
-          <div className="en" key={active.lineIdx}>{active.line?.en}</div>
-          {showJp && active.line?.jp && <div className="jp">{active.line.jp}</div>}
+      {/* ── the now-gloss (only when the line carries a meaning/bridge) ── */}
+      {(active.line?.en || (showJp && active.line?.jp)) && (
+        <div className="lyric-now">
+          <span className="glabel">
+            meaning
+            {active.line?.kind && active.line.kind !== 'sung' && (
+              <span className="line-kind">{active.line.kind}</span>
+            )}
+          </span>
+          <div>
+            <div className="en" key={active.lineIdx}>{active.line?.en}</div>
+            {showJp && active.line?.jp && <div className="jp">{active.line.jp}</div>}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }
