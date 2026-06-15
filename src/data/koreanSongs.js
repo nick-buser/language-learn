@@ -48,6 +48,9 @@
 //  * @property {string} rr   connected/sung romanization of the whole line
 //  * @property {string} en   translation
 //  * @property {?string} jp  Japanese bridge for the line
+//  * @property {'sung'|'rap'|'chant'} [kind]  how the line is delivered
+//                          (defaults to 'sung'; rap/chant sit in a narrow
+//                          pitch band — the roll shows the difference)
 //  *
 //  * @typedef {Object} Section
 //  * @property {string} id
@@ -154,10 +157,11 @@ const RAW_LINES = [
   },
 ];
 
-// Thread absolute beats + resolve midi. One section (the verse-refrain).
-function buildSection() {
+// Thread absolute beats + resolve midi over a list of authored lines, so
+// every song speaks the same flat, ready timeline to the components.
+function buildSection(rawLines) {
   let beat = 0;
-  const lines = RAW_LINES.map((raw) => {
+  const lines = rawLines.map((raw) => {
     const startBeat = beat;
     const syls = raw.syls.map(([han, rr, deg, dur]) => {
       const syl = { han, rr, deg, dur, beat, midi: SCALE[deg] };
@@ -167,12 +171,12 @@ function buildSection() {
     const endBeat = beat;
     beat += raw.restAfter;
     return { id: raw.id, syls, startBeat, endBeat, restAfter: raw.restAfter,
-      rr: raw.rr, en: raw.en, jp: raw.jp };
+      rr: raw.rr, en: raw.en, jp: raw.jp, kind: raw.kind || 'sung' };
   });
   return { lines, beats: beat };
 }
 
-const built = buildSection();
+const built = buildSection(RAW_LINES);
 
 export const ARIRANG = {
   id: 'arirang',
@@ -326,4 +330,174 @@ export const ARIRANG = {
   ],
 };
 
-export const KO_SONGS = [ARIRANG];
+// =====================================================================
+// BTS · MIC Drop — HOOK EXCERPT ONLY.
+//
+// Unlike Arirang, this is a copyrighted commercial song. Encoded here is
+// just the hook — a short teaching excerpt for personal language study,
+// the most-repeated and most learnable chunk — not the full lyric, and the
+// rap verses are described, not reproduced. Attribution lives in `origin`.
+// A song built almost entirely from RAP, so it stresses the instruments
+// differently than Arirang: rhythm and connected speech carry it, the
+// melody is a near-monotone chant (a narrow band on the roll, by design).
+// =====================================================================
+const RAW_LINES_MICDROP = [
+  {
+    id: 'm1', restAfter: 0.5, kind: 'chant',
+    rr: 'a neomu bappa neomu busy',
+    en: 'ah, too busy, too busy',
+    jp: 'ああ、忙しすぎる、忙しすぎる',
+    syls: [
+      ['아', 'a', 'd', 0.5], ['너', 'neo', 'r', 0.5], ['무', 'mu', 'd', 0.5],
+      ['바', 'ba', 'r', 0.5], ['빠', 'ppa', 'm', 0.5], ['너', 'neo', 'r', 0.5],
+      ['무', 'mu', 'd', 0.5], ['busy', 'busy', 'd', 1],
+    ],
+  },
+  {
+    id: 'm2', restAfter: 0.5, kind: 'chant',
+    rr: 'nae onmomi mojalla',
+    en: '(even) my whole body can’t keep up',
+    jp: '体ひとつじゃ足りない',
+    syls: [
+      ['내', 'nae', 'r', 0.5], ['온', 'on', 'd', 0.5], ['몸', 'mom', 'd', 0.5],
+      ['이', 'i', 'r', 0.5], ['모', 'mo', 'd', 0.5], ['잘', 'jal', 'r', 0.5], ['라', 'ra', 'd', 1],
+    ],
+  },
+  {
+    id: 'm3', restAfter: 0.5, kind: 'chant',
+    rr: 'Mic drop Mic drop',
+    en: '(the signature — drop the mic)',
+    jp: '（マイク・ドロップ）',
+    syls: [
+      ['Mic', 'mic', 'm', 1], ['drop', 'drop', 'd', 1],
+      ['Mic', 'mic', 'm', 1], ['drop', 'drop', 'd', 1],
+    ],
+  },
+  {
+    id: 'm4', restAfter: 2, kind: 'chant',
+    rr: 'bal bal josim neone mal mal josim',
+    en: 'watch your step — watch your mouth',
+    jp: '足元に注意、お前ら言葉に気をつけろ',
+    syls: [
+      ['발', 'bal', 'd', 0.5], ['발', 'bal', 'd', 0.5], ['조', 'jo', 'r', 0.5], ['심', 'sim', 'd', 0.5],
+      ['너', 'neo', 'r', 0.5], ['네', 'ne', 'd', 0.5], ['말', 'mal', 'r', 0.5], ['말', 'mal', 'r', 0.5],
+      ['조', 'jo', 'r', 0.5], ['심', 'sim', 'd', 1],
+    ],
+  },
+];
+
+const builtMic = buildSection(RAW_LINES_MICDROP);
+
+export const MIC_DROP = {
+  id: 'micdrop',
+  title: { han: 'MIC Drop', rr: 'Mic Drop', en: 'Mic Drop' },
+  origin: 'BTS (방탄소년단) · “MIC Drop” (2017, Love Yourself: Her) · written by Pdogg, “hitman” bang, Supreme Boi, RM, j-hope, SUGA · © Big Hit / HYBE — HOOK EXCERPT, reproduced for personal language study only',
+  genre: '힙합 · hip-hop',
+  meta: { bpm: 150, beatsPerBar: 4, key: 'C', mode: 'chant (study transcription)' },
+  context: {
+    difficulty: 'beginner (hook) · the verses are advanced rap',
+    register: '반말 · casual/boast',
+    tags: ['힙합 hip-hop', '디스 clap-back', '4/4 trap'],
+    blurbHtml:
+      'A clap-back anthem: success as the last word to the doubters. The hook trades on a tidy ' +
+      'piece of wordplay — <b>발 조심</b> (watch your step) against <b>말 조심</b> (watch your ' +
+      'mouth), 발 / 말 a single vowel apart. Only the hook is encoded here, as a short study ' +
+      'excerpt; the verses are dense rap and are left to the record.',
+    whyHtml:
+      'A deliberate contrast to Arirang. This song is almost all <b>rap</b>, so it leans on the ' +
+      'instruments differently — rhythm and connected speech do the work, and the melody is a ' +
+      'near-monotone chant (watch it sit in a narrow band on the roll, where Arirang roamed the ' +
+      'full pentatonic). The hook is still a clean little lesson: the everyday intensifier ' +
+      '<span class="kr">너무</span>, a model <span class="kr">ㅡ</span>-irregular ' +
+      '(<span class="kr">바쁘다 → 바빠</span>), and a Sino word whose hanja Japan didn’t keep ' +
+      '(<span class="kr">조심</span>, 操心).',
+  },
+  sections: [
+    { id: 'hook', kind: 'chorus', label: 'the hook (excerpt)', lines: builtMic.lines },
+  ],
+  beats: builtMic.beats,
+
+  diction: [
+    {
+      id: 'onmomi',
+      written: { han: '온몸이', rr: 'on-mom + i' },
+      sung: { han: '온모미', rr: 'on-mo-mi' },
+      kind: 'liaison · 연음',
+      html: 'The subject particle 이 pulls the ㅁ off 몸: 온몸이 → <b>[온모미]</b>. The same ' +
+        'liaison Arirang shows on 님은 — a 받침 never sits still before a vowel, sung fast least ' +
+        'of all.',
+      link: { folio: '#/ko/grammar', label: 'the gate — 받침 & liaison' },
+    },
+    {
+      id: 'mojalla',
+      written: { han: '모자라', rr: 'mo-ja-ra' },
+      sung: { han: '모잘라', rr: 'mo-jal-la' },
+      kind: 'colloquial · 구어',
+      html: 'The standard verb is 모자라(다) “to fall short”; sung, it colors to <b>모잘라</b> — a ' +
+        'casual coloring you’ll hear all over K-pop. Not a sound law, a register: know the ' +
+        'dictionary form lives under it.',
+      link: null,
+    },
+  ],
+
+  harvestVocab: [
+    {
+      head: '너무', rr: 'neomu', pos: 'adverb', en: 'too · so (much)', from: 'm1',
+      bridge: { kanji: 'あまりに · とても', kana: '', rr: 'amari ni · totemo', kind: 'equivalent' },
+      note: 'The everyday intensifier. Strictly “excessively,” but colloquially just “so” — ' +
+        '너무 좋아 = 超いい.',
+    },
+    {
+      head: '바쁘다', rr: 'bappeuda', pos: 'adj', en: 'to be busy', from: 'm1',
+      bridge: { kanji: '忙しい', kana: 'いそがしい', rr: 'isogashii', kind: 'equivalent' },
+      note: 'A model <b>ㅡ-irregular</b>: 바쁘 + 아 → <span class="kr">바빠</span>, the ㅡ dropping ' +
+        'exactly as in 크다 → 커요. The verb forge files the class.',
+    },
+    {
+      head: '몸', rr: 'mom', pos: 'noun', en: 'body', from: 'm2',
+      bridge: { kanji: '体', kana: 'からだ', rr: 'karada', kind: 'equivalent' },
+      note: '온몸 = 온 (whole, native) + 몸 — “the whole body,” the 온 of 온종일 (all day long).',
+    },
+    {
+      head: '조심', rr: 'josim', pos: 'noun', en: 'caution · care', from: 'm4',
+      bridge: { kanji: '用心', kana: 'ようじん', rr: 'yōjin', kind: 'equivalent' },
+      note: 'Sino-Korean <b>操心</b> — but Japanese never kept those characters for the sense; the ' +
+        'everyday word is 用心 / 気をつける. A 한자어 whose hanja didn’t cross, like 공부 vs 勉強. ' +
+        '조심하다 = to be careful.',
+    },
+    {
+      head: '말', rr: 'mal', pos: 'noun', en: 'words · speech', from: 'm4',
+      bridge: { kanji: '言葉', kana: 'ことば', rr: 'kotoba', kind: 'equivalent' },
+      note: '말 조심 = “watch your words.” One vowel from 발 (foot) — the hook’s whole joke: ' +
+        '발 조심 / 말 조심.',
+    },
+    {
+      head: '발', rr: 'bal', pos: 'noun', en: 'foot', from: 'm4',
+      bridge: { kanji: '足', kana: 'あし', rr: 'ashi', kind: 'equivalent' },
+      note: '발 조심 = “watch your step.” Native, like 손 (hand) and 몸 (body) — the body lexicon ' +
+        'is overwhelmingly 고유어.',
+    },
+  ],
+
+  grammar: [
+    {
+      id: 'eu-irreg',
+      head: 'the ㅡ-irregular stem',
+      han: '바쁘다 → 바빠', rr: 'bappeuda → bappa', en: 'busy → (is) busy',
+      html: 'When a stem ends in ㅡ, the ㅡ <b>drops</b> before 아/어: 바쁘 + 아 → 바빠. No ' +
+        'Japanese analog — it’s pure Korean phonology — but it’s utterly regular once seen. Same ' +
+        'class: 크다 → 커, 쓰다 → 써, 아프다 → 아파.',
+      link: { folio: '#/ko/verbs', label: 'the verb forge (ㅡ-drop)' },
+    },
+    {
+      id: 'noun-josim',
+      head: 'noun + 조심 — “watch your X”',
+      han: '발 조심 · 말 조심', rr: 'bal josim · mal josim', en: 'watch your step · watch your mouth',
+      html: 'A bare noun + 조심 is an idiomatic warning (full verb: 조심하다). Maps neatly to ' +
+        'Japanese 〜に気をつけて / 足元に注意. The hook stacks two for the 발/말 pun.',
+      link: { folio: '#/ko/particles', label: 'the particle cabinet' },
+    },
+  ],
+};
+
+export const KO_SONGS = [ARIRANG, MIC_DROP];

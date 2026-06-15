@@ -192,6 +192,12 @@
 .lyric-now .glabel {
   font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.2em;
   text-transform: uppercase; color: var(--ink-faded); white-space: nowrap; padding-top: 4px;
+  display: flex; flex-direction: column; gap: 6px;
+}
+.lyric-now .glabel .line-kind {
+  align-self: flex-start;
+  color: var(--accent-deep); border: 1px solid var(--rule); padding: 1px 6px;
+  letter-spacing: 0.14em;
 }
 .lyric-now .en {
   font-family: var(--font-display); font-size: 22px; line-height: 1.35;

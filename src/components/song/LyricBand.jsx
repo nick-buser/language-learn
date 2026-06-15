@@ -136,7 +136,12 @@ export default function LyricBand({ song, transport, showReadings, showJp }) {
 
       {/* ── the now-gloss ── */}
       <div className="lyric-now">
-        <span className="glabel">meaning</span>
+        <span className="glabel">
+          meaning
+          {active.line?.kind && active.line.kind !== 'sung' && (
+            <span className="line-kind">{active.line.kind}</span>
+          )}
+        </span>
         <div>
           <div className="en" key={active.lineIdx}>{active.line?.en}</div>
           {showJp && active.line?.jp && <div className="jp">{active.line.jp}</div>}
