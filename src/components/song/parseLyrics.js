@@ -10,9 +10,13 @@
 //
 // There's no melody here, so every syllable gets a flat pitch and an equal
 // duration — enough for the playhead to sweep and light each one in time.
+// Romanization is filled in by the deterministic per-syllable romanizer
+// (approximate: no cross-syllable liaison/assimilation — see romanize.js).
 // The output shape matches koreanSongs.js exactly, so the band and the
 // transport can't tell a typed song from a hand-authored one.
 // =====================================================================
+
+import { romanizeToken } from './romanize.js';
 
 const isHangul = (c) => c >= '가' && c <= '힣';
 const isWord = (c) => /[A-Za-z0-9'’]/.test(c);
@@ -63,7 +67,7 @@ export function parseLyrics(text, opts = {}) {
   const lines = rawLines.map((lineText, idx) => {
     const startBeat = beat;
     const syls = tokenizeLine(lineText).map((han) => {
-      const syl = { han, rr: '', deg: 'd', midi: 72, dur: beatsPerSyllable, beat };
+      const syl = { han, rr: romanizeToken(han), deg: 'd', midi: 72, dur: beatsPerSyllable, beat };
       beat += beatsPerSyllable;
       return syl;
     });

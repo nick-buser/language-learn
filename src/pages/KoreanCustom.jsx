@@ -69,7 +69,9 @@ export default function KoreanCustom({ showReadings, showJp }) {
       </p>
       <p className="gram-sub">
         Each line becomes a line; hangul splits a character at a time, English words stay whole.
-        Just the words and the highlights for now — no melody, meaning, or pronunciation yet.
+        An approximate romanization is generated under each syllable — flip on the{' '}
+        <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>readings</b>{' '}
+        toggle to see it. No melody or meaning yet — just the words, the readings, and the highlights.
       </p>
 
       {/* The entry */}
@@ -123,10 +125,13 @@ export default function KoreanCustom({ showReadings, showJp }) {
               data the parser can’t infer yet.
             </p>
             <p>
-              The honest gaps are the roadmap: there’s no <b>romanization</b> (it would have to be
-              generated and hand-checked), no <b>meaning</b>, and the timing is uniform — one beat a
-              syllable — rather than a real rhythm. Each of those is a place the future dictionary
-              and a real score would plug in.
+              The <b>romanization</b> is generated, not looked up: hangul decomposes to jamo
+              deterministically, so each syllable romanizes on its own with no dictionary at all.
+              It’s honestly <i>approximate</i> — it skips the cross-syllable sandhi a dictionary
+              would catch (liaison 책이→chae<u>g</u>i, assimilation 십리→sim<u>n</u>i, palatalization
+              같이→ga<u>ch</u>i) — but it’s right within each block and plenty to read along to. The
+              remaining gaps are <b>meaning</b> and a real <b>rhythm</b> (timing is uniform here, one
+              beat a syllable) — both places the future dictionary and a real score plug in.
             </p>
             <blockquote>
               Give it your own words and the same clock keeps them.
@@ -135,9 +140,9 @@ export default function KoreanCustom({ showReadings, showJp }) {
           <aside className="marginalia">
             <h4>For the next plate</h4>
             <div className="note">
-              <span className="date">auto-romanize</span>
-              Run pasted hangul through the dictionary to fill the RR line under each syllable —
-              the readings toggle would finally do something here.
+              <span className="date">precise readings</span>
+              The romanizer is per-syllable; a dictionary pass would add the cross-syllable
+              sandhi (liaison, assimilation, palatalization) to turn the approximation exact.
             </div>
             <div className="note">
               <span className="date">tap the tempo</span>
