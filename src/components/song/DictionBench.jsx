@@ -11,7 +11,9 @@ import React, { useRef, useState } from 'react';
 // all and a lantern lights. Honors showReadings.
 // =====================================================================
 
-export default function DictionBench({ song, showReadings }) {
+// Memoized: the transport re-renders the page ~60×/s; this instrument
+// doesn't depend on the playhead, so it should sit still while the song plays.
+function DictionBench({ song, showReadings }) {
   const [revealed, setRevealed] = useState(() => new Set());
   const [eureka, setEureka] = useState(false);
   const fired = useRef(false);
@@ -103,3 +105,5 @@ export default function DictionBench({ song, showReadings }) {
     </div>
   );
 }
+
+export default React.memo(DictionBench);

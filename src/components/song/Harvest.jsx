@@ -13,7 +13,9 @@ import React from 'react';
 
 const BRIDGE_BADGE = { cognate: '同源 twin', equivalent: '対訳 equiv' };
 
-export default function Harvest({ song, showReadings, showJp }) {
+// Memoized — like the diction bench, it doesn't ride the playhead, so it
+// stays put while the transport re-renders the page each frame.
+function Harvest({ song, showReadings, showJp }) {
   const lines = song.sections.flatMap((s) => s.lines);
   const lineNo = (id) => {
     const i = lines.findIndex((l) => l.id === id);
@@ -68,3 +70,5 @@ export default function Harvest({ song, showReadings, showJp }) {
     </div>
   );
 }
+
+export default React.memo(Harvest);

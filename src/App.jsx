@@ -5,6 +5,7 @@ import KoreanVerbs from './pages/KoreanVerbs.jsx'
 import KoreanParticles from './pages/KoreanParticles.jsx'
 import KoreanCognates from './pages/KoreanCognates.jsx'
 import KoreanVocab from './pages/KoreanVocab.jsx'
+import KoreanSong from './pages/KoreanSong.jsx'
 import KoreanRoadmap from './pages/KoreanRoadmap.jsx'
 import JapaneseVocab from './pages/JapaneseVocab.jsx'
 import './styles/base.css'
@@ -15,6 +16,7 @@ import './styles/particles.css'
 import './styles/cognates.css'
 import './styles/roadmap.css'
 import './styles/vocab.css'
+import './styles/song.css'
 
 // Two-level atlas: language → folio pages within it.
 const LANGS = [
@@ -26,6 +28,7 @@ const LANGS = [
       { id: 'particles', glyph: '조사', label: 'particle cabinet', component: KoreanParticles },
       { id: 'cognates',  glyph: '한자어', label: 'cognate bridge',  component: KoreanCognates },
       { id: 'vocab',     glyph: '어휘', label: 'word bank',        component: KoreanVocab },
+      { id: 'song',      glyph: '노래', label: 'the song',         component: KoreanSong },
       { id: 'roadmap',   glyph: '여정', label: 'fluency roadmap',  component: KoreanRoadmap },
     ],
   },

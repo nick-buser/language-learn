@@ -32,6 +32,7 @@ Default route is `#/ko/grammar` — Korean is the active study.
 | **조사 · particle cabinet** (`#/ko/particles`) | The particle deep dive — 33 particles in five pigment-coded drawers (skeleton case particles · place/time/direction · pairing & comparing · the focus set · the social set), one uniform card each: forms + 받침 fitting rule, Japanese twin, specimen sentence (hangul/RR/bridge/EN), why-it-matters, and trap footnotes. **The cabinet** — clickable index, chip → scroll-and-flash to card. **에 vs 에서 spotlight** — the に/で border. **The stack** — particle compounding: delimiters 는/도/만 *stack* after adverbial particles (에는 = には) but *replace* case particles (를+는 → 는, mirroring ✗をは), with live JP mirror equations, a ready-made stack catalogue (엔/에선/만이/께서는…), and contraction notes (난/널/전). |
 | **한자어 · cognate bridge** (`#/ko/cognates`) | Sino-Japanese ↔ Sino-Korean. **The sound bridge** — the six final-consonant correspondences (-く/-き↔ㄱ, -つ/-ち↔ㄹ, long -う↔ㅂ, long vowel↔ㅇ, ん↔ㄴ *and* ㅁ), each with specimen characters and the Middle-Chinese why, plus an initials drawer (g/k↔h, b↔m, the vanishing 人). **The cognate ledger** — the dictionary pilot: 16 hand-checked entries (hanja, hangul+RR, kana+romaji, per-character rule derivation, specimen sentence), badged *true twin / skewed sense / false friend* (工夫, 愛人, 八方美人); rule chips link back into the bridge. The ledger's schema is the contract for the future dictionary backend — see `docs/vocabulary-plan.md`. |
 | **어휘 · word bank** (`#/ko/vocab`) | The vocabulary system's first working face (plan phases 3+5, interface-first). **The holdings ledger** — the bank as a table: census strip (stacked coverage bar over unseen/met/learning/known, each account a click-to-filter chip), full-text search across hangul/RR/gloss/kanji, stratum (한자어·고유어·외래어) and POS filter chips with counts, sortable columns, expandable rows with the specimen sentence, usage note, hanja and SRS facts. Opening an unseen word files it as *met* — browsing builds the record. **The review drawer** — the quiet SRS: due queue over the learning set, bare-headword card fronts, full dictionary backs (reading, gloss, JP bridge with cognate/loan/equivalent badge, specimen), four grade buttons that print the interval each would buy, space/1–4 keyboard play, seven-day due forecast, session receipt. Words graduate to *known* at a 21-day interval. State: `localStorage` `atlas.ko.vocab.v1` (and `atlas.ja.vocab.v1`), shaped as the future backend payload. Data: `koreanVocab.js`, 38 hand-checked entries across the three strata. |
+| **노래 · the song** (`#/ko/song`) | Learning a song end-to-end — the first instrument that asks you to make *sound*. Four instruments on one tune (아리랑, the standard Bonjo version, public-domain), all driven by **one shared transport** (`useTransport`) — a playhead measured in beats, advanced by `requestAnimationFrame`, that *sounds* the song as it plays via a dependency-free Web Audio synth (`audio.js`). **The lyric band** — transport karaoke: play/restart, three tempo stops, voice/tick/loop toggles and a progress thread; the line under the head lifts, the sung syllable lights, passed ones dim; click a line to seek; a "now" gloss carries the line's translation + JP bridge. **The melody roll** — a piano-roll of the air: beats left→right, the five pentatonic lanes bottom→top, each syllable a note block lit by the *same* playhead; click a block to hear its pitch, hold a tonic drone to hum against, a dashed contour traces the shape. **The diction bench** — written ≠ sung: liaison (넘어→너머), nasalization (십리→심니), tensification (못가→몯까, 발병→발뼝), each tap-to-reveal with the rule and a folio link; reveal all → lantern. **The harvest** — the vocab + grammar the lyric carries (고개·넘다·버리다·못·里; the honorific -시- in a relative clause, plain -ㄴ다, the -고 connective), cross-linked to the folios that teach them. Data: `koreanSongs.js` (the Song schema as a future songs-API payload). The lyrics/RR/bridges are hand-checked; the melody is a labeled **study transcription** (recognizable pentatonic contour, not a score). |
 | **여정 · fluency roadmap** (`#/ko/roadmap`) | The long road — capacity-phased roadmap to fluency, charted deep through B1 and honestly unmapped beyond. **The trail** — five Sino-named waymarks (관문 sound gate · 생존 survival kit · 연결 connected sentence · 자립 independence · 원경 far ranges), each a lantern that fills as its checklist completes, over CEFR/TOPIK reference rails (mileposts beside the road, not the road). **The waymark dossiers** — per-phase deep charts across six strands (어휘·문법·발음·듣기·읽기·말글): can-do goal-posts, explanations with JP-bridge notes, ~95 persisted checkboxes, an effort-mix panel (steady/listener/reader splits) and a pace dial (weeks-of-walking math, JP-transfer discount included). **The practice ledger** — seven habits with 14-day lamp-dot strips + streaks, and the weekly reckoning (check-in journal). First persistent state in the atlas: `localStorage` `atlas.ko.roadmap.v1`, the pilot for per-learner backend state. Content grounded in `project/uploads/files (5)/korean_approach.md`. |
 
 ### 日本語 Japanese (maintained)
@@ -69,6 +70,7 @@ src/
     KoreanParticles.jsx    ko folio — particle cabinet
     KoreanCognates.jsx     ko folio — cognate bridge
     KoreanVocab.jsx        ko folio — word bank
+    KoreanSong.jsx         ko folio — the song (one shared transport, four instruments)
     KoreanRoadmap.jsx      ko folio — fluency roadmap
     JapaneseVocab.jsx      ja folio — word bank
   components/
@@ -98,6 +100,13 @@ src/
       ReviewDrawer.jsx     the review drawer — due queue, flip cards, four grades
       useVocabStore.js     per-word state: unseen/met/learning/known (localStorage per lang)
       srs.js               the SM-2-ish day scheduler (pure functions + interval previews)
+    song/                  song-learning instruments (fed by a per-song data module)
+      useTransport.js      the shared clock — beat playhead (rAF), voice/tick/loop scheduling
+      audio.js             dependency-free Web Audio: tones, metronome tick, tonic drone
+      LyricBand.jsx        transport karaoke — syllable playhead, tempo, the "now" gloss
+      MelodyRoll.jsx       piano-roll of the air — clickable notes, contour, tonic drone
+      DictionBench.jsx     written ≠ sung — liaison/nasalization/tensification, reveal cards
+      Harvest.jsx          the song's vocab + grammar, cross-linked to the teaching folios
   data/
     grammarData.js         ja content
     koreanData.js          ko content (hangul + RR + JP bridges, hand-checked)
@@ -109,6 +118,9 @@ src/
     koreanVocab.js         ko word bank — 38 entries across 한자어/고유어/외래어, the
                            generalized dictionary schema (VocabEntry) + lang config
     japaneseVocab.js       ja word bank — 18 entries across 漢語/和語/外来語, same schema
+    koreanSongs.js         ko song folio — the Song schema (timeline of pitched syllables,
+                           diction table, harvest), piloted as a future songs-API payload;
+                           one encoded song (아리랑)
   styles/
     base.css               atlas/codex structure (binding, folios, plates, nav)
     aburaya.css            Aburaya skin — tokens + dark/day themes (canonical: dark)
@@ -118,6 +130,7 @@ src/
     cognates.css           cognate bridge (rule panel, specimen crossings, ledger cards)
     roadmap.css            fluency roadmap (trail & lanterns, dossiers, habit ledger)
     vocab.css              word bank (census, ledger table, review drawer & grade bar)
+    song.css               the song (transport, lyric band, melody roll, diction, harvest)
 docs/
   vocabulary-plan.md       the five-phase vocabulary acquisition roadmap
 ```
