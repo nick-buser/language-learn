@@ -500,4 +500,157 @@ export const MIC_DROP = {
   ],
 };
 
-export const KO_SONGS = [ARIRANG, MIC_DROP];
+// =====================================================================
+// GD&TOP · Knock Out (뻑이가요) — HOOK / PRE-CHORUS EXCERPT ONLY.
+//
+// Another copyrighted track, so again only a short attributed excerpt for
+// study — here the pre-chorus + the hook, the most learnable chunk; the
+// rap verses are left to the record. What earns it a place beside the
+// others: the whole hook is a PUN on liaison. 뻑이 가요 (I'm blown away)
+// and 손이 가요 (my hand reaches) rhyme only because each 받침 slides onto
+// the 이 behind it — 뻑이→[뻐기], 손이→[소니]. The song that teaches the
+// single most important Korean reading reflex by making a joke of it. It
+// also mixes delivery: a moving SUNG pre-chorus over a flat CHANT hook, so
+// one song shows both `kind`s on the roll.
+// =====================================================================
+const RAW_LINES_KNOCKOUT = [
+  {
+    id: 'k1', restAfter: 0.5, kind: 'sung',
+    rr: 'dulman bomyeon nado mollae',
+    en: 'the moment I just see the two of us, despite myself —',
+    jp: '二人を見ると、つい自分でも知らないうちに',
+    syls: [
+      ['둘', 'dul', 'd', 0.5], ['만', 'man', 'd', 0.5], ['보', 'bo', 'r', 0.5], ['면', 'myeon', 'm', 1],
+      ['나', 'na', 'r', 0.5], ['도', 'do', 'd', 0.5], ['몰', 'mol', 'l', 0.5], ['래', 'rae', 'd', 1],
+    ],
+  },
+  {
+    id: 'k2', restAfter: 0.5, kind: 'sung',
+    rr: 'ppeogigayo ani sonigayo',
+    en: 'I’m knocked out — no, my hand’s already reaching.',
+    jp: 'イカれちゃう、いや、つい手が伸びる',
+    syls: [
+      ['뻑', 'ppeok', 'm', 0.5], ['이', 'i', 'r', 0.5], ['가', 'ga', 'r', 0.5], ['요', 'yo', 'd', 1],
+      ['아', 'a', 'r', 0.5], ['니', 'ni', 'm', 0.5], ['손', 'son', 'm', 0.5], ['이', 'i', 'r', 0.5],
+      ['가', 'ga', 'd', 0.5], ['요', 'yo', 'd', 1.5],
+    ],
+  },
+  {
+    id: 'k3', restAfter: 2, kind: 'chant',
+    rr: 'ppeogigayo aju ppeogigayo',
+    en: 'knock out — it’s a real knock out',
+    jp: 'ノックアウト、すっかりやられる',
+    syls: [
+      ['뻑', 'ppeok', 'd', 0.5], ['이', 'i', 'd', 0.5], ['가', 'ga', 'd', 0.5], ['요', 'yo', 'd', 1],
+      ['아', 'a', 'r', 0.5], ['주', 'ju', 'r', 0.5], ['뻑', 'ppeok', 'd', 0.5], ['이', 'i', 'd', 0.5],
+      ['가', 'ga', 'd', 0.5], ['요', 'yo', 'd', 1.5],
+    ],
+  },
+];
+
+const builtKnock = buildSection(RAW_LINES_KNOCKOUT);
+
+export const KNOCK_OUT = {
+  id: 'knockout',
+  title: { han: '뻑이가요', rr: 'Knock Out', en: 'Knock Out' },
+  origin: 'GD&TOP (지드래곤&탑) · “Knock Out” (뻑이가요) (2010) · written by G-Dragon, Teddy, et al. · © YG Entertainment — PRE-CHORUS / HOOK EXCERPT, reproduced for personal language study only',
+  genre: '힙합 · hip-hop',
+  meta: { bpm: 130, beatsPerBar: 4, key: 'C', mode: 'sung + chant (study transcription)' },
+  context: {
+    difficulty: 'beginner (hook) · the verses are advanced rap/slang',
+    register: '반말 · slang/boast',
+    tags: ['힙합 hip-hop', '말장난 wordplay', '4/4'],
+    blurbHtml:
+      'A 2010 GD&TOP banger whose Korean title, <b>뻑이가요</b>, is slang for “you knock me out / ' +
+      'I’m blown away.” The pre-chorus runs the joke: <b>뻑이 가요</b> (I’m blown away) against ' +
+      '<b>손이 가요</b> (my hand reaches) — the same tune, a single consonant apart, made to rhyme ' +
+      'by liaison. Only that excerpt is encoded; the rap verses are left to the record.',
+    whyHtml:
+      'A wordplay song that drills the one reflex Korean reading most depends on: <b>liaison</b>. ' +
+      'Its whole hook only rhymes because the 받침 slides onto the 이 behind it — 뻑이→[뻐기], ' +
+      '손이→[소니]. The pre-chorus throws in a compact grammar kit too: the conditional ' +
+      '<span class="kr">-(으)면</span> (보면 = 見れば), and the focus particles ' +
+      '<span class="kr">만</span> (だけ) and <span class="kr">도</span> (も). It also mixes ' +
+      'delivery — a moving sung line over a flat chant — so one song shows both on the roll.',
+  },
+  sections: [
+    { id: 'hook', kind: 'chorus', label: 'pre-chorus + hook (excerpt)', lines: builtKnock.lines },
+  ],
+  beats: builtKnock.beats,
+
+  diction: [
+    {
+      id: 'ppeogi',
+      written: { han: '뻑이', rr: 'ppeok + i' },
+      sung: { han: '뻐기', rr: 'ppeo-gi' },
+      kind: 'liaison · 연음',
+      html: 'The ㄱ of 뻑 slides onto the 이: 뻑이 → <b>[뻐기]</b>. Half of the song’s pun — and the ' +
+        'reason 뻑이가요 and 손이가요 rhyme at all.',
+      link: { folio: '#/ko/grammar', label: 'the gate — 받침 & liaison' },
+    },
+    {
+      id: 'soni',
+      written: { han: '손이', rr: 'son + i' },
+      sung: { han: '소니', rr: 'so-ni' },
+      kind: 'liaison · 연음',
+      html: 'The other half: the ㄴ of 손 carries onto 이, 손이 → <b>[소니]</b>. Two 받침, two ' +
+        'liaisons, one rhyme — the pun is pure phonology. (손 = hand; 손이 가다 = the hand reaches, ' +
+        '“to be tempted.”)',
+      link: { folio: '#/ko/grammar', label: 'the gate — 받침 & liaison' },
+    },
+  ],
+
+  harvestVocab: [
+    {
+      head: '아주', rr: 'aju', pos: 'adverb', en: 'very · really', from: 'k3',
+      bridge: { kanji: '非常に · とても', kana: '', rr: 'hijō ni · totemo', kind: 'equivalent' },
+      note: 'A degree adverb a notch stronger than 너무 — 아주 좋아 = すごくいい. Stacks before ' +
+        'adjectives and verbs alike.',
+    },
+    {
+      head: '둘', rr: 'dul', pos: 'noun', en: 'two (of them) · the two', from: 'k1',
+      bridge: { kanji: '二人 · 二つ', kana: 'ふたり · ふたつ', rr: 'futari · futatsu', kind: 'equivalent' },
+      note: 'The <b>native</b> two; the Sino 이 (二) takes over for dates and counting — exactly ' +
+        'the kun/on split (ふたつ vs に).',
+    },
+    {
+      head: '몰래', rr: 'mollae', pos: 'adverb', en: 'secretly · without (one) knowing', from: 'k1',
+      bridge: { kanji: 'こっそり', kana: '', rr: 'kossori', kind: 'equivalent' },
+      note: 'From 모르다 (to not know). 나도 몰래 = “even without my realizing” — before you know it.',
+    },
+    {
+      head: '손', rr: 'son', pos: 'noun', en: 'hand', from: 'k2',
+      bridge: { kanji: '手', kana: 'て', rr: 'te', kind: 'equivalent' },
+      note: '손이 가다 = “the hand reaches” → 手が伸びる, the idiom of being drawn to something. The ' +
+        'punchline of the pun.',
+    },
+    {
+      head: '뻑가다', rr: 'ppeokgada', pos: 'expression', en: 'to be blown away · smitten (slang)', from: 'k2',
+      bridge: { kanji: 'イカれる · メロメロ', kana: '', rr: 'ikareru · meromero', kind: 'equivalent' },
+      note: 'Slang (뻑이 가다): to flip for someone/something. The title itself — no clean bridge, ' +
+        'just attitude.',
+    },
+  ],
+
+  grammar: [
+    {
+      id: 'eu-myeon',
+      head: 'the -(으)면 conditional',
+      han: '보면', rr: 'bomyeon', en: 'when / if (one) sees',
+      html: '보다 + <b>-면</b> = “when/if (you) see.” Maps to Japanese 〜ば / 〜たら / 〜と — 見れば, ' +
+        '見たら. Add 으 after a 받침 (먹으면 = 食べれば). One of the first connectives to own.',
+      link: { folio: '#/ko/verbs', label: 'the verb forge' },
+    },
+    {
+      id: 'man-do',
+      head: '만 & 도 — the focus particles',
+      han: '둘만 · 나도', rr: 'dulman · nado', en: 'just the two · me too',
+      html: '<b>만</b> = だけ (only/just): 둘만 = “just the two.” <b>도</b> = も (also/even): 나도 = ' +
+        '“I too.” Both attach straight to the noun, and both <i>stack</i> after other particles — ' +
+        'the stack instrument files how.',
+      link: { folio: '#/ko/particles', label: 'the particle stack (는/도/만)' },
+    },
+  ],
+};
+
+export const KO_SONGS = [ARIRANG, MIC_DROP, KNOCK_OUT];
