@@ -127,6 +127,9 @@ src/
                            diction table, harvest), piloted as a future songs-API payload;
                            three songs — 아리랑 (full, public-domain) + MIC Drop +
                            Knock Out (뻑이가요) (hook excerpts)
+    dictionary/            the dictionary subsystem (phase 2 — docs/dictionary.md)
+      schema.js            DictionaryEntry v2 — senses[], freqRank, conjugation, source
+      index.js             loadVocab() — THE data-access seam (local now, homelab API later)
   styles/
     base.css               atlas/codex structure (binding, folios, plates, nav)
     aburaya.css            Aburaya skin — tokens + dark/day themes (canonical: dark)
@@ -137,8 +140,13 @@ src/
     roadmap.css            fluency roadmap (trail & lanterns, dossiers, habit ledger)
     vocab.css              word bank (census, ledger table, review drawer & grade bar)
     song.css               the song (transport, lyric band, melody roll, diction, harvest)
+tools/
+  seed-dictionary.mjs      frequency list + gloss adapter → DictionaryEntry JSON (the seeder);
+                           --adapter=manual (offline, the hand bank) | krdict (key + licensing)
+  data/ko-freq.sample.txt  sample frequency seed (one headword per line; line number = rank)
 docs/
   vocabulary-plan.md       the five-phase vocabulary acquisition roadmap
+  dictionary.md            phase 2 — schema v2, the data-access seam, the seeding pipeline
 ```
 
 ## Design system

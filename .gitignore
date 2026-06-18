@@ -1,3 +1,8 @@
 node_modules/
 dist/
 .DS_Store
+
+# dictionary pipeline — generated/unverified output and licensed source lists
+# stay out of git until hand-checked + licensing-cleared (see docs/dictionary.md)
+src/data/dictionary/*.generated.json
+tools/data/ko-freq.full.txt

@@ -1,0 +1,50 @@
+# Korean frequency seed — SAMPLE, hand-ordered (rough), not authoritative.
+# Format: one headword per line; line number = frequency rank.
+# The real list (tools/data/ko-freq.full.txt) comes from a corpus / NIKL
+# 빈도 조사 and is thousands long; this small set just drives the pipeline.
+# Words not in the hand-checked bank stay UNGLOSSED until a real source
+# (krdict) fills them — that's the point of the gap.
+우리
+시간
+사람
+가다
+보다
+좋다
+오늘
+집
+먹다
+물
+밥
+손
+크다
+생각
+학교
+친구
+책
+회사
+영화
+음악
+사랑
+전화
+주말
+어제
+비
+하늘
+마시다
+커피
+여행
+공원
+문제
+수업
+음식
+사전
+괜찮다
+일하다
+나라
+버스
+컴퓨터
+핸드폰
+텔레비전
+아르바이트
+공부하다
+감사합니다

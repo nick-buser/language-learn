@@ -41,6 +41,15 @@ A real lexicon behind the instruments.
 - The frontend instruments stay payload-compatible: swapping hardcoded modules for API calls
   should not require component surgery.
 
+*Status 2026-06: the substrate is in, interface-first. The schema v2 (`DictionaryEntry`,
+`src/data/dictionary/schema.js`) generalizes the pilot with senses[], freqRank, conjugation,
+and source. The data-access seam (`loadVocab`, `src/data/dictionary/index.js`) is async and is
+the single place the backend lands — the vocab folios now read through it. The seeding pipeline
+(`tools/seed-dictionary.mjs`, frequency-first) runs offline against the hand-checked bank
+(`--adapter=manual`) and has a key-gated `krdict` adapter for the real source. Still pending:
+a real frequency list, the KRDICT licensing sign-off + bulk run + hand-check into `ko.json`,
+and the backend service itself. See `docs/dictionary.md`.*
+
 ### 3. Known-vocabulary persistence
 
 Track what the learner actually knows.
