@@ -122,7 +122,7 @@ export default function LyricBand({ song, transport, showReadings, showJp }) {
                   const lit = isActive && active.sylIdx === si;
                   const past = isActive && active.sylIdx > -1 && si < active.sylIdx;
                   return (
-                    <span key={si} className={'lyric-syl' + (lit ? ' lit' : '') + (past ? ' past' : '')}>
+                    <span key={si} className={'lyric-syl' + (lit ? ' lit' : '') + (past ? ' past' : '') + (s.spaceBefore ? ' word-start' : '')}>
                       <span className="han">{s.han}</span>
                       {showReadings && s.rr && <span className="rr">{s.rr}</span>}
                     </span>
