@@ -2,6 +2,11 @@ node_modules/
 dist/
 .DS_Store
 
+# Vite env — .env.example is the tracked template
+.env
+.env.local
+.env.*.local
+
 # dictionary pipeline — generated/unverified output and licensed source lists
 # stay out of git until hand-checked + licensing-cleared (see docs/dictionary.md)
 src/data/dictionary/*.generated.json
