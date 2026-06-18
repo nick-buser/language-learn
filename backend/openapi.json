@@ -1,0 +1,587 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "Polyglot Atlas API",
+    "summary": "Dictionary + per-learner vocab state for The Polyglot's Atlas.",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/healthz": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Healthz",
+        "description": "Liveness — the process is up.",
+        "operationId": "healthz_healthz_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Healthz Healthz Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/readyz": {
+      "get": {
+        "tags": [
+          "health"
+        ],
+        "summary": "Readyz",
+        "description": "Readiness — the database answers.",
+        "operationId": "readyz_readyz_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "additionalProperties": {
+                    "type": "string"
+                  },
+                  "type": "object",
+                  "title": "Response Readyz Readyz Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/dictionary/{lang}": {
+      "get": {
+        "tags": [
+          "dictionary"
+        ],
+        "summary": "Get Dictionary",
+        "description": "The whole dictionary for a language (what loadVocab fetches).",
+        "operationId": "get_dictionary_v1_dictionary__lang__get",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lang"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DictionarySlice"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/dictionary/{lang}/{slug}": {
+      "get": {
+        "tags": [
+          "dictionary"
+        ],
+        "summary": "Get Entry",
+        "description": "A single entry by its slug.",
+        "operationId": "get_entry_v1_dictionary__lang___slug__get",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lang"
+            }
+          },
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DictionaryEntryOut"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "Bridge": {
+        "properties": {
+          "kanji": {
+            "type": "string",
+            "title": "Kanji"
+          },
+          "kana": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kana"
+          },
+          "rr": {
+            "type": "string",
+            "title": "Rr"
+          },
+          "kind": {
+            "type": "string",
+            "title": "Kind"
+          }
+        },
+        "type": "object",
+        "required": [
+          "kanji",
+          "rr",
+          "kind"
+        ],
+        "title": "Bridge"
+      },
+      "DictionaryEntryOut": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "head": {
+            "type": "string",
+            "title": "Head"
+          },
+          "hanja": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hanja"
+          },
+          "reading": {
+            "$ref": "#/components/schemas/Reading"
+          },
+          "pos": {
+            "type": "string",
+            "title": "Pos"
+          },
+          "origin": {
+            "type": "string",
+            "title": "Origin"
+          },
+          "en": {
+            "type": "string",
+            "title": "En"
+          },
+          "senses": {
+            "items": {
+              "$ref": "#/components/schemas/Sense"
+            },
+            "type": "array",
+            "title": "Senses"
+          },
+          "band": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Band"
+          },
+          "freqRank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Freqrank"
+          },
+          "conjugation": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Conjugation"
+          },
+          "domain": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Domain"
+          },
+          "grade": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Grade"
+          },
+          "bridge": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Bridge"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "ex": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Example"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "note": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Note"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "source": {
+            "type": "string",
+            "title": "Source"
+          },
+          "krdictId": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Krdictid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "head",
+          "reading",
+          "pos",
+          "origin",
+          "en",
+          "senses",
+          "source"
+        ],
+        "title": "DictionaryEntryOut"
+      },
+      "DictionarySlice": {
+        "properties": {
+          "lang": {
+            "type": "string",
+            "title": "Lang"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "entries": {
+            "items": {
+              "$ref": "#/components/schemas/DictionaryEntryOut"
+            },
+            "type": "array",
+            "title": "Entries"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lang",
+          "count",
+          "entries"
+        ],
+        "title": "DictionarySlice",
+        "description": "A whole language's dictionary — what loadVocab(lang) returns."
+      },
+      "Example": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "rr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Rr"
+          },
+          "jp": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jp"
+          },
+          "jpRr": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Jprr"
+          },
+          "en": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "En"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "Example"
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Note": {
+        "properties": {
+          "head": {
+            "type": "string",
+            "title": "Head"
+          },
+          "html": {
+            "type": "string",
+            "title": "Html"
+          }
+        },
+        "type": "object",
+        "required": [
+          "head",
+          "html"
+        ],
+        "title": "Note"
+      },
+      "Reading": {
+        "properties": {
+          "rr": {
+            "type": "string",
+            "title": "Rr"
+          },
+          "kana": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Kana"
+          }
+        },
+        "type": "object",
+        "required": [
+          "rr"
+        ],
+        "title": "Reading"
+      },
+      "Sense": {
+        "properties": {
+          "gloss": {
+            "type": "string",
+            "title": "Gloss"
+          },
+          "def": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Def"
+          },
+          "enDef": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Endef"
+          },
+          "domain": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Domain"
+          },
+          "note": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Note"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "gloss"
+        ],
+        "title": "Sense"
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          },
+          "input": {
+            "title": "Input"
+          },
+          "ctx": {
+            "type": "object",
+            "title": "Context"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      }
+    }
+  }
+}
