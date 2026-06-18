@@ -658,3 +658,39 @@
   .rv-grades { grid-template-columns: repeat(2, 1fr); }
   .rv-head { font-size: 34px; }
 }
+
+/* =====================================================================
+   DICTIONARY SENSES — KRDICT-backed entries (numbered meanings)
+   ===================================================================== */
+.wb-senses { list-style: none; counter-reset: sense; margin: 0; padding: 0; }
+.wb-senses li {
+  counter-increment: sense;
+  position: relative;
+  padding: 9px 0 9px 26px;
+  border-top: 1px dotted var(--rule-soft);
+}
+.wb-senses li:first-child { border-top: none; }
+.wb-senses li::before {
+  content: counter(sense);
+  position: absolute; left: 0; top: 9px;
+  font-family: var(--font-mono); font-size: 9.5px; color: var(--accent);
+  border: 1px solid var(--rule);
+  width: 16px; height: 16px;
+  display: grid; place-items: center;
+}
+.wb-senses .s-gloss { font-family: var(--font-body); font-size: 15px; color: var(--ink); }
+.wb-senses .s-def {
+  display: block;
+  font-family: var(--font-kr-serif); font-size: 13px; line-height: 1.55;
+  color: var(--ink-soft); margin-top: 3px;
+}
+.rv-senses { margin: 14px auto 0; text-align: left; max-width: 470px; }
+
+/* source credit — KRDICT, mentioned loudly */
+.wb-credit {
+  margin-top: 14px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.04em;
+  color: var(--ink-faded); line-height: 1.6;
+}
+.wb-credit a { color: var(--accent); text-decoration: none; border-bottom: 1px dotted var(--gilt-line); }
+.wb-credit .kr { font-family: var(--font-kr-serif); letter-spacing: 0; }

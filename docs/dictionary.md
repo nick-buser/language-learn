@@ -56,10 +56,12 @@ Adapters (`head → partial DictionaryEntry`):
 - **`manual`** — the existing hand-checked bank (`koreanVocab.js`), keyed by headword. Offline
   and authoritative, but only covers the pilot set — which is exactly why we need a real source.
 - **`krdict`** — the [국립국어원 한국어기초사전 open API](https://krdict.korean.go.kr/openApi/openApiInfo).
-  Reads `KRDICT_API_KEY`; generates an approximate RR with our own
-  [`romanize.js`](../src/components/song/romanize.js); maps KRDICT `pos` → our enum and each
-  `sense` → a `Sense`. **The XML parse is provisional** — verify it against a live response
-  before trusting a bulk run.
+  Reads `KRDICT_API_KEY` and fetches via `curl` (more reliable than node `fetch` in our sandbox),
+  with retries. Captures `origin` (한자), `word_grade` (초급/중급/고급), `pos`, `target_code`, and
+  each `<sense>`'s `definition` + English `trans_word`/`trans_dfn`; generates an approximate RR
+  with our own [`romanize.js`](../src/components/song/romanize.js). Verified against live responses.
+  The pipeline then **merges** the hand bank's depth (Japanese bridge, specimen sentence, note)
+  onto each match, so the pilot words keep their bridges and new words gain real definitions.
 
 Output is `{ lang, generatedAt, count, entries }`. Unglossed ranked words are reported, not
 emitted — they're the queue the real source fills.
@@ -74,15 +76,20 @@ The open API key is free (register at krdict.korean.go.kr). Licensing is the gat
   *with attribution and share-alike*. If we commit glosses/examples sourced here, the repo must
   carry the attribution and the share-alike obligation.
 
-House rule (unchanged from the cognate ledger): **anything surfaced in an instrument is
-hand-checked.** So the pipeline's role is to *propose* ranked, glossed entries; a human pass
-approves them into `src/data/dictionary/ko.json`, and only then does `loadVocab` point at it.
-Until that pass and the licensing sign-off, the seam keeps serving the hand-authored bank.
+**Decision (2026-06): this atlas is for private use, shared narrowly with friends — no
+commercial or public redistribution.** We use KRDICT data on that basis and **credit it loudly**:
+국립국어원 「한국어기초사전」 is named in the 어휘 folio, the colophon, the generated `ko.json`
+(`source` field), this doc, and the README. KRDICT's glosses are authoritative (it *is* the
+national standard), so they're trusted directly; the per-entry `source` records provenance
+(`krdict` or `krdict+atlas-seed`). The Japanese bridges, specimens, and notes remain hand-authored.
+If this were ever published or shared widely, revisit the per-field KRDICT terms first.
 
 ## Sequencing
 
-1. ✅ schema v2 + the data-access seam (`loadVocab`) — done.
-2. ✅ the pipeline + a sample frequency list — done (this commit).
-3. ◻ a real frequency list (NIKL 빈도 조사 / a corpus list) → `tools/data/ko-freq.full.txt`.
-4. ◻ run `--adapter=krdict`, hand-check, write `ko.json`, point `SEEDS.ko` at it.
-5. ◻ the homelab backend serves the same schema; `loadVocab` swaps local JSON for `fetch`.
+1. ✅ schema v2 + the data-access seam (`loadVocab`).
+2. ✅ the pipeline + frequency seeds (`ko-freq.sample.txt`, `ko-freq.core.txt`).
+3. ✅ KRDICT integrated; `--adapter=krdict` run over the ~160-word core list → `ko.json`,
+   merged with the hand bank; `SEEDS.ko` points at it; KRDICT credited in-app.
+4. ◻ a real frequency list (NIKL 빈도 조사 / a corpus list) → grow past the core hundreds.
+5. ◻ verbs/adjectives: fill `conjugation` (the ㅡ/ㄷ/ㅂ/르 classes) for the forge + generation.
+6. ◻ the homelab backend serves the same schema; `loadVocab` swaps local JSON for `fetch`.

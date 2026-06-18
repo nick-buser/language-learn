@@ -11,15 +11,29 @@
 // contract": the backend lands here, and only here.
 // =====================================================================
 
-import { KO_VOCAB, KO_VOCAB_LANG } from '../koreanVocab.js';
+import koDict from './ko.json';
+import { KO_VOCAB_LANG } from '../koreanVocab.js';
 import { JA_VOCAB, JA_VOCAB_LANG } from '../japaneseVocab.js';
 import { normalizeEntry } from './schema.js';
 
-// Local seed sources, keyed by language. When the backend exists this map
-// becomes a base-URL lookup instead.
+// Korean reads the generated, KRDICT-backed dictionary (ko.json) — built by
+// tools/seed-dictionary.mjs, frequency-ranked, merged with the hand-checked
+// bank's bridges + specimens, already v2-normalized. Definitions, readings,
+// hanja, and learner grades are from the 국립국어원 「한국어기초사전」 (KRDICT)
+// Open API — credited loudly in the folio and the README.
+// Japanese is still the hand bank, normalized on read.
 const SEEDS = {
-  ko: { lang: KO_VOCAB_LANG, entries: KO_VOCAB, source: 'atlas-seed' },
-  ja: { lang: JA_VOCAB_LANG, entries: JA_VOCAB, source: 'atlas-seed' },
+  ko: { lang: KO_VOCAB_LANG, entries: koDict.entries, normalized: true },
+  ja: { lang: JA_VOCAB_LANG, entries: JA_VOCAB, normalized: false, source: 'atlas-seed' },
+};
+
+// Source credit, surfaced in the UI.
+export const DICTIONARY_CREDIT = {
+  ko: {
+    name: '국립국어원 「한국어기초사전」',
+    latin: 'KRDICT — National Institute of Korean Language, Basic Korean Dictionary',
+    url: 'https://krdict.korean.go.kr',
+  },
 };
 
 /**
@@ -29,10 +43,10 @@ const SEEDS = {
  */
 export async function loadVocab(langId) {
   const seed = SEEDS[langId] || SEEDS.ko;
-  return {
-    lang: seed.lang,
-    entries: seed.entries.map((e) => normalizeEntry(e, { source: seed.source })),
-  };
+  const entries = seed.normalized
+    ? seed.entries
+    : seed.entries.map((e) => normalizeEntry(e, { source: seed.source }));
+  return { lang: seed.lang, entries };
 }
 
 /** Languages the dictionary currently serves. */

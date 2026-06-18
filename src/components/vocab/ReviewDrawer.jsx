@@ -22,6 +22,10 @@ const GRADE_COLOR = {
   easy: 'var(--st-active)',
 }
 
+// KRDICT-backed entries carry real definitions but no specimen sentence;
+// show the senses on the back so the card still teaches something.
+const hasSenses = (e) => Array.isArray(e.senses) && e.senses.some(s => s.def)
+
 const EUREKAS = {
   graduated: {
     head: 'a word crossed the counter',
@@ -233,18 +237,30 @@ export default function ReviewDrawer({ entries, lang, store, showReadings, showJ
                     </span>
                   </div>
                 )}
-                <div className="wb-ex rv-ex">
-                  <div className={'ex-text ' + lang.scriptClass} style={{ fontFamily: lang.font }}
-                    dangerouslySetInnerHTML={{ __html: current.ex.text }} />
-                  {showReadings && <div className="ex-rr">{current.ex.rr}</div>}
-                  {showJp && current.ex.jp && (
-                    <div className="ex-jp">
-                      <span className="jp">{current.ex.jp}</span>
-                      {showReadings && <span className="jp-rr">{current.ex.jpRr}</span>}
-                    </div>
-                  )}
-                  <div className="ex-en">{current.ex.en}</div>
-                </div>
+                {current.ex && (
+                  <div className="wb-ex rv-ex">
+                    <div className={'ex-text ' + lang.scriptClass} style={{ fontFamily: lang.font }}
+                      dangerouslySetInnerHTML={{ __html: current.ex.text }} />
+                    {showReadings && <div className="ex-rr">{current.ex.rr}</div>}
+                    {showJp && current.ex.jp && (
+                      <div className="ex-jp">
+                        <span className="jp">{current.ex.jp}</span>
+                        {showReadings && <span className="jp-rr">{current.ex.jpRr}</span>}
+                      </div>
+                    )}
+                    <div className="ex-en">{current.ex.en}</div>
+                  </div>
+                )}
+                {!current.ex && hasSenses(current) && (
+                  <ol className="wb-senses rv-senses">
+                    {current.senses.slice(0, 4).map((s, i) => (
+                      <li key={i}>
+                        <span className="s-gloss">{s.gloss}</span>
+                        {s.def && <span className={'s-def ' + lang.scriptClass}>{s.def}</span>}
+                      </li>
+                    ))}
+                  </ol>
+                )}
                 {current.note && (
                   <div className="rv-note">
                     <span className="fn-head">{current.note.head}</span>

@@ -20,6 +20,10 @@ const POS_LABEL = {
   noun: 'noun', verb: 'verb', adj: 'adjective', adverb: 'adverb', expression: 'expression',
 }
 
+// Show the dictionary senses (KRDICT) when an entry carries real definitions —
+// hand entries lean on their specimen + note instead, so they skip this.
+const hasSenses = (e) => Array.isArray(e.senses) && e.senses.some(s => s.def)
+
 const STATUS_ORDER = { unseen: 0, met: 1, learning: 2, known: 3 }
 
 const EUREKAS = {
@@ -101,7 +105,12 @@ export default function WordLedger({ entries, lang, store, showReadings, showJp 
     const dir = sort.dir
     return list.sort((a, b) => {
       if (sort.by === 'word') return dir * a.head.localeCompare(b.head, lang.id)
-      if (sort.by === 'band') return dir * (a.band - b.band) || a.reading.rr.localeCompare(b.reading.rr)
+      if (sort.by === 'band') {
+        // prefer the finer frequency rank; fall back to the coarse band
+        const ra = a.freqRank ?? (a.band ?? 3) * 100000
+        const rb = b.freqRank ?? (b.band ?? 3) * 100000
+        return dir * (ra - rb) || a.reading.rr.localeCompare(b.reading.rr)
+      }
       // status: by state, then the soonest-due learning words first
       const sa = STATUS_ORDER[statusOf(a.id)]
       const sb = STATUS_ORDER[statusOf(b.id)]
@@ -300,18 +309,30 @@ export default function WordLedger({ entries, lang, store, showReadings, showJp 
               {open && (
                 <div className="wb-detail" role="row">
                   <div className="wb-detail-main">
-                    <div className="wb-ex">
-                      <div className={'ex-text ' + lang.scriptClass} style={{ fontFamily: lang.font }}
-                        dangerouslySetInnerHTML={{ __html: e.ex.text }} />
-                      {showReadings && <div className="ex-rr">{e.ex.rr}</div>}
-                      {showJp && e.ex.jp && (
-                        <div className="ex-jp">
-                          <span className="jp">{e.ex.jp}</span>
-                          {showReadings && <span className="jp-rr">{e.ex.jpRr}</span>}
-                        </div>
-                      )}
-                      <div className="ex-en">{e.ex.en}</div>
-                    </div>
+                    {e.ex && (
+                      <div className="wb-ex">
+                        <div className={'ex-text ' + lang.scriptClass} style={{ fontFamily: lang.font }}
+                          dangerouslySetInnerHTML={{ __html: e.ex.text }} />
+                        {showReadings && <div className="ex-rr">{e.ex.rr}</div>}
+                        {showJp && e.ex.jp && (
+                          <div className="ex-jp">
+                            <span className="jp">{e.ex.jp}</span>
+                            {showReadings && <span className="jp-rr">{e.ex.jpRr}</span>}
+                          </div>
+                        )}
+                        <div className="ex-en">{e.ex.en}</div>
+                      </div>
+                    )}
+                    {hasSenses(e) && (
+                      <ol className="wb-senses">
+                        {e.senses.map((s, i) => (
+                          <li key={i}>
+                            <span className="s-gloss">{s.gloss}</span>
+                            {s.def && <span className={'s-def ' + lang.scriptClass}>{s.def}</span>}
+                          </li>
+                        ))}
+                      </ol>
+                    )}
                     {e.note && (
                       <div className="wb-note">
                         <span className="fn-head">{e.note.head}</span>

@@ -2,14 +2,15 @@ import React, { useEffect, useState } from 'react'
 import WordLedger from '../components/vocab/WordLedger.jsx'
 import ReviewDrawer from '../components/vocab/ReviewDrawer.jsx'
 import useVocabStore from '../components/vocab/useVocabStore.js'
-import { loadVocab } from '../data/dictionary/index.js'
+import { loadVocab, DICTIONARY_CREDIT } from '../data/dictionary/index.js'
 
 function VocabColophon() {
   return (
     <div className="colophon">
       <div className="ornament">⟡ 어휘 ⟡</div>
       The Polyglot's Atlas · Korean folio · the word bank<br />
-      drawn in the Aburaya hand · browse · file · review — the bank remembers for you
+      drawn in the Aburaya hand · browse · file · review — the bank remembers for you<br />
+      <span style={{ opacity: 0.85 }}>dictionary data · 국립국어원 「한국어기초사전」 (KRDICT) Open API</span>
     </div>
   )
 }
@@ -65,8 +66,18 @@ export default function KoreanVocab({ showReadings, showJp }) {
             Two instruments on one state. The <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>holdings ledger</b> is
             the bank book — search it, sort it, open the fine print, and file each word as met, learning,
             or known. The <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>review drawer</b> is
-            where learning words come due. The pilot bank holds {data.entries.length} hand-checked words;
-            the dictionary behind it arrives later and these instruments won’t notice.
+            where learning words come due. The bank now holds {data.entries.length} words — drawn
+            from <span className="kr">「한국어기초사전」</span> (KRDICT) and merged with the
+            hand-checked core that carries the Japanese bridges. The dictionary behind it grew, and
+            these instruments didn’t notice.
+          </p>
+          <p className="wb-credit">
+            Definitions · readings · 한자 · learner grades from{' '}
+            <a href={DICTIONARY_CREDIT.ko.url} target="_blank" rel="noreferrer">
+              <span className="kr">{DICTIONARY_CREDIT.ko.name}</span> (KRDICT)
+            </a>{' '}
+            Open API — 국립국어원 · the National Institute of Korean Language. Cross-checked words
+            carry hand-written Japanese bridges &amp; specimen sentences.
           </p>
 
           {/* INSTRUMENT I — the holdings ledger */}
@@ -137,8 +148,9 @@ export default function KoreanVocab({ showReadings, showJp }) {
                 <h4>For the next plate</h4>
                 <div className="note">
                   <span className="date">the dictionary</span>
-                  Phase 2 of the vocabulary plan: a real lexicon behind this schema — bulk-seeded,
-                  frequency-ranked, served by the homelab backend. The ledger becomes a window.
+                  Phase 2, underway: KRDICT-seeded and frequency-ranked behind the{' '}
+                  <code>loadVocab</code> seam. Next — a real frequency list to grow past these
+                  hundreds, then the homelab backend serving the very same schema.
                 </div>
                 <div className="note">
                   <span className="date">extensive reading</span>
