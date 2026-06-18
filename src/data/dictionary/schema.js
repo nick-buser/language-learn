@@ -20,7 +20,9 @@
 //
 // /**
 //  * @typedef {Object} Sense — one meaning of a headword
-//  * @property {string} gloss          the definition / English gloss
+//  * @property {string} gloss          the English gloss (KRDICT trans_word)
+//  * @property {?string} def           the Korean definition (KRDICT)
+//  * @property {?string} enDef         the English definition (KRDICT trans_dfn)
 //  * @property {?string} domain        coarse topic tag
 //  * @property {?{head: string, html: string}} note  usage / trap footnote
 //  *
@@ -37,10 +39,12 @@
 //  * @property {?number} freqRank      rank in a frequency list (null = unseeded)
 //  * @property {?string} conjugation   inflection class (verbs/adj) or null
 //  * @property {string} domain         primary topic tag (= senses[0].domain)
+//  * @property {?string} grade         KRDICT learner level (초급/중급/고급) or null
 //  * @property {?Object} bridge        the Japanese side (see koreanVocab.js)
-//  * @property {Object} ex             specimen sentence
+//  * @property {?Object} ex            specimen sentence (hand-authored; may be absent)
 //  * @property {?{head: string, html: string}} note  primary usage footnote
 //  * @property {string} source         provenance ('atlas-seed', 'krdict', …)
+//  * @property {?string} krdictId      KRDICT target_code (provenance) or null
 //  */
 // =====================================================================
 
