@@ -1,8 +1,8 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import WordLedger from '../components/vocab/WordLedger.jsx'
 import ReviewDrawer from '../components/vocab/ReviewDrawer.jsx'
 import useVocabStore from '../components/vocab/useVocabStore.js'
-import { JA_VOCAB, JA_VOCAB_LANG } from '../data/japaneseVocab.js'
+import { loadVocab } from '../data/dictionary/index.js'
 
 function VocabColophon() {
   return (
@@ -17,6 +17,13 @@ function VocabColophon() {
 export default function JapaneseVocab({ showReadings }) {
   // One store for the folio — the ledger and the drawer share the ink.
   const store = useVocabStore('ja')
+  // Words come through the dictionary seam (local now, the homelab API later).
+  const [data, setData] = useState(null)
+  useEffect(() => {
+    let live = true
+    loadVocab('ja').then(d => { if (live) setData(d) })
+    return () => { live = false }
+  }, [])
 
   return (
     <div className="page" data-screen-label="Japanese — Word bank">
@@ -41,6 +48,10 @@ export default function JapaneseVocab({ showReadings }) {
         </div>
       </header>
 
+      {!data ? (
+        <p className="gram-sub" style={{ marginTop: 24 }}>Loading the bank…</p>
+      ) : (
+        <>
       {/* Lede */}
       <p className="gram-lede">
         Japanese is the <span className="accent">maintained</span> language of this atlas — the
@@ -52,7 +63,7 @@ export default function JapaneseVocab({ showReadings }) {
       <p className="gram-sub">
         The instruments are identical to the Korean folio’s — one ledger, one drawer, one
         state — because the machinery was built language-blind. The pilot bank holds{' '}
-        {JA_VOCAB.length} words; readings sit one toggle away for honest self-testing.
+        {data.entries.length} words; readings sit one toggle away for honest self-testing.
       </p>
 
       {/* INSTRUMENT I — the holdings ledger */}
@@ -65,8 +76,8 @@ export default function JapaneseVocab({ showReadings }) {
         <span className="dot"></span> search and sort the bank — open a row for the fine print; file what you hold as known
       </div>
       <WordLedger
-        entries={JA_VOCAB}
-        lang={JA_VOCAB_LANG}
+        entries={data.entries}
+        lang={data.lang}
         store={store}
         showReadings={showReadings}
         showJp={false}
@@ -82,12 +93,14 @@ export default function JapaneseVocab({ showReadings }) {
         <span className="dot"></span> answer before you turn — space turns the card, 1–4 grade it
       </div>
       <ReviewDrawer
-        entries={JA_VOCAB}
-        lang={JA_VOCAB_LANG}
+        entries={data.entries}
+        lang={data.lang}
         store={store}
         showReadings={showReadings}
         showJp={false}
       />
+        </>
+      )}
 
       <VocabColophon />
     </div>
