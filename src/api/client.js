@@ -11,10 +11,15 @@
 
 import createClient from 'openapi-fetch'
 
-const baseUrl = import.meta.env.VITE_API_URL
+// VITE_API_URL is undefined when unset, '' when set empty. The backend is used
+// whenever it's DEFINED — including '' for same-origin (the container build
+// sets it so the SPA calls the API it's served from); a full URL points at a
+// separate origin (local dev against a backend, etc.). Unset → local-only, no
+// network (static hosting / offline dev).
+const apiBase = import.meta.env.VITE_API_URL
 
-/** Whether a backend base URL is configured. */
-export const API_ENABLED = Boolean(baseUrl)
+/** Whether to read the dictionary from the backend. */
+export const API_ENABLED = apiBase !== undefined
 
 /** @type {import('openapi-fetch').Client<import('./schema').paths>} */
-export const api = createClient({ baseUrl: baseUrl || '/' })
+export const api = createClient({ baseUrl: apiBase || '' })

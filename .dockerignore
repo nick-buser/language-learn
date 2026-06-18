@@ -1,0 +1,24 @@
+# Build context trim — node_modules / venvs / caches are the big ones; the
+# image reinstalls deps and builds dist/ itself. Keep source, configs, and
+# backend/README.md (referenced by pyproject's readme field).
+.git
+.gitignore
+node_modules
+dist
+**/.venv
+**/__pycache__
+**/*.py[cod]
+**/.mypy_cache
+**/.ruff_cache
+**/.pytest_cache
+**/.coverage
+**/htmlcov
+.env
+.env.local
+.env.*.local
+.DS_Store
+
+# Heavy, deploy-irrelevant provenance/design bundles
+chats/
+project/
+design_system.zip

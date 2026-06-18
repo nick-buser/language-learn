@@ -34,6 +34,10 @@ class Settings(BaseSettings):
     )
     log_level: str = "INFO"
     api_v1_prefix: str = "/v1"
+    # When set to a built SPA directory (containing index.html), the API also
+    # serves the frontend same-origin (StaticFiles + SPA 404 fallback). Unset
+    # in pure-API deployments. In the container the runtime sets PA_SPA_DIR.
+    spa_dir: str | None = None
 
     @field_validator("cors_origins", mode="before")
     @classmethod

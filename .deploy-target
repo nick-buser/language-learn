@@ -1,0 +1,7 @@
+# Maps env → Dokploy app (read by labctl deploy-pr / the /deploy-dev webhook).
+# Single-app shape: one image to one slot per env (serves API + SPA same-origin).
+
+dev:
+  app: polyglot-atlas-dev
+prod:
+  app: polyglot-atlas-prod
