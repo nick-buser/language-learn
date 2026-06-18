@@ -1,0 +1,143 @@
+# Woodpecker CI for polyglot-atlas (Vite SPA + FastAPI, one same-origin image).
+#
+#   pull_request  → check, web-check, publish-pr
+#   push → main   → check, web-check, publish-main, deploy-dev
+#   tag v*        → check, web-check, publish-tag, deploy-prod
+#
+# Secrets (global ones registered by the homelab woodpecker-setup _wp_secrets
+# loop; per-app ids created by scripts/dokploy_bootstrap.py):
+#   registry_user / registry_token   — Gitea user + write:package token (global)
+#   dokploy_token                     — Dokploy PAT, x-api-key (global)
+#   polyglot_atlas_{dev,prod}_app_id  — Dokploy application ids (per-app)
+#
+# Migrations: the dev DB is already at head (seeded out-of-band); the runtime
+# entrypoint does a read-only drift check. Automated migrate-dev/-prod steps
+# (rw role) get added with the first post-deploy schema change.
+#
+# .github/workflows continues on origin (GitHub) until the Phase 9 cutover.
+
+when:
+  - event: [pull_request, push, tag]
+
+steps:
+  # ── Backend: lint + types + tests (no DB needed — tests are DB-free) ──
+  check:
+    image: ghcr.io/astral-sh/uv:python3.13-bookworm
+    commands:
+      - cd backend
+      - uv sync --frozen --dev
+      - uv run ruff check .
+      - uv run ruff format --check .
+      - uv run mypy
+      - uv run pytest
+
+  # ── Frontend: production build (the SPA the image will serve) ──────────
+  web-check:
+    image: node:22-alpine
+    commands:
+      - npm ci
+      - npm run build
+
+  # ── Image publishing — build the Dockerfile `runtime` target, push to
+  #    the Gitea registry at git.lab. Image ref uses the kebab slug. ──────
+  publish-pr:
+    image: woodpeckerci/plugin-docker-buildx:latest
+    settings:
+      registry: git.lab
+      repo: git.lab/nick-b/polyglot-atlas
+      dockerfile: Dockerfile
+      target: runtime
+      username:
+        from_secret: registry_user
+      password:
+        from_secret: registry_token
+      tags:
+        - "pr-${CI_COMMIT_PULL_REQUEST}-${CI_COMMIT_SHA:0:8}"
+        - "pr-${CI_COMMIT_PULL_REQUEST}-latest"
+    when:
+      - event: pull_request
+    depends_on:
+      - check
+      - web-check
+
+  publish-main:
+    image: woodpeckerci/plugin-docker-buildx:latest
+    settings:
+      registry: git.lab
+      repo: git.lab/nick-b/polyglot-atlas
+      dockerfile: Dockerfile
+      target: runtime
+      username:
+        from_secret: registry_user
+      password:
+        from_secret: registry_token
+      tags:
+        - "main-${CI_COMMIT_SHA:0:8}"
+        - "dev-latest"
+    when:
+      - event: push
+        branch: main
+    depends_on:
+      - check
+      - web-check
+
+  publish-tag:
+    image: woodpeckerci/plugin-docker-buildx:latest
+    settings:
+      registry: git.lab
+      repo: git.lab/nick-b/polyglot-atlas
+      dockerfile: Dockerfile
+      target: runtime
+      username:
+        from_secret: registry_user
+      password:
+        from_secret: registry_token
+      tags:
+        - "${CI_COMMIT_TAG}"
+        - "${CI_COMMIT_SHA:0:8}"
+        - "prod-latest"
+    when:
+      - event: tag
+    depends_on:
+      - check
+      - web-check
+
+  # ── Dokploy redeploy hooks (x-api-key auth; pulls the floating tag) ────
+  deploy-dev:
+    image: curlimages/curl:8.10.1
+    environment:
+      DOKPLOY_TOKEN:
+        from_secret: dokploy_token
+      DOKPLOY_APP_ID:
+        from_secret: polyglot_atlas_dev_app_id
+    commands:
+      - >-
+        curl -fsSL --cacert /etc/ssl/certs/ca-certificates.crt -X POST
+        -H "x-api-key: $${DOKPLOY_TOKEN}"
+        -H "Content-Type: application/json"
+        -d "{\"applicationId\":\"$${DOKPLOY_APP_ID}\"}"
+        https://dokploy.lab/api/application.deploy
+    when:
+      - event: push
+        branch: main
+    depends_on:
+      - publish-main
+
+  deploy-prod:
+    image: curlimages/curl:8.10.1
+    environment:
+      DOKPLOY_TOKEN:
+        from_secret: dokploy_token
+      DOKPLOY_APP_ID:
+        from_secret: polyglot_atlas_prod_app_id
+    commands:
+      - >-
+        curl -fsSL --cacert /etc/ssl/certs/ca-certificates.crt -X POST
+        -H "x-api-key: $${DOKPLOY_TOKEN}"
+        -H "Content-Type: application/json"
+        -d "{\"applicationId\":\"$${DOKPLOY_APP_ID}\"}"
+        https://dokploy.lab/api/application.deploy
+    when:
+      - event: tag
+    depends_on:
+      - publish-tag
