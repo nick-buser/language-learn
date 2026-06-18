@@ -38,6 +38,10 @@
 //  * @property {number} dur   length in beats
 //  * @property {string} deg   scale degree label (sol·la·do·re·mi)
 //  * @property {number} midi  MIDI note number (the synthesis truth)
+//  * @property {boolean} [spaceBefore]  this syllable opens a new word — the
+//  *                          band opens a gap before it. Set by the custom
+//  *                          bench's parser from the spaces in pasted text;
+//  *                          hand-authored songs leave it unset.
 //  *
 //  * @typedef {Object} Line
 //  * @property {string} id

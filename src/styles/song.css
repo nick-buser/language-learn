@@ -182,6 +182,12 @@
 }
 .lyric-syl.lit { transform: translateY(-3px); }
 .lyric-syl.lit .rr { color: var(--ink-soft); }
+/* word grouping — a clear gap opens before each syllable that began a new
+   word in the source, so spaceless hangul still reads as words. Only syls the
+   parser flags (the custom bench) carry word-start; hand-authored songs don't
+   set spaceBefore, so they're untouched. The base 4px column-gap stays tight
+   within a word, which throws the word breaks into relief. */
+.lyric-syl.word-start { margin-left: 18px; }
 
 /* the "now" gloss — translation + bridge of the active line */
 .lyric-now {
@@ -212,6 +218,7 @@
   .lyric-now { grid-template-columns: 1fr; gap: 6px; }
   .lyric-syl .han { font-size: 26px; }
   .lyric-line.active .lyric-syl .han { font-size: 30px; }
+  .lyric-syl.word-start { margin-left: 12px; }
 }
 
 /* =====================================================================

@@ -69,7 +69,8 @@ export default function KoreanCustom({ showReadings, showJp }) {
       </p>
       <p className="gram-sub">
         Each line becomes a line; hangul splits a character at a time, English words stay whole.
-        An approximate romanization is generated under each syllable — flip on the{' '}
+        The spaces in your paste are kept as <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>word gaps</b>,
+        so each clump still reads as a word. An approximate romanization is generated under each syllable — flip on the{' '}
         <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>readings</b>{' '}
         toggle to see it. No melody or meaning yet — just the words, the readings, and the highlights.
       </p>
