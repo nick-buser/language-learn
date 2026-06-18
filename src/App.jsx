@@ -54,6 +54,12 @@ export default function App() {
   const [route, setRoute] = useState(parseHash)
   const [showReadings, setShowReadings] = useState(true)
   const [showJp, setShowJp] = useState(true)
+  // Night is home; Daylight is the counterpart (data-theme="day" in aburaya.css).
+  const [theme, setTheme] = useState(() => {
+    if (typeof window === 'undefined') return 'night'
+    try { return window.localStorage.getItem('atlas-theme') === 'day' ? 'day' : 'night' }
+    catch { return 'night' }
+  })
 
   useEffect(() => {
     const onHash = () => setRoute(parseHash())
@@ -64,6 +70,16 @@ export default function App() {
   useEffect(() => {
     if (typeof window !== 'undefined') window.scrollTo(0, 0)
   }, [route])
+
+  // Drive the daylight skin off the document root, where the [data-theme="day"]
+  // token overrides AND the .atlas-shell grain/foxing day-variants both key off.
+  useEffect(() => {
+    if (typeof document === 'undefined') return
+    const root = document.documentElement
+    if (theme === 'day') root.setAttribute('data-theme', 'day')
+    else root.removeAttribute('data-theme')
+    try { window.localStorage.setItem('atlas-theme', theme) } catch { /* storage blocked */ }
+  }, [theme])
 
   const [langId, pageId] = route.split('/')
   const lang = LANGS.find(l => l.id === langId) || LANGS[0]
@@ -121,6 +137,19 @@ export default function App() {
                 bridge
               </span>
             )}
+            <span
+              className={'mini-toggle' + (theme === 'day' ? ' on' : '')}
+              style={{ cursor: 'pointer' }}
+              onClick={() => setTheme(t => (t === 'day' ? 'night' : 'day'))}
+              role="switch"
+              aria-checked={theme === 'day'}
+              aria-label="daylight theme"
+              title="daylight / night"
+            >
+              <span className="box"></span>
+              <span style={{ fontFamily: 'var(--font-cjk-serif)', letterSpacing: 0, marginRight: 4 }}>昼</span>
+              daylight
+            </span>
             <span style={{ fontFamily: lang.font }}>{lang.metaGlyph}</span>
           </div>
         </div>
