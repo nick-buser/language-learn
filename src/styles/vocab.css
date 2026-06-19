@@ -74,6 +74,36 @@
   background: color-mix(in srgb, var(--st) 9%, transparent);
 }
 
+/* the three-bucket headline — the learner's known / not-known / unvisited,
+   projected from the five fine states the accounts below track */
+.wb-buckets {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px 24px;
+  margin-bottom: 14px;
+  padding-bottom: 13px;
+  border-bottom: 1px solid var(--rule-soft);
+}
+.wb-bucket {
+  display: inline-flex;
+  align-items: baseline;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.wb-bucket b {
+  font-weight: 500;
+  font-size: 18px;
+  letter-spacing: 0;
+  color: var(--st);
+}
+.wb-bucket.known     { --st: var(--st-active); }
+.wb-bucket.not-known { --st: var(--signal); }
+.wb-bucket.unvisited { --st: var(--ink-faded); }
+
 /* =====================================================================
    tools — search, filter chips, the tally
    ===================================================================== */
@@ -280,6 +310,28 @@
 }
 .wb-act:hover { border-color: var(--amber); color: var(--ink); box-shadow: 0 0 14px -8px var(--amber); }
 .wb-act.know:hover { border-color: var(--st-active); box-shadow: 0 0 14px -8px var(--st-active); }
+.wb-act.flag:hover { border-color: var(--signal); color: var(--ink); box-shadow: 0 0 14px -8px var(--signal); }
+
+/* export — the bank as a portable file, the reading generator's input */
+.wb-export {
+  display: inline-block;
+  margin-top: 12px;
+  background: none;
+  border: 1px solid var(--rule);
+  padding: 5px 12px 6px;
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--ink-soft);
+  cursor: pointer;
+  transition: all var(--dur-quick) var(--ease-drift);
+}
+.wb-export:hover {
+  border-color: var(--accent);
+  color: var(--ink);
+  box-shadow: 0 0 16px -9px var(--accent);
+}
 
 /* expanded row — the fine print */
 .wb-detail {

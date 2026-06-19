@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import WordLedger from '../components/vocab/WordLedger.jsx'
 import ReviewDrawer from '../components/vocab/ReviewDrawer.jsx'
 import useVocabStore from '../components/vocab/useVocabStore.js'
+import { downloadExport } from '../components/vocab/exportVocab.js'
 import { loadVocab } from '../data/dictionary/index.js'
 
 function VocabColophon() {
@@ -45,6 +46,15 @@ export default function JapaneseVocab({ showReadings }) {
           <div className="smallcaps" style={{ marginTop: 10 }}>
             browse · file · review
           </div>
+          {data && (
+            <button
+              className="wb-export"
+              onClick={() => downloadExport('ja', data.entries, store.words)}
+              title="every word + its known/target/unseen state, as JSON — the reading generator's input"
+            >
+              export · JSON ↓
+            </button>
+          )}
         </div>
       </header>
 

@@ -11,7 +11,7 @@ import { dayKey, newSrs, schedule, KNOWN_INTERVAL } from './srs.js'
 //   {
 //     words: {
 //       [entryId]: {
-//         status:  'met' | 'learning' | 'known',   // unseen = absent
+//         status:  'met' | 'target' | 'learning' | 'known',  // unseen = absent
 //         since:   'YYYY-MM-DD',                   // when status last changed
 //         source:  'ledger' | 'review',            // which instrument set it
 //         srs:     { reps, lapses, ease, interval, due },  // once learning
@@ -21,12 +21,16 @@ import { dayKey, newSrs, schedule, KNOWN_INTERVAL } from './srs.js'
 //   }
 //
 // Status taxonomy (the plan's contract): unseen — never touched; met —
-// encountered, parked; learning — in the review queue; known — held.
+// encountered, parked; target — a deliberate known-gap ("I know I don't know
+// it"), the set the reading generator samples; learning — in the review queue;
+// known — held. The learner's three buckets project onto these: known = known,
+// not-known = target + learning, unvisited = unseen + met.
 // =====================================================================
 
 export const STATUSES = [
   { id: 'unseen',   label: 'unseen',   color: 'var(--ink-faded)', hint: 'not yet met' },
   { id: 'met',      label: 'met',      color: 'var(--st-travel)', hint: 'encountered, not yet studied' },
+  { id: 'target',   label: 'target',   color: 'var(--signal)',    hint: 'a known gap — flagged to learn, sampled by reading' },
   { id: 'learning', label: 'learning', color: 'var(--amber)',     hint: 'in the review queue' },
   { id: 'known',    label: 'known',    color: 'var(--st-active)', hint: 'held — 21 days without a lapse' },
 ]
