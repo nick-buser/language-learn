@@ -24,7 +24,7 @@ const POS_LABEL = {
 // hand entries lean on their specimen + note instead, so they skip this.
 const hasSenses = (e) => Array.isArray(e.senses) && e.senses.some(s => s.def)
 
-const STATUS_ORDER = { unseen: 0, met: 1, learning: 2, known: 3 }
+const STATUS_ORDER = { unseen: 0, met: 1, target: 2, learning: 3, known: 4 }
 
 const EUREKAS = {
   met: {
@@ -32,6 +32,13 @@ const EUREKAS = {
     body: 'The ledger files what you open: an unseen word you inspect becomes <b>met</b>, ' +
           'dated today. Nothing to do — the bank simply remembers that you’ve crossed paths, ' +
           'and every later instrument (reading, review) will read that memory.',
+  },
+  target: {
+    head: 'naming the gap',
+    body: 'A <b>target</b> is a word you <i>know</i> you don’t know — a deliberate gap, not just ' +
+          'one you’ve walked past. It’s the set the reading machine will hunt: generated passages ' +
+          'keep ~98% of their words inside your <b>known</b> holdings and spend the remaining slice ' +
+          'on your targets, so every page is aimed at what you’ve asked to learn next.',
   },
   learn: {
     head: 'the drawer below has a card now',
@@ -87,10 +94,19 @@ export default function WordLedger({ entries, lang, store, showReadings, showJp 
   }
 
   const census = useMemo(() => {
-    const c = { unseen: 0, met: 0, learning: 0, known: 0 }
+    const c = { unseen: 0, met: 0, target: 0, learning: 0, known: 0 }
     entries.forEach(e => { c[statusOf(e.id)] += 1 })
     return c
   }, [entries, statusOf])
+
+  // The learner's three buckets, projected from the five fine states:
+  // known stays itself; not-known gathers the deliberate gaps (target) and the
+  // words being closed (learning); unvisited is everything undecided.
+  const buckets = useMemo(() => ({
+    known: census.known,
+    notKnown: census.target + census.learning,
+    unvisited: census.unseen + census.met,
+  }), [census])
 
   const poses = useMemo(() => [...new Set(entries.map(e => e.pos))], [entries])
 
@@ -137,6 +153,7 @@ export default function WordLedger({ entries, lang, store, showReadings, showJp 
 
   const move = (id, status) => {
     setStatus(id, status)
+    if (status === 'target') fire('target')
     if (status === 'learning') fire('learn')
     if (status === 'known') fire('known')
   }
@@ -153,11 +170,18 @@ export default function WordLedger({ entries, lang, store, showReadings, showJp 
         Every word in the bank, joined to what the bank knows about you. Open a row to read the
         specimen and the fine print — opening an unseen word files it as <b>met</b>. From there:
         words you already own go straight to <b>known</b>; words worth drilling go to{' '}
-        <b>learning</b>, which stocks the review drawer below.
+        <b>learning</b>, which stocks the review drawer below; and a word you know you don’t know
+        yet — <b>flag</b> it as a <b>target</b>, the gap the reading machine will aim at.
       </div>
 
-      {/* census — the coverage bar and the status accounts */}
+      {/* census — the three-bucket headline, then the fine coverage bar + accounts */}
       <div className="wb-census">
+        <div className="wb-buckets" role="img"
+          aria-label={`${buckets.known} known, ${buckets.notKnown} not-known, ${buckets.unvisited} unvisited`}>
+          <span className="wb-bucket known"><b>{buckets.known}</b> known</span>
+          <span className="wb-bucket not-known"><b>{buckets.notKnown}</b> not-known</span>
+          <span className="wb-bucket unvisited"><b>{buckets.unvisited}</b> unvisited</span>
+        </div>
         <div className="wb-census-bar" role="img"
           aria-label={STATUSES.map(s => `${census[s.id]} ${s.label}`).join(', ')}>
           {STATUSES.map(s => census[s.id] > 0 && (
@@ -293,12 +317,22 @@ export default function WordLedger({ entries, lang, store, showReadings, showJp 
                 <span className="wb-actions" role="cell" onClick={ev => ev.stopPropagation()}>
                   {(status === 'unseen' || status === 'met') && (
                     <>
+                      <button className="wb-act flag" onClick={() => move(e.id, 'target')}>flag</button>
+                      <button className="wb-act" onClick={() => move(e.id, 'learning')}>learn</button>
+                      <button className="wb-act know" onClick={() => move(e.id, 'known')}>know</button>
+                    </>
+                  )}
+                  {status === 'target' && (
+                    <>
                       <button className="wb-act" onClick={() => move(e.id, 'learning')}>learn</button>
                       <button className="wb-act know" onClick={() => move(e.id, 'known')}>know</button>
                     </>
                   )}
                   {status === 'learning' && (
-                    <button className="wb-act know" onClick={() => move(e.id, 'known')}>know</button>
+                    <>
+                      <button className="wb-act flag" onClick={() => move(e.id, 'target')}>flag</button>
+                      <button className="wb-act know" onClick={() => move(e.id, 'known')}>know</button>
+                    </>
                   )}
                   {status === 'known' && (
                     <button className="wb-act" onClick={() => move(e.id, 'learning')}>relearn</button>

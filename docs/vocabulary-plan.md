@@ -55,17 +55,25 @@ conjugation classes, and the backend service itself. See `docs/dictionary.md`.*
 
 Track what the learner actually knows.
 
-- Per-word state (unseen / met / learning / known), timestamps, source of acquisition
-  (which instrument/article introduced it).
+- Per-word state (unseen / met / target / learning / known), timestamps, source of
+  acquisition (which instrument/article introduced it). **target** is the deliberate
+  known-gap — "I know I don't know it" — distinct from the passive met/learning states,
+  and the set the reading generator samples.
 - Starts as localStorage keyed to the same schema; graduates to the backend with the
   dictionary. Every later feature (reading, SRS) reads and writes this state.
 
-*Status 2026-06: piloted, interface-first, in the word bank folios (`#/ko/vocab`,
-`#/ja/vocab`). The holdings ledger (`WordLedger`) is the browsing/triage face over a
-hardcoded exemplar bank (`koreanVocab.js` / `japaneseVocab.js` — the generalized
-VocabEntry schema); `useVocabStore` holds the four-state taxonomy in localStorage
-(`atlas.<lang>.vocab.v1`). Still pending from this phase: source-of-acquisition beyond
-ledger/review (arrives with reading), backend persistence (arrives with phase 2).*
+*Status 2026-06: persisted to the backend. `useVocabStore` holds the five-state
+taxonomy (unseen / met / **target** / learning / known); the holdings ledger
+(`WordLedger`) browses + triages over the dictionary seam. When `VITE_API_URL` is set
+the homelab API is the canonical store — `GET /v1/vocab/{lang}` hydrates on mount, every
+change writes through (`PUT`/`DELETE /v1/vocab/{lang}/{slug}`), and a first run on a
+fresh backend migrates the localStorage pilot up — with localStorage kept as the offline
+cache (unset → localStorage-only, as before). `target` (the deliberate "I know I don't
+know it" gap) was added as the reading generator's sampling set; the bank is exportable
+as generator-ready JSON (`exportVocab.js` client-side + `GET /v1/vocab/{lang}/export`
+server-side — every word with its known/target/unseen state). Still pending: source-of-
+acquisition beyond ledger/review (arrives with reading); a learner-identity story (it's
+single-learner, no auth, deliberately — private/narrow-share).*
 
 ### 4. Extensive reading
 
@@ -77,6 +85,11 @@ Comprehensible input tuned to the known-vocabulary set.
 - Unknown-word taps: glossed inline from the dictionary, one tap to mark as learning.
 - Reading is also the harvest: words met in context feed the SRS queue with their sentence
   attached.
+
+*Status 2026-06: not started, but its input seam exists. The generator-ready export
+(client-side `exportVocab.js` + `GET /v1/vocab/{lang}/export`) emits every word with its
+state, so the writer can pool `known` for the ~98% coverage floor and sample the unknown
+slice heavily from `target` — the deliberate gaps the learner has flagged to learn next.*
 
 ### 5. Simple SRS
 

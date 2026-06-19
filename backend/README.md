@@ -47,6 +47,10 @@ uv run pytest
 | GET | `/readyz` | readiness (DB ping) |
 | GET | `/v1/dictionary/{lang}` | the whole dictionary — what `loadVocab(lang)` fetches |
 | GET | `/v1/dictionary/{lang}/{slug}` | one entry |
+| GET | `/v1/vocab/{lang}` | the whole per-learner state — what `useVocabStore` hydrates |
+| PUT | `/v1/vocab/{lang}/{slug}` | upsert one word's state (the SPA's write-through) |
+| DELETE | `/v1/vocab/{lang}/{slug}` | erase a word's state (the return to unseen) |
+| GET | `/v1/vocab/{lang}/export` | every word + its known/target/unseen state — the reading generator's input |
 
 The list response is the frontend `DictionaryEntry` contract verbatim (the entry
 JSON is stored in a `data` JSONB column and validated out through Pydantic), so
@@ -64,20 +68,22 @@ backend/
     db.py                   engine + session (sync)
     logging.py              structlog
     errors.py               RFC 9457 problem+json
-    models/                 SQLAlchemy 2.0 typed models (dictionary_entries)
+    models/                 SQLAlchemy 2.0 typed models (dictionary_entries, vocab_state)
     schemas/                Pydantic wire contract (camelCase ↔ snake_case)
     repositories/           SQL only
     services/               business logic
-    api/                    routers (health, dictionary)
-    alembic/                migrations (0001 initial)
+    api/                    routers (health, dictionary, vocab)
+    alembic/                migrations (0001 initial, 0002 vocab_state)
     seed/                   ko.json → Postgres
   tests/
 ```
 
 ## Roadmap (next slices)
 
-- **Vocab state** — per-learner status/SRS (`atlas.<lang>.vocab.v1` → DB), needs a
-  minimal identity story (this is private/narrow-share).
+- ~~**Vocab state**~~ — done: the `vocab_state` table + `/v1/vocab` (slice / upsert /
+  delete / export); the SPA hydrates and writes through (`atlas.<lang>.vocab.v1` is now
+  the offline cache). Single-learner, no auth yet — a minimal identity story is the
+  remaining piece before this is shared beyond one person.
 - **OpenAPI contract sharing** — commit `openapi.json`, generate the SPA's TS
   client (openapi-typescript + openapi-fetch), CI drift check.
 - **Observability** — OpenTelemetry → the homelab SigNoz; structlog trace correlation.

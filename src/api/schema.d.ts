@@ -84,6 +84,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/vocab/{lang}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Get Vocab
+         * @description The whole per-learner state for a language (what useVocabStore hydrates).
+         */
+        get: operations["get_vocab_v1_vocab__lang__get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vocab/{lang}/export": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Export Vocab
+         * @description Every word with its known/target/unseen state — the generator's input.
+         */
+        get: operations["export_vocab_v1_vocab__lang__export_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/v1/vocab/{lang}/{slug}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Put Vocab
+         * @description Upsert one word's state (the SPA's write-through).
+         */
+        put: operations["put_vocab_v1_vocab__lang___slug__put"];
+        post?: never;
+        /**
+         * Delete Vocab
+         * @description Erase a word's state — the transition back to unseen.
+         */
+        delete: operations["delete_vocab_v1_vocab__lang___slug__delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -178,6 +242,13 @@ export interface components {
             /** Kana */
             kana?: string | null;
         };
+        /** ReviewLog */
+        ReviewLog: {
+            /** Date */
+            date: string;
+            /** Grade */
+            grade: string;
+        };
         /** Sense */
         Sense: {
             /** Gloss */
@@ -189,6 +260,19 @@ export interface components {
             /** Domain */
             domain?: string | null;
             note?: components["schemas"]["Note"] | null;
+        };
+        /** Srs */
+        Srs: {
+            /** Reps */
+            reps: number;
+            /** Lapses */
+            lapses: number;
+            /** Ease */
+            ease: number;
+            /** Interval */
+            interval: number;
+            /** Due */
+            due: string;
         };
         /** ValidationError */
         ValidationError: {
@@ -202,6 +286,85 @@ export interface components {
             input?: unknown;
             /** Context */
             ctx?: Record<string, never>;
+        };
+        /**
+         * VocabExport
+         * @description The generator-ready export: every word with its known/target/unseen state.
+         *
+         *     The extensive-reading generator reads ``words``: the known pool is the ~98%
+         *     coverage floor; unknowns are sampled heavily from ``status == "target"``.
+         */
+        VocabExport: {
+            /** Lang */
+            lang: string;
+            /** Exportedat */
+            exportedAt: string;
+            /** Counts */
+            counts: {
+                [key: string]: number;
+            };
+            /** Words */
+            words: components["schemas"]["VocabExportRow"][];
+        };
+        /**
+         * VocabExportRow
+         * @description One word in the export — the dictionary projection joined to its state.
+         */
+        VocabExportRow: {
+            /** Id */
+            id: string;
+            /** Head */
+            head: string;
+            reading: components["schemas"]["Reading"];
+            /** Pos */
+            pos: string;
+            /** Origin */
+            origin: string;
+            /** En */
+            en: string;
+            /** Band */
+            band?: number | null;
+            /** Freqrank */
+            freqRank?: number | null;
+            /** Hanja */
+            hanja?: string | null;
+            /** Status */
+            status: string;
+            /** Since */
+            since?: string | null;
+            srs?: components["schemas"]["Srs"] | null;
+        };
+        /**
+         * VocabSlice
+         * @description A whole language's per-learner state — the localStorage ``words`` map.
+         */
+        VocabSlice: {
+            /** Lang */
+            lang: string;
+            /** Count */
+            count: number;
+            /** Words */
+            words: {
+                [key: string]: components["schemas"]["WordState"];
+            };
+        };
+        /**
+         * WordState
+         * @description One word's per-learner record — ``unseen`` is never stored (no record).
+         */
+        WordState: {
+            /** Status */
+            status: string;
+            /** Since */
+            since: string;
+            /**
+             * Source
+             * @default ledger
+             */
+            source: string;
+            srs?: components["schemas"]["Srs"] | null;
+            /** Log */
+            log?: components["schemas"]["ReviewLog"][] | null;
         };
     };
     responses: never;
@@ -307,6 +470,134 @@ export interface operations {
                 content: {
                     "application/json": components["schemas"]["DictionaryEntryOut"];
                 };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_vocab_v1_vocab__lang__get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lang: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VocabSlice"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    export_vocab_v1_vocab__lang__export_get: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lang: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["VocabExport"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    put_vocab_v1_vocab__lang___slug__put: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lang: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["WordState"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["WordState"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    delete_vocab_v1_vocab__lang___slug__delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                lang: string;
+                slug: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
             };
             /** @description Validation Error */
             422: {
