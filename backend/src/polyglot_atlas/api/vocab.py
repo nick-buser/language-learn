@@ -22,19 +22,21 @@ router = APIRouter(prefix="/vocab", tags=["vocab"])
 DbSession = Annotated[Session, Depends(get_db)]
 
 
-@router.get("/{lang}", response_model=VocabSlice)
+# exclude_none on the state responses so the wire omits absent srs/log keys —
+# the SPA hydrates into the exact shape localStorage keeps (no explicit nulls).
+@router.get("/{lang}", response_model=VocabSlice, response_model_exclude_none=True)
 def get_vocab(lang: str, db: DbSession) -> VocabSlice:
     """The whole per-learner state for a language (what useVocabStore hydrates)."""
     return svc.get_slice(db, lang)
 
 
-@router.get("/{lang}/export", response_model=VocabExport)
+@router.get("/{lang}/export", response_model=VocabExport, response_model_exclude_none=True)
 def export_vocab(lang: str, db: DbSession) -> VocabExport:
     """Every word with its known/target/unseen state — the generator's input."""
     return svc.export(db, lang)
 
 
-@router.put("/{lang}/{slug}", response_model=WordState)
+@router.put("/{lang}/{slug}", response_model=WordState, response_model_exclude_none=True)
 def put_vocab(lang: str, slug: str, state: WordState, db: DbSession) -> WordState:
     """Upsert one word's state (the SPA's write-through)."""
     return svc.put_word(db, lang, slug, state)
