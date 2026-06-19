@@ -86,10 +86,18 @@ Comprehensible input tuned to the known-vocabulary set.
 - Reading is also the harvest: words met in context feed the SRS queue with their sentence
   attached.
 
-*Status 2026-06: not started, but its input seam exists. The generator-ready export
-(client-side `exportVocab.js` + `GET /v1/vocab/{lang}/export`) emits every word with its
-state, so the writer can pool `known` for the ~98% coverage floor and sample the unknown
-slice heavily from `target` — the deliberate gaps the learner has flagged to learn next.*
+*Status 2026-06: the reading surface is in (`#/ko/reading`, 다독). It imports any pasted
+passage and reports **known-word coverage** against the bank — the ~98% gauge — then reads
+it with the gaps lit and each tap harvesting into vocab state (reading *is* the harvest;
+marking reuses `useVocabStore.setStatus`, already backend-persisted). Korean is resolved by a
+real morphological analyzer running **in-process** in the backend (`kiwipiepy`/Kiwi, no
+separate service): `POST /v1/reading/analyze` returns lemma + POS + offsets, and the SPA joins
+lemma → dictionary → live state client-side. Readings are a localStorage shelf
+(`atlas.ko.readings.v1`) shaped as the future `/v1/readings` + Garage contract. Still pending:
+the **generator** itself (LLM-written passages to the known set, sampling `target`) — it drops
+into this same room as another source — and harvested context sentences flowing to the SRS
+queue. The generator's input seam already exists: the export (`exportVocab.js` /
+`GET /v1/vocab/{lang}/export`) carries every word with its known/target/unseen state.*
 
 ### 5. Simple SRS
 
