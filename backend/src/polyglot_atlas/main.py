@@ -12,7 +12,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.staticfiles import StaticFiles
 
 from . import __version__
-from .api import dictionary, health
+from .api import dictionary, health, vocab
 from .config import get_settings
 from .db import engine
 from .errors import add_error_handlers
@@ -62,6 +62,7 @@ def create_app() -> FastAPI:
 
     app.include_router(health.router)
     app.include_router(dictionary.router, prefix=settings.api_v1_prefix)
+    app.include_router(vocab.router, prefix=settings.api_v1_prefix)
 
     # Same-origin SPA: serve the built frontend alongside the API when a
     # SPA dir is configured (the container sets PA_SPA_DIR). Hashed Vite

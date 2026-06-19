@@ -152,6 +152,197 @@
           }
         }
       }
+    },
+    "/v1/vocab/{lang}": {
+      "get": {
+        "tags": [
+          "vocab"
+        ],
+        "summary": "Get Vocab",
+        "description": "The whole per-learner state for a language (what useVocabStore hydrates).",
+        "operationId": "get_vocab_v1_vocab__lang__get",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lang"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VocabSlice"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/vocab/{lang}/export": {
+      "get": {
+        "tags": [
+          "vocab"
+        ],
+        "summary": "Export Vocab",
+        "description": "Every word with its known/target/unseen state — the generator's input.",
+        "operationId": "export_vocab_v1_vocab__lang__export_get",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lang"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/VocabExport"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/v1/vocab/{lang}/{slug}": {
+      "put": {
+        "tags": [
+          "vocab"
+        ],
+        "summary": "Put Vocab",
+        "description": "Upsert one word's state (the SPA's write-through).",
+        "operationId": "put_vocab_v1_vocab__lang___slug__put",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lang"
+            }
+          },
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/WordState"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/WordState"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "delete": {
+        "tags": [
+          "vocab"
+        ],
+        "summary": "Delete Vocab",
+        "description": "Erase a word's state — the transition back to unseen.",
+        "operationId": "delete_vocab_v1_vocab__lang___slug__delete",
+        "parameters": [
+          {
+            "name": "lang",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Lang"
+            }
+          },
+          {
+            "name": "slug",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Slug"
+            }
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "Successful Response"
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
@@ -486,6 +677,24 @@
         ],
         "title": "Reading"
       },
+      "ReviewLog": {
+        "properties": {
+          "date": {
+            "type": "string",
+            "title": "Date"
+          },
+          "grade": {
+            "type": "string",
+            "title": "Grade"
+          }
+        },
+        "type": "object",
+        "required": [
+          "date",
+          "grade"
+        ],
+        "title": "ReviewLog"
+      },
       "Sense": {
         "properties": {
           "gloss": {
@@ -542,6 +751,39 @@
         ],
         "title": "Sense"
       },
+      "Srs": {
+        "properties": {
+          "reps": {
+            "type": "integer",
+            "title": "Reps"
+          },
+          "lapses": {
+            "type": "integer",
+            "title": "Lapses"
+          },
+          "ease": {
+            "type": "number",
+            "title": "Ease"
+          },
+          "interval": {
+            "type": "integer",
+            "title": "Interval"
+          },
+          "due": {
+            "type": "string",
+            "title": "Due"
+          }
+        },
+        "type": "object",
+        "required": [
+          "reps",
+          "lapses",
+          "ease",
+          "interval",
+          "due"
+        ],
+        "title": "Srs"
+      },
       "ValidationError": {
         "properties": {
           "loc": {
@@ -581,6 +823,213 @@
           "type"
         ],
         "title": "ValidationError"
+      },
+      "VocabExport": {
+        "properties": {
+          "lang": {
+            "type": "string",
+            "title": "Lang"
+          },
+          "exportedAt": {
+            "type": "string",
+            "title": "Exportedat"
+          },
+          "counts": {
+            "additionalProperties": {
+              "type": "integer"
+            },
+            "type": "object",
+            "title": "Counts"
+          },
+          "words": {
+            "items": {
+              "$ref": "#/components/schemas/VocabExportRow"
+            },
+            "type": "array",
+            "title": "Words"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lang",
+          "exportedAt",
+          "counts",
+          "words"
+        ],
+        "title": "VocabExport",
+        "description": "The generator-ready export: every word with its known/target/unseen state.\n\nThe extensive-reading generator reads ``words``: the known pool is the ~98%\ncoverage floor; unknowns are sampled heavily from ``status == \"target\"``."
+      },
+      "VocabExportRow": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "head": {
+            "type": "string",
+            "title": "Head"
+          },
+          "reading": {
+            "$ref": "#/components/schemas/Reading"
+          },
+          "pos": {
+            "type": "string",
+            "title": "Pos"
+          },
+          "origin": {
+            "type": "string",
+            "title": "Origin"
+          },
+          "en": {
+            "type": "string",
+            "title": "En"
+          },
+          "band": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Band"
+          },
+          "freqRank": {
+            "anyOf": [
+              {
+                "type": "integer"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Freqrank"
+          },
+          "hanja": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Hanja"
+          },
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "since": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Since"
+          },
+          "srs": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Srs"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "head",
+          "reading",
+          "pos",
+          "origin",
+          "en",
+          "status"
+        ],
+        "title": "VocabExportRow",
+        "description": "One word in the export — the dictionary projection joined to its state."
+      },
+      "VocabSlice": {
+        "properties": {
+          "lang": {
+            "type": "string",
+            "title": "Lang"
+          },
+          "count": {
+            "type": "integer",
+            "title": "Count"
+          },
+          "words": {
+            "additionalProperties": {
+              "$ref": "#/components/schemas/WordState"
+            },
+            "type": "object",
+            "title": "Words"
+          }
+        },
+        "type": "object",
+        "required": [
+          "lang",
+          "count",
+          "words"
+        ],
+        "title": "VocabSlice",
+        "description": "A whole language's per-learner state — the localStorage ``words`` map."
+      },
+      "WordState": {
+        "properties": {
+          "status": {
+            "type": "string",
+            "title": "Status"
+          },
+          "since": {
+            "type": "string",
+            "title": "Since"
+          },
+          "source": {
+            "type": "string",
+            "title": "Source",
+            "default": "ledger"
+          },
+          "srs": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Srs"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "log": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ReviewLog"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Log"
+          }
+        },
+        "type": "object",
+        "required": [
+          "status",
+          "since"
+        ],
+        "title": "WordState",
+        "description": "One word's per-learner record — ``unseen`` is never stored (no record)."
       }
     }
   }
