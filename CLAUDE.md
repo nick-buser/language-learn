@@ -18,7 +18,10 @@ the next feature starts. Concretely:
 - Order commits so the tree builds at every step: data/components first (unreferenced files are
   fine), wiring/shell after.
 - End commit messages with `Co-Authored-By` per the harness footer convention.
-- Don't push unless asked.
+- Push branches and open PRs as part of the normal flow: when a unit is ready for review, push
+  the feature branch and open a PR into `main` on the homelab Gitea (`nick-b/polyglot-atlas`,
+  remote `gitea`; the `open-pr` skill does both). Work reaches `main` only through a PR — never
+  commit or push directly to `main`. (Merging the PR is the user's call.)
 
 ## Architecture conventions
 
