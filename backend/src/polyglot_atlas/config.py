@@ -51,6 +51,20 @@ class Settings(BaseSettings):
             return [o.strip() for o in text.split(",") if o.strip()]
         return value
 
+    @field_validator("database_url", mode="after")
+    @classmethod
+    def _ensure_psycopg_driver(cls, value: str) -> str:
+        # `labctl migrate` (and the CI migrate steps) hand a bare `postgresql://`
+        # DSN — its scheme is postgres|postgresql, no driver — while alembic and
+        # the dictionary seed both call create_engine() on this value and need
+        # psycopg3 named explicitly. Normalize so migrate, seed, and the runtime
+        # all speak psycopg3; a DSN that already names a driver (…+psycopg://) is
+        # left untouched.
+        for prefix in ("postgresql://", "postgres://"):
+            if value.startswith(prefix):
+                return "postgresql+psycopg://" + value[len(prefix) :]
+        return value
+
 
 @lru_cache
 def get_settings() -> Settings:
