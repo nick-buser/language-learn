@@ -64,7 +64,12 @@ COPY --from=python-builder /opt/venv /opt/venv
 COPY --from=python-builder /app /app
 COPY --from=web-builder /web/dist /app/web/dist
 COPY backend/scripts/docker-entrypoint.sh /usr/local/bin/docker-entrypoint.sh
-RUN chmod +x /usr/local/bin/docker-entrypoint.sh \
+COPY backend/scripts/migrate.sh /usr/local/bin/migrate.sh
+# Reference dictionary (frontend-generated) baked in so the released image can
+# seed its own DB via `labctl migrate` / the CI migrate steps. The runtime app
+# never reads it — it's loaded once, as the rw role, by migrate.sh.
+COPY src/data/dictionary/ko.json /app/seed/ko.json
+RUN chmod +x /usr/local/bin/docker-entrypoint.sh /usr/local/bin/migrate.sh \
     && chown -R app:app /app
 USER app
 EXPOSE 8000

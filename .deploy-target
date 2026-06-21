@@ -5,3 +5,16 @@ dev:
   app: polyglot-atlas-dev
 prod:
   app: polyglot-atlas-prod
+
+# How `labctl migrate --env <env>` (and the future CI migrate steps) apply schema
+# + seed: run the released image's migrate.sh as the rw/owner role. The rw DSN is
+# built from vault (polyglot_atlas_<env>_rw_db_*) and passed via `docker run -e`,
+# so the secret never hits argv or the long-running container (which is app-role).
+migrate:
+  cmd: ["sh", "/usr/local/bin/migrate.sh"]
+  db_url_env: PA_DATABASE_URL
+  contract: polyglot_atlas
+  scheme: postgresql
+  # urlencode_password left at the default (true): the password is percent-encoded
+  # and SQLAlchemy decodes it — matching the runtime DSN contract. config.py then
+  # normalizes the bare postgresql:// scheme to postgresql+psycopg:// for psycopg3.
