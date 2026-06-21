@@ -343,10 +343,81 @@
           }
         }
       }
+    },
+    "/v1/reading/analyze": {
+      "post": {
+        "tags": [
+          "reading"
+        ],
+        "summary": "Analyze",
+        "description": "Tokenize Korean text into morphemes (lemma + POS + char offsets).",
+        "operationId": "analyze_v1_reading_analyze_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/AnalyzeRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AnalyzeResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   "components": {
     "schemas": {
+      "AnalyzeRequest": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          }
+        },
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "AnalyzeRequest"
+      },
+      "AnalyzeResponse": {
+        "properties": {
+          "tokens": {
+            "items": {
+              "$ref": "#/components/schemas/MorphToken"
+            },
+            "type": "array",
+            "title": "Tokens"
+          }
+        },
+        "type": "object",
+        "required": [
+          "tokens"
+        ],
+        "title": "AnalyzeResponse"
+      },
       "Bridge": {
         "properties": {
           "kanji": {
@@ -634,6 +705,44 @@
         },
         "type": "object",
         "title": "HTTPValidationError"
+      },
+      "MorphToken": {
+        "properties": {
+          "surface": {
+            "type": "string",
+            "title": "Surface"
+          },
+          "lemma": {
+            "type": "string",
+            "title": "Lemma"
+          },
+          "pos": {
+            "type": "string",
+            "title": "Pos"
+          },
+          "content": {
+            "type": "boolean",
+            "title": "Content"
+          },
+          "start": {
+            "type": "integer",
+            "title": "Start"
+          },
+          "length": {
+            "type": "integer",
+            "title": "Length"
+          }
+        },
+        "type": "object",
+        "required": [
+          "surface",
+          "lemma",
+          "pos",
+          "content",
+          "start",
+          "length"
+        ],
+        "title": "MorphToken"
       },
       "Note": {
         "properties": {

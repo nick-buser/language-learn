@@ -148,10 +148,40 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/v1/reading/analyze": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Analyze
+         * @description Tokenize Korean text into morphemes (lemma + POS + char offsets).
+         */
+        post: operations["analyze_v1_reading_analyze_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AnalyzeRequest */
+        AnalyzeRequest: {
+            /** Text */
+            text: string;
+        };
+        /** AnalyzeResponse */
+        AnalyzeResponse: {
+            /** Tokens */
+            tokens: components["schemas"]["MorphToken"][];
+        };
         /** Bridge */
         Bridge: {
             /** Kanji */
@@ -227,6 +257,21 @@ export interface components {
         HTTPValidationError: {
             /** Detail */
             detail?: components["schemas"]["ValidationError"][];
+        };
+        /** MorphToken */
+        MorphToken: {
+            /** Surface */
+            surface: string;
+            /** Lemma */
+            lemma: string;
+            /** Pos */
+            pos: string;
+            /** Content */
+            content: boolean;
+            /** Start */
+            start: number;
+            /** Length */
+            length: number;
         };
         /** Note */
         Note: {
@@ -598,6 +643,39 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    analyze_v1_reading_analyze_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AnalyzeRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AnalyzeResponse"];
+                };
             };
             /** @description Validation Error */
             422: {

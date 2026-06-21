@@ -7,7 +7,8 @@ Postgres + Garage.
 ## Stack
 
 uv · FastAPI · Pydantic v2 (+ pydantic-settings) · **sync** SQLAlchemy 2.0
-(typed `Mapped[...]`) over psycopg3 · Alembic · structlog · Ruff + mypy `--strict`.
+(typed `Mapped[...]`) over psycopg3 · Alembic · structlog · **kiwipiepy** (in-process
+Korean morphology, loaded once) · Ruff + mypy `--strict`.
 `src/` layout split into `api` / `services` / `repositories` / `schemas` / `models`.
 Errors are RFC 9457 `application/problem+json`; the DB pool is lifespan-managed.
 
@@ -51,6 +52,7 @@ uv run pytest
 | PUT | `/v1/vocab/{lang}/{slug}` | upsert one word's state (the SPA's write-through) |
 | DELETE | `/v1/vocab/{lang}/{slug}` | erase a word's state (the return to unseen) |
 | GET | `/v1/vocab/{lang}/export` | every word + its known/target/unseen state — the reading generator's input |
+| POST | `/v1/reading/analyze` | Korean text → morpheme tokens (lemma + POS + offsets) for the reading room's coverage; stateless, in-process Kiwi |
 
 The list response is the frontend `DictionaryEntry` contract verbatim (the entry
 JSON is stored in a `data` JSONB column and validated out through Pydantic), so
@@ -71,8 +73,8 @@ backend/
     models/                 SQLAlchemy 2.0 typed models (dictionary_entries, vocab_state)
     schemas/                Pydantic wire contract (camelCase ↔ snake_case)
     repositories/           SQL only
-    services/               business logic
-    api/                    routers (health, dictionary, vocab)
+    services/               business logic (incl. morphology — the Kiwi singleton)
+    api/                    routers (health, dictionary, vocab, reading)
     alembic/                migrations (0001 initial, 0002 vocab_state)
     seed/                   ko.json → Postgres
   tests/

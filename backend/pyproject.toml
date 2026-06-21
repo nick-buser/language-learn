@@ -13,6 +13,7 @@ dependencies = [
     "pydantic>=2.10",
     "pydantic-settings>=2.7",
     "structlog>=24.4",
+    "kiwipiepy>=0.23.2",
 ]
 
 [dependency-groups]
@@ -57,6 +58,11 @@ mypy_path = "src"
 files = ["src", "tests"]
 # Alembic's generated env/versions aren't worth strict-typing.
 exclude = "(^|/)alembic/"
+
+# kiwipiepy (the Korean morphology engine) ships no type stubs.
+[[tool.mypy.overrides]]
+module = ["kiwipiepy.*"]
+ignore_missing_imports = true
 
 [tool.pydantic-mypy]
 init_forbid_extra = true
