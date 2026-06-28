@@ -210,6 +210,104 @@ export const FORGE_VERBS = [
   },
 ]
 
+// ---- negation: ない / ません, and the bridge to Korean's two no's ----
+// Japanese has one negator (ない) where Korean splits won't (안) from can't
+// (못 — which maps to the Japanese potential-negative 食べられない). The short
+// 안-form, the long -지 않다, and 못 are authored per verb (Korean negation has
+// its own placement rules — 말 안 해, not ✗안 말해); the Japanese forms derive.
+const NEG_KO = {
+  taberu: { an: '안 먹어', anRr: 'an meogeo', mot: '못 먹어', motRr: 'mot meogeo', ji: '먹지 않아', jiRr: 'meokji anha' },
+  miru: { an: '안 봐', anRr: 'an bwa', mot: '못 봐', motRr: 'mot bwa', ji: '보지 않아', jiRr: 'boji anha' },
+  iku: { an: '안 가', anRr: 'an ga', mot: '못 가', motRr: 'mot ga', ji: '가지 않아', jiRr: 'gaji anha' },
+  kaku: { an: '안 써', anRr: 'an sseo', mot: '못 써', motRr: 'mot sseo', ji: '쓰지 않아', jiRr: 'sseuji anha' },
+  nomu: { an: '안 마셔', anRr: 'an masyeo', mot: '못 마셔', motRr: 'mot masyeo', ji: '마시지 않아', jiRr: 'masiji anha' },
+  matsu: { an: '안 기다려', anRr: 'an gidaryeo', mot: '못 기다려', motRr: 'mot gidaryeo', ji: '기다리지 않아', jiRr: 'gidariji anha' },
+  hanasu: { an: '말 안 해', anRr: 'mal an hae', mot: '말 못 해', motRr: 'mal mot hae', ji: '말하지 않아', jiRr: 'malhaji anha' },
+  suru: { an: '안 해', anRr: 'an hae', mot: '못 해', motRr: 'mot hae', ji: '하지 않아', jiRr: 'haji anha' },
+  kuru: { an: '안 와', anRr: 'an wa', mot: '못 와', motRr: 'mot wa', ji: '오지 않아', jiRr: 'oji anha' },
+}
+
+export function negCells(verb) {
+  const neg = verb.forms.negative, pol = verb.forms.polite, pot = verb.forms.potential
+  const g = verb.gloss.replace('to ', '')
+  return {
+    nonpast: {
+      plain: { result: neg.result, reading: neg.reading, en: 'don’t ' + g },
+      polite: { result: pol.result.replace(/ます$/, 'ません'), reading: pol.reading.replace(/masu$/, 'masen'), en: 'don’t ' + g + ' (polite)' },
+    },
+    past: {
+      plain: { result: neg.result.replace(/ない$/, 'なかった'), reading: neg.reading.replace(/nai$/, 'nakatta'), en: 'didn’t ' + g },
+      polite: { result: pol.result.replace(/ます$/, 'ませんでした'), reading: pol.reading.replace(/masu$/, 'masen deshita'), en: 'didn’t ' + g + ' (polite)' },
+    },
+    cant: {
+      plain: { result: pot.result.replace(/る$/, 'ない'), reading: pot.reading.replace(/ru$/, 'nai'), en: 'can’t ' + g },
+      polite: { result: pot.result.replace(/る$/, 'ません'), reading: pot.reading.replace(/ru$/, 'masen'), en: 'can’t ' + g + ' (polite)' },
+    },
+    ko: NEG_KO[verb.id],
+  }
+}
+
+// ---- politeness: the lane, and the rule that only the FINAL verb carries it ----
+// A multi-clause sentence has many verbs, but politeness lands once — at the
+// very end. The medial clauses (te-form / -고 / -아서) are register-neutral;
+// toggling polite changes ONLY the final verb. This is the load-bearing fact
+// English speakers miss (they reach for "please/polite" words throughout).
+export const POLITENESS = {
+  prompt:
+    'Japanese keeps roughly two registers — plain and polite (ます/です) — where Korean keeps four. ' +
+    'But the move that matters is the same in both: in a long sentence, politeness lands exactly ' +
+    'once, on the FINAL verb. Every clause before the end stays plain. Flip the lane and watch only ' +
+    'the last word change.',
+  sentences: [
+    {
+      id: 'morning', en: 'I woke up, ate breakfast, and went to school.',
+      clauses: [
+        { jp: '朝起きて', reading: 'asa okite' },
+        { jp: '、ご飯を食べて', reading: 'gohan o tabete' },
+        { jp: '、学校に', reading: 'gakkō ni' },
+      ],
+      final: { plain: { jp: '行った', reading: 'itta' }, polite: { jp: '行きました', reading: 'ikimashita' } },
+      ko: {
+        clauses: [
+          { jp: '아침에 일어나서', reading: 'achime ireonaseo' },
+          { jp: ' 밥을 먹고', reading: 'babeul meokgo' },
+          { jp: ' 학교에', reading: 'hakgyoe' },
+        ],
+        final: { plain: { jp: ' 갔어', reading: 'gasseo' }, polite: { jp: ' 갔어요', reading: 'gasseoyo' } },
+      },
+    },
+    {
+      id: 'cafe', en: 'I drank coffee, read a book, and waited for a friend.',
+      clauses: [
+        { jp: 'コーヒーを飲んで', reading: 'kōhī o nonde' },
+        { jp: '、本を読んで', reading: 'hon o yonde' },
+        { jp: '、友達を', reading: 'tomodachi o' },
+      ],
+      final: { plain: { jp: '待った', reading: 'matta' }, polite: { jp: '待ちました', reading: 'machimashita' } },
+      ko: {
+        clauses: [
+          { jp: '커피를 마시고', reading: 'keopireul masigo' },
+          { jp: ' 책을 읽고', reading: 'chaegeul ilkgo' },
+          { jp: ' 친구를', reading: 'chingureul' },
+        ],
+        final: { plain: { jp: ' 기다렸어', reading: 'gidaryeosseo' }, polite: { jp: ' 기다렸어요', reading: 'gidaryeosseoyo' } },
+      },
+    },
+  ],
+  note:
+    'The medial verbs are in the te-form (Korean: -고 / -아서) — register-neutral connectors. They ' +
+    'never inflect for politeness; they only hand off to the next clause. Politeness is a property of ' +
+    'the sentence’s END, not of each verb.',
+  lantern: {
+    head: 'politeness lands once — at the end',
+    body: 'You toggled the register and <b>only the final verb moved</b>. Every clause before it stayed ' +
+      'plain, because te-form / -고 connectors carry no register. This is why Japanese (and Korean) feel ' +
+      'economical: you don’t re-mark politeness on every verb — you set it once, on the word that closes ' +
+      'the sentence. Korean simply runs the same rule across <b>four</b> levels instead of two — see the ' +
+      'register dial on the 동사 folio.',
+  },
+}
+
 export const FORGE_EUREKAS = {
   cls: {
     head: '活用 — class, not vowel',

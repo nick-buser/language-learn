@@ -308,3 +308,82 @@
   .cop-form { font-size: 2.6rem; }
   .cop-controls { gap: 14px; }
 }
+
+/* =====================================================================
+   NEGATION — ない / ません across tense, the bridge to 안 / 못
+   ===================================================================== */
+.neg-grid {
+  display: grid; grid-template-columns: auto 1fr 1fr; gap: 8px; margin-top: 20px;
+  align-items: stretch;
+}
+.neg-lane-h, .neg-row-h {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em;
+  color: var(--ink-faded); text-transform: uppercase; display: flex; align-items: center; gap: 6px;
+}
+.neg-lane-h { justify-content: center; padding-bottom: 4px; }
+.neg-lane-h .kr, .neg-row-h .kr { font-size: 13px; text-transform: none; letter-spacing: 0; }
+.neg-row-h { padding-right: 8px; color: var(--accent); }
+.neg-row-h.cant { color: var(--st-travel); }
+.neg-mot-tag {
+  font-family: var(--font-kr-serif); font-size: 11px; color: var(--st-travel);
+  border: 1px solid color-mix(in srgb, var(--st-travel) 50%, transparent); border-radius: 999px; padding: 1px 7px;
+}
+.neg-cell {
+  display: flex; flex-direction: column; gap: 2px; align-items: center; justify-content: center;
+  padding: 12px 10px; background: var(--paper-deep); border: 1px solid var(--rule); border-radius: var(--radius-sm);
+}
+.neg-jp { font-size: 24px; color: var(--ink); }
+.neg-rr { font-family: var(--font-mono); font-size: 11px; color: var(--accent); }
+.neg-en { font-family: var(--font-display); font-style: italic; font-size: 12px; color: var(--ink-faded); }
+
+.neg-bridge { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; }
+.neg-bridge-head { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; color: var(--ink-faded); display: flex; align-items: center; gap: 8px; }
+.neg-bridge-row {
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  padding: 11px 14px; border: 1px dotted var(--rule-soft); border-left: 2px solid var(--gilt-line);
+  background: color-mix(in srgb, var(--paper-deep) 55%, transparent);
+}
+.neg-bridge-row.cant { border-left-color: var(--st-travel); }
+.nb-jp { font-size: 21px; color: var(--ink-soft); }
+.nb-arrow { color: var(--ink-faded); }
+.nb-ko { font-size: 22px; color: var(--ink); font-weight: 500; }
+.nb-rr { font-family: var(--font-mono); font-size: 11px; color: var(--ink-faded); }
+.nb-note { font-family: var(--font-display); font-style: italic; font-size: 13px; color: var(--ink-faded); flex: 1 1 240px; }
+.nb-note .kr { font-style: normal; color: var(--ink-soft); }
+
+/* =====================================================================
+   POLITENESS — the lane, and "only the final verb carries it"
+   ===================================================================== */
+.pol-stage { display: flex; flex-direction: column; gap: 18px; }
+.pol-controls { display: flex; flex-wrap: wrap; gap: 16px; align-items: center; justify-content: space-between; }
+.pol-readout {
+  padding: 24px; background: var(--plate-bg); border: 1px solid var(--gilt-line);
+  border-radius: var(--radius-lg); box-shadow: var(--abu-card-shadow); display: flex; flex-direction: column; gap: 8px;
+}
+.pol-line { font-size: 1.7rem; line-height: 1.5; color: var(--ink-soft); }
+.pol-line.jp { font-family: var(--font-cjk-serif); }
+.pol-line.kr { font-family: var(--font-kr-serif); font-size: 1.4rem; }
+.pol-clause { color: var(--ink-faded); }
+.pol-final {
+  color: var(--accent); font-weight: 600; padding: 1px 4px; border-radius: 3px;
+  background: var(--abu-hover-wash); box-shadow: inset 0 -2px 0 var(--gilt-line);
+  animation: tl-rise var(--dur-base) var(--ease-enter);
+}
+.pol-period { color: var(--ink-faded); }
+.pol-reading { font-family: var(--font-mono); font-size: 12.5px; color: var(--ink-faded); letter-spacing: 0.03em; }
+.pol-en { font-family: var(--font-display); font-style: italic; font-size: 15px; color: var(--ink-soft); margin-top: 2px; }
+.pol-bridge {
+  margin-top: 8px; padding-top: 14px; border-top: 1px dotted var(--rule-soft);
+  display: flex; flex-direction: column; gap: 6px;
+}
+.pol-bridge-tag { font-family: var(--font-mono); font-size: 11px; color: var(--accent-deep); }
+.pol-note {
+  font-size: 14.5px; color: var(--ink-soft); line-height: 1.6;
+  padding: 13px 16px; background: var(--paper-deep); border: 1px solid var(--rule);
+  border-left: 2px solid var(--accent); border-radius: var(--radius-sm);
+}
+@media (max-width: 560px) {
+  .neg-jp { font-size: 19px; }
+  .pol-line { font-size: 1.35rem; }
+  .pol-line.kr { font-size: 1.15rem; }
+}

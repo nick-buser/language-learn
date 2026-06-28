@@ -1,5 +1,7 @@
 import React from 'react'
 import JapaneseVerbForge from '../components/japanese/JapaneseVerbForge.jsx'
+import Negation from '../components/japanese/Negation.jsx'
+import Politeness from '../components/japanese/Politeness.jsx'
 import VerbDial from '../components/VerbDial.jsx'
 
 function VerbColophon() {
@@ -63,9 +65,31 @@ export default function JapaneseVerbs({ showReadings, showJp }) {
       </div>
       <JapaneseVerbForge showReadings={showReadings} showJp={showJp} />
 
-      {/* INSTRUMENT II — voice (the verb dial, moved here from grammar) */}
+      {/* INSTRUMENT II — negation */}
       <div className="instr-head" style={{ marginTop: 56 }}>
         <div className="no">II</div>
+        <h2>Negation</h2>
+        <div className="latin">否定 (hitei) · one ない — where Korean keeps two no’s</div>
+      </div>
+      <div className="try-strip">
+        <span className="dot"></span> pick a verb — read ない/ません across tense, and watch the “can’t” row cross to 못
+      </div>
+      <Negation showReadings={showReadings} showJp={showJp} />
+
+      {/* INSTRUMENT III — politeness */}
+      <div className="instr-head" style={{ marginTop: 56 }}>
+        <div className="no">III</div>
+        <h2>Politeness</h2>
+        <div className="latin">丁寧さ (teineisa) · the lane — and it lands only once</div>
+      </div>
+      <div className="try-strip">
+        <span className="dot"></span> flip plain ⟷ polite — only the final verb moves; every clause before it stays plain
+      </div>
+      <Politeness showReadings={showReadings} showJp={showJp} />
+
+      {/* INSTRUMENT IV — voice (the verb dial, moved here from grammar) */}
+      <div className="instr-head" style={{ marginTop: 56 }}>
+        <div className="no">IV</div>
         <h2>Voice — the verb dial</h2>
         <div className="latin">態 (tai) · the same 私, four roles — passive, causative, the knot</div>
       </div>
@@ -110,21 +134,16 @@ export default function JapaneseVerbs({ showReadings, showJp }) {
           <aside className="marginalia">
             <h4>For the next plate</h4>
             <div className="note">
-              <span className="date">negation, on its own</span>
-              ない / ません across tense, in both lanes — and the Korean 안 / -지 않다 it faces, with the
-              “can’t” that maps to 못. Joining this folio next.
+              <span className="date">the constructions next door</span>
+              the te-form economy (ている / ておく / てしまう…), the four “if”s (ば / たら / と / なら), and
+              volitional + imperative (ましょう / 食べろ) live on the new <b>活用 · constructions</b> folio —
+              each given room to make its one point clear.
             </div>
             <div className="note">
-              <span className="date">politeness, explained</span>
-              plain ⟷ polite as its own instrument — and the rule that startles English speakers: in a
-              long sentence, only the <i>final</i> verb carries politeness; every clause before it stays
-              plain. Faces the Korean register dial (해요체 / 합쇼체 / 반말).
-            </div>
-            <div className="note">
-              <span className="date">the constructions — a folio of their own</span>
-              the て-form economy (ている / ておく / てしまう…), the four “if”s (ば / たら / と / なら), and
-              volitional + imperative (ましょう / 食べろ) move to the new <b>活用 · constructions</b> folio,
-              where each gets the room to make its one point clear.
+              <span className="date">Korean, catching up</span>
+              Korean already had this folio’s politeness (the register dial) and negation (안 / 못). What it
+              lacks is the <i>constructions</i> — the connective -아서 / -고, the conditional -(으)면, the
+              voice it has no instrument for yet. Those mirror over next.
             </div>
             <div className="note">
               <span className="date">adjectives conjugate too</span>
