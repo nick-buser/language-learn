@@ -99,6 +99,36 @@
   .forge-tenses.jv-forms { grid-template-columns: repeat(3, 1fr); }
 }
 
+/* the tense board — three tenses, two register lanes */
+.forge-tenses.jv-tenses { grid-template-columns: repeat(3, 1fr); }
+.lane-pair {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-top: 18px;
+}
+.vlane {
+  background: var(--paper-deep); border: 1px solid var(--rule);
+  border-top: 2px solid var(--accent); border-radius: var(--radius-sm); padding: 14px 16px 16px;
+}
+.vlane:last-child { border-top-color: var(--st-travel); }
+.vlane-head {
+  display: flex; align-items: baseline; justify-content: space-between; gap: 8px;
+  padding-bottom: 10px; margin-bottom: 4px; border-bottom: 1px dotted var(--rule-soft);
+}
+.vl-reg { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--accent); }
+.vlane:last-child .vl-reg { color: var(--st-travel); }
+.vl-kr { font-size: 14px; color: var(--ink-faded); }
+.vlane .forge-eq { margin-top: 4px; }
+.vlane .fq-result { font-size: 30px; }
+.vlane .fq-line { flex-wrap: wrap; }
+.lane-note {
+  margin-top: 14px; font-family: var(--font-display); font-style: italic;
+  font-size: 13.5px; color: var(--ink-faded); line-height: 1.55;
+}
+.lane-note b { color: var(--accent); font-style: normal; font-weight: 600; }
+@media (max-width: 640px) {
+  .lane-pair { grid-template-columns: 1fr; }
+  .vlane .fq-result { font-size: 26px; }
+}
+
 /* the class fork — wider trigger column than the Korean vowel fork,
    and CJK glyphs in the condition (する・来る, -iる) */
 .forge-stage.ja .ff-branch {

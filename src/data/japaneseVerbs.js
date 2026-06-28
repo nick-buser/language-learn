@@ -48,6 +48,59 @@ export const JV_FORMS = [
   { id: 'potential', label: 'potential', jp: '〜(ら)れる' },
 ]
 
+// ---- the tense board: tense × plain|polite lanes ----
+// Politeness is NOT a form alongside negation/past — it's an orthogonal axis,
+// so the forge shows TENSE down the side and the plain | polite lanes across.
+// The two lanes do real teaching: the plain past uses 音便 (飲んだ) while the
+// polite past uses the clean 連用形 (飲みました) — the contrast is right there.
+export const JV_TENSES = [
+  { id: 'nonpast', label: 'non-past', jp: '〜る / ます', hint: 'now · habitual · future' },
+  { id: 'past', label: 'past', jp: '〜た / ました', hint: 'did' },
+  { id: 'prog', label: 'progressive', jp: '〜ている', hint: 'is —ing · ongoing state' },
+]
+
+// Progressive (〜ている) Korean twins + English gerunds — the one bit not
+// derivable from the existing forms, keyed by verb id.
+const PROG = {
+  taberu: { ger: 'eating', ko: '먹고 있어', koRr: 'meokgo isseo' },
+  miru: { ger: 'watching', ko: '보고 있어', koRr: 'bogo isseo' },
+  iku: { ger: 'going', ko: '가고 있어', koRr: 'gago isseo' },
+  kaku: { ger: 'writing', ko: '쓰고 있어', koRr: 'sseugo isseo' },
+  nomu: { ger: 'drinking', ko: '마시고 있어', koRr: 'masigo isseo' },
+  matsu: { ger: 'waiting', ko: '기다리고 있어', koRr: 'gidarigo isseo' },
+  hanasu: { ger: 'speaking', ko: '말하고 있어', koRr: 'malhago isseo' },
+  suru: { ger: 'doing', ko: '하고 있어', koRr: 'hago isseo' },
+  kuru: { ger: 'coming', ko: '오고 있어', koRr: 'ogo isseo' },
+}
+
+const stripYo = s => s.replace(/요$/, '')
+const stripYoRr = s => s.replace(/yo$/, '')
+
+// Derive the six tense-lane cells from a verb's existing hand-checked forms:
+//   nonpast/plain = the dictionary form;  nonpast/polite = the ます form
+//   past/plain    = the 音便 past (た);    past/polite    = 連用形 + ました
+//   prog          = te-form + いる / います
+// Korean: plain lane = 반말 (먹어), polite lane = 해요체 (먹어요).
+export function tenseCells(verb) {
+  const p = verb.forms.polite, pa = verb.forms.past, te = verb.forms.te
+  const prog = PROG[verb.id]
+  const dictTail = verb.jp.slice(verb.stem.length)
+  return {
+    nonpast: {
+      plain: { pieces: [{ t: verb.stem, c: 'stem' }, { t: dictTail, c: 'tail' }], result: verb.jp, reading: verb.reading, en: verb.gloss.replace('to ', ''), ko: stripYo(p.ko), koRr: stripYoRr(p.koRr) },
+      polite: { pieces: p.pieces, result: p.result, reading: p.reading, en: p.en, ko: p.ko, koRr: p.koRr },
+    },
+    past: {
+      plain: { pieces: pa.pieces, result: pa.result, reading: pa.reading, en: pa.en, ko: pa.ko, koRr: pa.koRr },
+      polite: { pieces: p.pieces.map((x, i) => i === p.pieces.length - 1 ? { ...x, t: 'ました' } : x), result: p.result.replace(/ます$/, 'ました'), reading: p.reading.replace(/masu$/, 'mashita'), en: pa.en + ' (polite)', ko: pa.ko + '요', koRr: pa.koRr + 'yo' },
+    },
+    prog: {
+      plain: { pieces: [...te.pieces, { t: 'いる', c: 'tail' }], result: te.result + 'いる', reading: te.reading + ' iru', en: 'is ' + prog.ger, ko: prog.ko, koRr: prog.koRr },
+      polite: { pieces: [...te.pieces, { t: 'います', c: 'tail' }], result: te.result + 'います', reading: te.reading + ' imasu', en: 'is ' + prog.ger + ' (polite)', ko: prog.ko + '요', koRr: prog.koRr + 'yo' },
+    },
+  }
+}
+
 // onbin: true for godan verbs whose past/te-form takes a sound change
 // (く→い, む→ん, つ→っ…). 話す (す→し) is the sibilant exception: false.
 export const FORGE_VERBS = [

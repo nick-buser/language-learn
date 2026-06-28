@@ -1,27 +1,29 @@
 import React, { useState, useRef } from 'react'
-import { FORGE_VERBS, JV_CLASSES, JV_FORMS, FORGE_EUREKAS } from '../../data/japaneseVerbs.js'
+import { FORGE_VERBS, JV_CLASSES, JV_TENSES, tenseCells, FORGE_EUREKAS } from '../../data/japaneseVerbs.js'
 
-// The Japanese mirror of the Korean verb forge. The fork is the verb
-// CLASS (一段 / 五段 / 不規則), and the gold syllable in the equation is
-// the class-driven stem shift. `showJp` here means "show the Korean
-// twin" — the reverse bridge, for the Korean learner.
+// The verb forge — class fork on the left, TENSE down the right, and the
+// plain | polite lanes across. Politeness is its own axis (its own instrument
+// below), so it comes out of the form list: here you read tense in both
+// registers at once. The lanes do real work — the plain past carries 音便
+// (飲んだ) while the polite past keeps the clean 連用形 (飲みました).
 export default function JapaneseVerbForge({ showReadings, showJp }) {
   const [verbId, setVerbId] = useState(FORGE_VERBS[0].id)
-  const [formId, setFormId] = useState('polite')
+  const [tenseId, setTenseId] = useState('nonpast')
   const [eureka, setEureka] = useState(null)
 
-  const seenIchidan = useRef(true) // 食べる ships selected — counts as seen
+  const seenIchidan = useRef(true)
   const seenGodan = useRef(false)
   const classShown = useRef(false)
   const onbinShown = useRef(false)
   const irregularShown = useRef(false)
 
   const verb = FORGE_VERBS.find(v => v.id === verbId)
-  const form = verb.forms[formId]
   const cls = JV_CLASSES.find(c => c.id === verb.cls)
+  const cells = tenseCells(verb)
+  const tense = cells[tenseId]
 
-  const maybeOnbin = (v, f) => {
-    if (v.cls === 'godan' && v.onbin && (f === 'past' || f === 'te') && !onbinShown.current) {
+  const maybeOnbin = (v, t) => {
+    if (v.cls === 'godan' && v.onbin && t === 'past' && !onbinShown.current) {
       onbinShown.current = true
       setEureka(FORGE_EUREKAS.onbin)
       return true
@@ -38,36 +40,56 @@ export default function JapaneseVerbForge({ showReadings, showJp }) {
       setEureka(FORGE_EUREKAS.irregular)
       return
     }
-    if (maybeOnbin(v, formId)) return
+    if (maybeOnbin(v, tenseId)) return
     if (seenIchidan.current && seenGodan.current && !classShown.current) {
       classShown.current = true
       setEureka(FORGE_EUREKAS.cls)
     }
   }
 
-  const pickForm = (f) => {
-    setFormId(f)
-    maybeOnbin(verb, f)
-  }
+  const pickTense = (t) => { setTenseId(t); maybeOnbin(verb, t) }
+
+  const Lane = ({ cell, label, kr }) => (
+    <div className="vlane">
+      <div className="vlane-head"><span className="vl-reg">{label}</span><span className="vl-kr kr">{kr}</span></div>
+      <div className="forge-eq" key={verbId + '-' + tenseId + '-' + label}>
+        <div className="fq-line">
+          {cell.pieces.map((p, i) => (
+            <React.Fragment key={i}>
+              {i > 0 && <span className="fq-plus">+</span>}
+              <span className={'fq-piece jp ' + p.c}>{p.t}</span>
+            </React.Fragment>
+          ))}
+          <span className="fq-eqsign">=</span>
+          <span className="fq-result jp">{cell.result}</span>
+        </div>
+        <div className="fq-readout">
+          {showReadings && <span className="fq-rr">{cell.reading}</span>}
+          <span className="fq-en">{cell.en}</span>
+        </div>
+        {showJp && (
+          <div className="fq-ko">
+            <span className="kr">{cell.ko}</span>
+            {showReadings && <span className="fq-ko-rr">{cell.koRr}</span>}
+          </div>
+        )}
+      </div>
+    </div>
+  )
 
   return (
     <div className="forge-stage ja" data-screen-label="Japanese verb forge">
       <div className="loom-prompt" style={{ marginTop: 0 }}>
-        You sorted these verbs years ago — into る-verbs, う-verbs, the two outlaws. Here that sort
-        is the whole machine:{' '}
-        <b style={{ color: 'var(--accent)', fontStyle: 'normal' }}>what class is the verb?</b>{' '}
-        decides how the stem shifts. Pick a verb, pull a form — and watch the bridge: Korean answers a
-        different question (the stem’s last <i>vowel</i>) and needs no classes at all.
+        The class decides how the stem shifts; <b style={{ color: 'var(--accent)', fontStyle: 'normal' }}>tense</b>{' '}
+        decides the ending. Politeness is a third thing entirely — so it’s pulled out as the two{' '}
+        <b style={{ color: 'var(--accent)', fontStyle: 'normal' }}>lanes</b>, plain and polite, read side by
+        side. Pick a verb, pull a tense, and watch the past split: plain takes 音便, polite keeps the clean 連用形.
       </div>
 
       <div className="specimen-row">
         <span className="lbl">Verb</span>
         {FORGE_VERBS.map(v => (
-          <button
-            key={v.id}
-            className={'specimen-chip' + (v.id === verbId ? ' active' : '')}
-            onClick={() => pickVerb(v)}
-          >
+          <button key={v.id} className={'specimen-chip' + (v.id === verbId ? ' active' : '')} onClick={() => pickVerb(v)}>
             <span className="jp">{v.jp}</span>{v.gloss.replace('to ', '')}
             {v.cls === 'irregular' && <span className="chip-irr">不規則</span>}
           </button>
@@ -75,7 +97,7 @@ export default function JapaneseVerbForge({ showReadings, showJp }) {
       </div>
 
       <div className="forge-body">
-        {/* Left — the decision */}
+        {/* Left — the class decision */}
         <div className="forge-left">
           <div className="forge-stem-card">
             <div className="fs-head">the dictionary form</div>
@@ -85,10 +107,7 @@ export default function JapaneseVerbForge({ showReadings, showJp }) {
                 {showReadings && <span className="fs-rr">{verb.reading}</span>}
                 <span className="fs-gloss">{verb.gloss}</span>
                 {showJp && (
-                  <span className="fs-ko">
-                    <span className="kr">{verb.ko}</span>
-                    {showReadings && <span className="fs-ko-rr">{verb.koRr}</span>}
-                  </span>
+                  <span className="fs-ko"><span className="kr">{verb.ko}</span>{showReadings && <span className="fs-ko-rr">{verb.koRr}</span>}</span>
                 )}
               </span>
             </div>
@@ -111,45 +130,28 @@ export default function JapaneseVerbForge({ showReadings, showJp }) {
           </div>
         </div>
 
-        {/* Right — the assembly */}
+        {/* Right — tense selector + the two lanes */}
         <div className="forge-right">
-          <div className="forge-tenses jv-forms" role="tablist" aria-label="form">
-            {JV_FORMS.map(f => (
-              <button
-                key={f.id}
-                role="tab"
-                aria-selected={f.id === formId}
-                className={'forge-tense' + (f.id === formId ? ' active' : '')}
-                onClick={() => pickForm(f.id)}
-              >
-                <span className="ft-en">{f.label}</span>
-                <span className="ft-kr jp">{f.jp}</span>
+          <div className="forge-tenses jv-tenses" role="tablist" aria-label="tense">
+            {JV_TENSES.map(t => (
+              <button key={t.id} role="tab" aria-selected={t.id === tenseId}
+                className={'forge-tense' + (t.id === tenseId ? ' active' : '')} onClick={() => pickTense(t.id)}>
+                <span className="ft-en">{t.label}</span>
+                <span className="ft-kr jp">{t.jp}</span>
               </button>
             ))}
           </div>
 
-          <div className="forge-eq" key={verbId + '-' + formId}>
-            <div className="fq-line">
-              {form.pieces.map((p, i) => (
-                <React.Fragment key={i}>
-                  {i > 0 && <span className="fq-plus">+</span>}
-                  <span className={'fq-piece jp ' + p.c}>{p.t}</span>
-                </React.Fragment>
-              ))}
-              <span className="fq-eqsign">=</span>
-              <span className="fq-result jp">{form.result}</span>
-            </div>
-            <div className="fq-readout">
-              {showReadings && <span className="fq-rr">{form.reading}</span>}
-              <span className="fq-en">{form.en}</span>
-            </div>
-            {showJp && (
-              <div className="fq-ko">
-                <span className="kr">{form.ko}</span>
-                {showReadings && <span className="fq-ko-rr">{form.koRr}</span>}
-              </div>
-            )}
-            <div className="fq-fuse" dangerouslySetInnerHTML={{ __html: form.fuse }} />
+          <div className="lane-pair">
+            <Lane cell={tense.plain} label="plain" kr="반말" />
+            <Lane cell={tense.polite} label="polite" kr="해요체" />
+          </div>
+          <div className="lane-note">
+            {tenseId === 'past'
+              ? <>The split to watch: <b>plain</b> past takes 音便 (the euphonic stem-morph), <b>polite</b> past keeps the clean 連用形 stem + ました.</>
+              : tenseId === 'prog'
+                ? <>〜ている is the same te-form + いる/います — Korean’s -고 있다 agrees here exactly (먹고 있어 / 먹고 있어요).</>
+                : <>Non-past covers now, habit, and future alike. Plain is the bare dictionary form; polite adds 連用形 + ます.</>}
           </div>
         </div>
       </div>

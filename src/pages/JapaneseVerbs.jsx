@@ -1,5 +1,6 @@
 import React from 'react'
 import JapaneseVerbForge from '../components/japanese/JapaneseVerbForge.jsx'
+import VerbDial from '../components/VerbDial.jsx'
 
 function VerbColophon() {
   return (
@@ -55,12 +56,29 @@ export default function JapaneseVerbs({ showReadings, showJp }) {
       <div className="instr-head">
         <div className="no">I</div>
         <h2>The forge</h2>
-        <div className="latin">活用 (katsuyō) · conjugation — the class decides the shift</div>
+        <div className="latin">活用 (katsuyō) · tense by class — and politeness pulled out as a lane</div>
       </div>
       <div className="try-strip">
-        <span className="dot"></span> pick a verb, pull a form — watch the stem shift, and the bridge cross
+        <span className="dot"></span> pick a verb, pull a tense — read plain and polite side by side, and watch the past split into 音便 vs 連用形
       </div>
       <JapaneseVerbForge showReadings={showReadings} showJp={showJp} />
+
+      {/* INSTRUMENT II — voice (the verb dial, moved here from grammar) */}
+      <div className="instr-head" style={{ marginTop: 56 }}>
+        <div className="no">II</div>
+        <h2>Voice — the verb dial</h2>
+        <div className="latin">態 (tai) · the same 私, four roles — passive, causative, the knot</div>
+      </div>
+      <p className="gram-sub" style={{ marginBottom: 0 }}>
+        Voice is a verb’s business, so the dial lives here now. The causative-passive — 〜させられる — is
+        the form that tangles fluent speakers mid-sentence; it untangles the moment you stop translating
+        and watch where{' '}
+        <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>私</b> stands.
+      </p>
+      <div className="try-strip">
+        <span className="dot"></span> turn the dial left to right — follow 私
+      </div>
+      <VerbDial />
 
       {/* Closing marginalia */}
       <section className="plate" style={{ marginTop: 64 }}>
@@ -92,23 +110,25 @@ export default function JapaneseVerbs({ showReadings, showJp }) {
           <aside className="marginalia">
             <h4>For the next plate</h4>
             <div className="note">
-              <span className="date">politeness, as a dial</span>
-              ます / です against plain だ — and the Korean register dial it faces (해요체 / 합쇼체 /
-              반말). Two levels here, four there: the gap subtitles flatten.
+              <span className="date">negation, on its own</span>
+              ない / ません across tense, in both lanes — and the Korean 안 / -지 않다 it faces, with the
+              “can’t” that maps to 못. Joining this folio next.
             </div>
             <div className="note">
-              <span className="date">the て-form economy</span>
-              て + いる / ある / おく / しまう / みる — what an action leaves behind, and where Korean’s
-              -고 있다 / -아 있다 agree and where they split.
+              <span className="date">politeness, explained</span>
+              plain ⟷ polite as its own instrument — and the rule that startles English speakers: in a
+              long sentence, only the <i>final</i> verb carries politeness; every clause before it stays
+              plain. Faces the Korean register dial (해요체 / 합쇼체 / 반말).
             </div>
             <div className="note">
-              <span className="date">voice — delivered</span>
-              passive, causative, the causative-passive knot: already a working dial on the{' '}
-              <b>文法 · grammar engine</b> folio. The verb dial that tracks 私.
+              <span className="date">the constructions — a folio of their own</span>
+              the て-form economy (ている / ておく / てしまう…), the four “if”s (ば / たら / と / なら), and
+              volitional + imperative (ましょう / 食べろ) move to the new <b>活用 · constructions</b> folio,
+              where each gets the room to make its one point clear.
             </div>
             <div className="note">
               <span className="date">adjectives conjugate too</span>
-              い-adjectives carry their own tense like quasi-verbs (高かった); see the new{' '}
+              い-adjectives carry their own tense like quasi-verbs (高かった); see the{' '}
               <b>形容詞 · adjectives</b> folio — where Korean stops splitting and merges them back into
               verbs entirely.
             </div>
