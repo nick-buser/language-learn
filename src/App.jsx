@@ -3,6 +3,7 @@ import JapaneseGrammar from './pages/JapaneseGrammar.jsx'
 import KoreanHangul from './pages/KoreanHangul.jsx'
 import KoreanGrammar from './pages/KoreanGrammar.jsx'
 import KoreanVerbs from './pages/KoreanVerbs.jsx'
+import KoreanForms from './pages/KoreanForms.jsx'
 import KoreanParticles from './pages/KoreanParticles.jsx'
 import KoreanCognates from './pages/KoreanCognates.jsx'
 import KoreanVocab from './pages/KoreanVocab.jsx'
@@ -38,6 +39,7 @@ const LANGS = [
       { id: 'hangul',    glyph: '한글', label: 'hangul forge',     component: KoreanHangul },
       { id: 'grammar',   glyph: '문법', label: 'grammar engine',   component: KoreanGrammar },
       { id: 'verbs',     glyph: '동사', label: 'verb forge',       component: KoreanVerbs },
+      { id: 'forms',     glyph: '활용', label: 'constructions',    component: KoreanForms },
       { id: 'particles', glyph: '조사', label: 'particle cabinet', component: KoreanParticles },
       { id: 'cognates',  glyph: '한자어', label: 'cognate bridge',  component: KoreanCognates },
       { id: 'vocab',     glyph: '어휘', label: 'word bank',        component: KoreanVocab },
