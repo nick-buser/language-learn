@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import JapaneseGrammar from './pages/JapaneseGrammar.jsx'
+import KoreanHangul from './pages/KoreanHangul.jsx'
 import KoreanGrammar from './pages/KoreanGrammar.jsx'
 import KoreanVerbs from './pages/KoreanVerbs.jsx'
 import KoreanParticles from './pages/KoreanParticles.jsx'
@@ -33,6 +34,7 @@ const LANGS = [
   {
     id: 'ko', glyph: '한국어', name: 'Korean', metaGlyph: '문법', font: 'var(--font-kr-serif)',
     pages: [
+      { id: 'hangul',    glyph: '한글', label: 'hangul forge',     component: KoreanHangul },
       { id: 'grammar',   glyph: '문법', label: 'grammar engine',   component: KoreanGrammar },
       { id: 'verbs',     glyph: '동사', label: 'verb forge',       component: KoreanVerbs },
       { id: 'particles', glyph: '조사', label: 'particle cabinet', component: KoreanParticles },
