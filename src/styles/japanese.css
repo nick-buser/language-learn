@@ -435,3 +435,84 @@
   .te-form-jp { font-size: 2rem; }
   .te-head .fq-result { font-size: 25px; }
 }
+
+/* =====================================================================
+   THE CONDITIONAL — four "if"s (活用 folio)
+   ===================================================================== */
+.cond-strip { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; margin-top: 20px; }
+.cond-chip {
+  display: flex; flex-direction: column; gap: 4px; align-items: center; padding: 12px 8px;
+  background: var(--paper-deep); border: 1px solid var(--rule); border-radius: var(--radius-sm);
+  cursor: pointer; transition: all var(--dur-quick) var(--ease-drift);
+}
+.cond-chip:hover { border-color: var(--accent-deep); background: var(--abu-hover-wash); }
+.cond-chip.active { border-color: var(--accent); box-shadow: 0 0 16px -7px rgba(242,166,90,0.4); }
+.cond-form { font-size: 22px; color: var(--ink); }
+.cond-chip.active .cond-form { color: var(--accent); }
+.cond-niche { font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.04em; color: var(--ink-faded); text-align: center; text-transform: uppercase; }
+
+.cond-detail {
+  margin-top: 14px; padding: 20px 22px; background: var(--plate-bg);
+  border: 1px solid var(--gilt-line); border-radius: var(--radius-lg); box-shadow: var(--abu-card-shadow);
+  display: flex; flex-direction: column; gap: 12px; animation: tl-rise var(--dur-base) var(--ease-enter);
+}
+.cond-d-head { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.cond-d-form { font-size: 2rem; color: var(--ink); }
+.cond-d-rr { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+.cond-d-niche { font-family: var(--font-display); font-style: italic; font-size: 14px; color: var(--ink-soft); }
+.cond-use { font-size: 15px; color: var(--ink-soft); line-height: 1.6; }
+.cond-ex {
+  display: flex; flex-direction: column; gap: 3px; padding: 12px 15px;
+  background: var(--paper-deep); border-left: 2px solid var(--accent); border-radius: var(--radius-sm);
+}
+.cond-ex .jp { font-size: 18px; color: var(--ink); }
+.cond-ex-rr { font-family: var(--font-mono); font-size: 11.5px; color: var(--ink-faded); }
+.cond-ex-en { font-family: var(--font-display); font-style: italic; font-size: 14px; color: var(--ink-soft); }
+.cond-bridge {
+  display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  padding: 10px 14px; border: 1px dotted var(--rule-soft); border-left: 2px solid var(--gilt-line);
+  background: color-mix(in srgb, var(--paper-deep) 55%, transparent);
+}
+.cond-bridge-pat { font-size: 18px; color: var(--ink); font-weight: 500; }
+.cond-bridge-note { font-family: var(--font-display); font-style: italic; font-size: 13px; color: var(--ink-faded); flex: 1 1 200px; }
+
+/* =====================================================================
+   VOLITIONAL & IMPERATIVE — proposing and commanding
+   ===================================================================== */
+.vi-section { margin-top: 22px; }
+.vi-sec-head {
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.08em; color: var(--accent);
+  padding-bottom: 8px; margin-bottom: 12px; border-bottom: 1px dotted var(--rule-soft);
+}
+.vi-cell { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.vi-jp { font-size: 30px; color: var(--ink); }
+.vi-rr { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+.vi-ko { display: flex; align-items: baseline; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+.vi-ko .kr { font-size: 18px; color: var(--ink-soft); }
+.vi-ko-rr { font-family: var(--font-mono); font-size: 10.5px; color: var(--ink-faded); }
+.vi-ko-pat { font-family: var(--font-mono); font-size: 11px; color: var(--accent-deep); }
+.vi-ko-pat::before { content: "한 "; font-family: var(--font-kr-serif); }
+
+.imp-ladder { display: flex; flex-direction: column; gap: 8px; }
+.imp-rung {
+  padding: 13px 16px; background: var(--paper-deep); border: 1px solid var(--rule);
+  border-left: 3px solid var(--rule); border-radius: var(--radius-sm); display: flex; flex-direction: column; gap: 5px;
+}
+.imp-rung[data-level="0"] { border-left-color: var(--signal); }
+.imp-rung[data-level="1"] { border-left-color: var(--amber); }
+.imp-rung[data-level="2"] { border-left-color: var(--st-active); }
+.imp-rung[data-level="3"] { border-left-color: var(--signal-lit); }
+.imp-top { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; }
+.imp-form { font-size: 24px; color: var(--ink); }
+.imp-rr { font-family: var(--font-mono); font-size: 11.5px; color: var(--accent); }
+.imp-label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; color: var(--ink-faded); margin-left: auto; display: flex; align-items: baseline; gap: 6px; }
+.imp-jp { font-size: 14px; color: var(--ink-soft); text-transform: none; letter-spacing: 0; }
+.imp-note { font-size: 13.5px; color: var(--ink-soft); line-height: 1.5; }
+.imp-ko { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.imp-ko .kr { font-size: 16px; color: var(--ink-soft); }
+
+@media (max-width: 600px) {
+  .cond-strip { grid-template-columns: repeat(2, 1fr); }
+  .vi-jp { font-size: 25px; }
+  .imp-label { margin-left: 0; }
+}
