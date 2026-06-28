@@ -925,3 +925,82 @@
   .fq-result { font-size: 33px; }
   .rf-sentence { font-size: 26px; }
 }
+
+/* =====================================================================
+   활용 · CONSTRUCTIONS folio — Korean-side overrides on the shared
+   te-/cond-/vi-/imp- instrument classes (defined in japanese.css), plus
+   the connective's two-stem head and the conditional's buffer head.
+   The bridge here points the other way (日 not 한): Korean headword,
+   Japanese twin.
+   ===================================================================== */
+
+/* the 日本語 bridge tag (cop-bridge-tag is KR-serif on the JP folio) */
+.cop-bridge-tag.jp-tag { font-family: var(--font-cjk-serif); }
+
+/* --- connective: the rack chips + assembled card (Korean script) --- */
+.te-form-kr { font-size: 2.6rem; color: var(--ink); }
+.te-chip .kr { font-size: 15px; color: var(--ink-soft); }
+.te-chip:hover .kr { color: var(--ink); }
+.te-chip.active .kr { color: var(--accent); }
+.conn-bridge-gloss { font-family: var(--font-display); font-style: italic; font-size: 13px; color: var(--ink-faded); }
+
+/* --- connective: the two stems, built from the forge --- */
+.conn-stems { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 20px; }
+.conn-stem {
+  padding: 16px 18px; background: var(--plate-bg); border: 1px solid var(--rule);
+  border-radius: var(--radius-sm); display: flex; flex-direction: column; gap: 4px;
+}
+.conn-stem.go { border-left: 2px solid var(--st-active); }
+.conn-stem.a { border-left: 2px solid var(--accent); }
+.conn-stem-lbl { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faded); }
+.conn-stem-form { font-size: 30px; color: var(--ink); }
+.conn-stem-rr { font-family: var(--font-mono); font-size: 12px; color: var(--accent); }
+.conn-stem-role { font-size: 12.5px; color: var(--ink-soft); line-height: 1.5; }
+.conn-stem-role b { color: var(--ink); font-weight: 600; }
+.conn-stem-harm { font-family: var(--font-mono); font-size: 10.5px; color: var(--accent-deep); margin-top: 2px; }
+
+/* --- connective: the minimal pair + the trap --- */
+.conn-contrast { margin-top: 20px; display: flex; flex-direction: column; gap: 10px; }
+.conn-contrast-head { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.07em; color: var(--accent); }
+.conn-pair { display: flex; flex-direction: column; gap: 6px; }
+.conn-pair-row {
+  display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap;
+  padding: 10px 14px; background: var(--paper-deep); border: 1px solid var(--rule);
+  border-left: 2px solid var(--rule); border-radius: var(--radius-sm);
+}
+.conn-pair-row.go { border-left-color: var(--st-active); }
+.conn-pair-row.seo { border-left-color: var(--accent); }
+.conn-pair-row.cause { border-left-color: var(--accent-deep); }
+.conn-pair-row .kr { font-size: 18px; color: var(--ink); }
+.conn-pair-rr { font-family: var(--font-mono); font-size: 11px; color: var(--ink-faded); }
+.conn-pair-en { font-family: var(--font-display); font-style: italic; font-size: 13.5px; color: var(--ink-soft); }
+.conn-pair-note { font-size: 12.5px; color: var(--ink-faded); flex: 1 1 180px; }
+.conn-trap {
+  padding: 13px 16px; background: var(--paper-deep); border: 1px solid var(--rule);
+  border-left: 2px solid var(--signal); border-radius: var(--radius-sm);
+  display: flex; flex-direction: column; gap: 5px;
+}
+.conn-trap-head { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.05em; color: var(--signal-lit); }
+.conn-trap-body { font-size: 13.5px; color: var(--ink-soft); line-height: 1.6; }
+.conn-trap-body .kr { color: var(--ink); font-style: normal; }
+
+/* --- conditional: the -(으)면 buffer head + Korean example --- */
+.cond-head {
+  margin-top: 20px; padding: 16px 20px; background: var(--plate-bg);
+  border: 1px solid var(--rule); border-left: 2px solid var(--accent); border-radius: var(--radius-sm);
+  display: flex; flex-direction: column; gap: 8px;
+}
+.cond-head-lbl { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faded); }
+.cond-head-eq { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; }
+.cond-head-eq .fq-result { font-size: 30px; }
+.cond-head-rr { font-family: var(--font-mono); font-size: 12px; color: var(--accent); margin-left: 4px; }
+.cond-head-note { font-family: var(--font-display); font-style: italic; font-size: 13px; color: var(--ink-faded); }
+.cond-head-irr { font-style: normal; font-family: var(--font-mono); font-size: 11px; color: var(--st-travel); }
+.cond-stage .cond-form { font-size: 15px; line-height: 1.3; }
+.cond-ex .kr { font-size: 18px; color: var(--ink); }
+
+@media (max-width: 560px) {
+  .te-form-kr { font-size: 2rem; }
+  .conn-stems { grid-template-columns: 1fr; }
+  .cond-head-eq .fq-result { font-size: 25px; }
+}
