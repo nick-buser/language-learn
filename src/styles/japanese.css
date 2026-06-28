@@ -202,3 +202,79 @@
 @media (max-width: 720px) {
   .adj-col .fq-result { font-size: 27px; }
 }
+
+/* =====================================================================
+   THE COPULA DIVE — だ・です stacking (grammar folio, instrument II)
+   ===================================================================== */
+.copula-stage { display: flex; flex-direction: column; gap: 18px; }
+
+.cop-controls { display: flex; flex-wrap: wrap; gap: 22px; }
+.cop-ctl { display: flex; flex-direction: column; gap: 6px; }
+.cop-ctl-lbl {
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--ink-faded);
+}
+.cop-seg { display: inline-flex; gap: 3px; background: var(--plate-bg); padding: 3px; border: 1px solid var(--rule); border-radius: var(--radius-sm); }
+.cop-segbtn {
+  display: flex; align-items: baseline; gap: 6px; padding: 6px 14px;
+  background: transparent; border: none; border-radius: 3px; cursor: pointer;
+  color: var(--ink-faded); transition: all var(--dur-quick) var(--ease-drift);
+}
+.cop-segbtn:hover { color: var(--ink-soft); }
+.cop-segbtn.active { background: var(--paper-deep); color: var(--ink); }
+.cs-jp { font-family: var(--font-cjk-serif); font-size: 17px; color: var(--accent); }
+.cop-segbtn .cs-en { font-family: var(--font-mono); font-size: 11px; }
+
+.cop-particles { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+.cop-particles .cop-ctl-lbl { margin-right: 4px; }
+.cop-pchip {
+  min-width: 52px; height: 46px; background: var(--paper-deep);
+  border: 1px solid var(--rule); border-radius: var(--radius-sm); cursor: pointer;
+  transition: all var(--dur-quick) var(--ease-drift);
+}
+.cop-pchip .jp { font-size: 22px; color: var(--ink); }
+.cop-pnone { font-size: 18px; color: var(--ink-faded); }
+.cop-pchip:hover { border-color: var(--accent-deep); background: var(--abu-hover-wash); }
+.cop-pchip.active { border-color: var(--accent); box-shadow: 0 0 16px -6px rgba(242,166,90,0.4); }
+.cop-pchip.active .jp { color: var(--accent); }
+
+.cop-readout {
+  display: flex; flex-direction: column; gap: 6px; align-items: center;
+  padding: 24px; background: var(--plate-bg); border: 1px solid var(--gilt-line);
+  border-radius: var(--radius-lg); box-shadow: var(--abu-card-shadow);
+  animation: tl-rise var(--dur-base) var(--ease-enter);
+}
+.cop-form { font-size: 3.4rem; line-height: 1.1; color: var(--ink); }
+.cop-reading { font-family: var(--font-mono); font-size: 14px; color: var(--accent); letter-spacing: 0.04em; }
+.cop-en { font-family: var(--font-display); font-style: italic; font-size: 16px; color: var(--ink-soft); }
+.cop-formnote { font-family: var(--font-mono); font-size: 11px; color: var(--ink-faded); margin-top: 4px; }
+.cop-formnote .jp { color: var(--ink-soft); }
+.cop-alt-r { opacity: 0.7; }
+.cop-drop { font-family: var(--font-display); font-style: italic; font-size: 13px; color: var(--ink-faded); }
+.cop-drop .jp { font-style: normal; color: var(--ink-soft); }
+
+.cop-nuance {
+  padding: 14px 18px; background: var(--paper-deep); border: 1px solid var(--rule);
+  border-left: 2px solid var(--accent); border-radius: var(--radius-sm);
+  font-size: 15px; color: var(--ink-soft); line-height: 1.5;
+}
+.cop-nuance-tag {
+  font-family: var(--font-cjk-serif); font-size: 18px; color: var(--accent);
+  margin-right: 10px; vertical-align: baseline;
+}
+.cop-bridge {
+  display: flex; gap: 10px; align-items: baseline; padding: 11px 14px;
+  border: 1px dotted var(--rule-soft); border-left: 2px solid var(--gilt-line);
+  background: color-mix(in srgb, var(--paper-deep) 55%, transparent);
+  font-size: 13.5px; color: var(--ink-faded); line-height: 1.55;
+}
+.cop-bridge-tag {
+  font-family: var(--font-kr-serif); font-size: 11px; color: var(--accent-deep);
+  flex: none; align-self: flex-start; margin-top: 2px;
+}
+.cop-bridge-ko { color: var(--ink-soft); font-weight: 500; }
+
+@media (max-width: 560px) {
+  .cop-form { font-size: 2.6rem; }
+  .cop-controls { gap: 14px; }
+}

@@ -165,6 +165,56 @@ export const VERB_DIAL = {
   ],
 }
 
+// だ / です — the copula and its stacking. One base (そう / 学生 / きれい),
+// conjugated on the copula's own axis (polarity × tense × register), then
+// capped by a 終助詞 (ね・よ・よね・か) that aims the whole sentence at the
+// listener. そうだ → そうじゃない → そうだね → そうだよね → そうじゃないよね…
+export const COPULA = {
+  prompt:
+    'だ / です means simply “it is” — but it is the most-stacked word in spoken Japanese. ' +
+    'Conjugate it (じゃない, だった), set the register, then cap it with a 終助詞 — ね, よ, よね — ' +
+    'and watch そうだ become そうだよね. The verb-stem of the sentence barely moves; the meaning ' +
+    'is carried entirely on the tail.',
+  bases: [
+    { id: 'sou', jp: 'そう', reading: 'sō', gloss: 'that way / right', ko: '그래', koRr: 'geurae',
+      en: { aff: { nonpast: 'That’s right.', past: 'That was right.' }, neg: { nonpast: 'That’s not right.', past: 'That wasn’t right.' } } },
+    { id: 'gakusei', jp: '学生', reading: 'gakusei', gloss: 'a student', ko: '학생', koRr: 'haksaeng',
+      en: { aff: { nonpast: '(I’m) a student.', past: '(I) was a student.' }, neg: { nonpast: '(I’m) not a student.', past: '(I) wasn’t a student.' } } },
+    { id: 'kirei', jp: 'きれい', reading: 'kirei', gloss: 'pretty (na-adj)', ko: '예뻐', koRr: 'yeppeo',
+      en: { aff: { nonpast: 'It’s pretty.', past: 'It was pretty.' }, neg: { nonpast: 'It’s not pretty.', past: 'It wasn’t pretty.' } } },
+  ],
+  // the copula segment, by register → tense → polarity
+  forms: {
+    plain: {
+      nonpast: { aff: { t: 'だ', r: 'da' }, neg: { t: 'じゃない', r: 'ja nai' } },
+      past: { aff: { t: 'だった', r: 'datta' }, neg: { t: 'じゃなかった', r: 'ja nakatta' } },
+    },
+    polite: {
+      nonpast: { aff: { t: 'です', r: 'desu' }, neg: { t: 'じゃないです', r: 'ja nai desu', alt: 'じゃありません', altR: 'ja arimasen' } },
+      past: { aff: { t: 'でした', r: 'deshita' }, neg: { t: 'じゃなかったです', r: 'ja nakatta desu', alt: 'じゃありませんでした', altR: 'ja arimasen deshita' } },
+    },
+  },
+  // the 終助詞 — the tail that aims the sentence at the listener
+  particles: [
+    { id: 'none', jp: '', r: '', label: '—', note: 'A flat statement — no stance toward the listener.', ko: '' },
+    { id: 'ne', jp: 'ね', r: 'ne', label: 'ね', note: 'Seeks agreement — “…right?”, “…isn’t it?” You assume the listener already shares the view.', ko: '≈ Korean -지(요) / -네(요): shared knowledge, soft confirmation.' },
+    { id: 'yo', jp: 'よ', r: 'yo', label: 'よ', note: 'Asserts / informs — “…you know!” New information you’re sure of, pressed onto the listener.', ko: '≈ Korean -거든(요) / an emphatic -어(요): “for your information…”' },
+    { id: 'yone', jp: 'よね', r: 'yo ne', label: 'よね', note: 'よ + ね at once — “…right?” You assert AND check in one breath: I think so, and you do too, don’t you?', ko: '≈ Korean -지(요)?: the workhorse spoken ender — assert-and-confirm.' },
+    { id: 'ka', jp: 'か', r: 'ka', label: 'か', note: 'Turns it into a question — “…is it?” In plain speech the copula だ usually drops: そう？ / そうなの？', ko: '≈ Korean -까(요)? / a rising -지(요)?' },
+  ],
+  copulaNote:
+    'だ / です is the copula — “it is” — conjugating on its own axis (じゃない, だった, じゃなかった), ' +
+    'with the 終助詞 riding the very end. ≈ Korean 이다 / 아니다 capped by -지 / -네 / -거든. ' +
+    'This is the 終助詞 drawer of the 助詞 folio, met as conjugation.',
+  lantern: {
+    head: 'よね — assert and confirm, in one syllable-pair',
+    body: 'よ pushes information out; ね pulls agreement in. Stacked as <b>よね</b> they do both at once — ' +
+      '“それ、そうだよね” = “that’s right, isn’t it (you agree).” Japanese carries on the <i>tail</i> ' +
+      'what English spreads across intonation and tag-questions. Korean does the very same with <b>-지(요)</b>, ' +
+      'which is why it is the first ending a learner overuses — it feels like よね.',
+  },
+}
+
 export const HAGA_SPOTLIGHT = {
   wa: {
     particle: 'は',
