@@ -48,8 +48,9 @@ double as Korean reinforcement from the side you already know.
 | Folio | Instruments |
 |---|---|
 | **仮名 · the kana foundry** (`#/ja/kana`) | The script entry — ひらがな + カタカナ, gamified and persisted (`atlas.ja.scripts.v1`), spoken via the browser's Web Speech voices. **The gojūon grid** — the 五十音 as the machine it is (five vowels × the consonant series), a ひらがな/カタカナ toggle over one shared skeleton, 濁音/拗音 drawers, tap-to-hear with the twin script shown (ぢ/づ faint, kept out of the drill). **The drill** — the shared recognition engine, with per-script mastery (か and カ learned separately), scoped 基本/濁音/拗音. **The transliteration bench** — 18 hand-checked 外来語 (コーヒー, ブラック, パーティー, マクドナルド…) into カタカナ and back, each romaji **verified to round-trip** the IME, each teaching its adaptation rule (long ー, the small っ, vowel padding, ティ/フォ). The mirror of `#/ko/hangul`'s bench. |
-| **文法 · grammar engine** (`#/ja/grammar`) | **The loom** — particles carry roles, order carries emphasis. **The verb dial** — 食べる through plain/passive/causative/causative-passive, tracking 私. **は & が spotlight** — topic vs. selection, plus 象は鼻が長い. |
-| **動詞 · verb forge** (`#/ja/verbs`) | **The forge** — nine verbs (2 一段, 5 五段 spanning every 音便 family, both irregulars) × five forms (polite ます / negative ない / past た / te-form て / potential). The central fork is the verb **class** (一段/五段/不規則), and the gold syllable in each equation is the class-driven stem shift — the mirror of the Korean forge's vowel-harmony fork. Lantern notes: 活用 (class, not vowel), 音便 (the euphonic shift), 不規則 (only two — する is 하다's verb-factory). Every form carries its register-matched Korean twin (ます↔해요체, plain↔반말): Japanese sorts the verbs, Korean sorts the endings. |
+| **文法 · grammar engine** (`#/ja/grammar`) | **The loom** — particles carry roles, order carries emphasis. **だ・です — the copula** — the copula deep-dive: pick a base (そう / 学生 / きれい), conjugate だ on its own axis (polarity だ/じゃない · tense だ/だった · register だ/です), then cap it with a 終助詞 — ね / よ / よね / か — and the form assembles live (そうだ → そうじゃない → そうだよね → そうじゃないよね), each tail carrying a nuance note (ね seeks agreement, よ asserts, よね both), the plain+か だ-drop called out, and a 한국어 bridge tying the 終助詞 to Korean's verb endings (-지/-네/-거든). **は & が spotlight** — topic vs. selection, plus 象は鼻が長い. (The voice dial moved to 動詞, where it belongs.) |
+| **動詞 · verb forge** (`#/ja/verbs`) | The everyday paradigm, in four instruments. **The forge** — the class fork (一段/五段/不規則) drives the stem; tense (non-past · past · progressive) reads down the side, and politeness is pulled out as the **plain \| polite two-lane** across — which surfaces a contrast the old single axis couldn't: the plain past takes 音便 (飲んだ) while the polite past keeps the clean 連用形 (飲みました). Lanterns 活用/音便/不規則; tense-lane cells **derived** from the hand-checked forms. **Negation** — ない/ません as a tense × lane grid + the "can't" row (potential-negative), bridged to Korean's two no's (안 won't / 못 can't — and 못 is exactly where the potential-negative lands). **Politeness** — the lane as its own axis, demonstrating the rule English speakers miss: in a long sentence politeness lands ONCE, on the final verb; every te-form/-고/-아서 clause before it is register-neutral (toggle and only the last word moves). **Voice — the verb dial** — 食べる through plain/passive/causative/causative-passive, tracking 私 (moved here from grammar). |
+| **活用 · constructions** (`#/ja/forms`) | The forms that *don't* fall out by rule — each given its own instrument. **The て-form** — the head shows the bare te-form with its 音便 lit (書いて / 飲んで / 待って / 行って the rogue); the compound rack shows what て + an auxiliary does — ている (progressive) · てみる (try) · てしまう (complete/regret) · ておく (prepare) · てください (request) · てもいい (permission) · てはいけない (prohibition) · てから (after) — each bridged to Korean's split stems (-고 vs -아/어). **The conditional** — Japanese's four "if"s (ば general · たら specific-when · と automatic · なら contextual), each owning a situation, against Korean's one all-purpose -(으)면. **Volitional & imperative** — the urging forms: 食べよう/食べましょう (let's) and the command ladder 食べろ → 食べなさい → 食べてください → 食べるな, blunt→polite, each rung faced with its Korean twin (-자/-(으)ㅂ시다, -아라/-(으)세요/-지 마). Data is `japaneseForms.js`, reusing the verb forms; Korean stems authored. The mirror of a future Korean 활용 folio. |
 | **形容詞 · adjectives** (`#/ja/adjectives`) | **The bench** — one い-adjective and one な-adjective conjugated in lockstep across six forms (present/negative/past/past-neg/te/adverb), so the split is *seen*: the い-type inflects **itself** (高い→高かった), the な-type inflects the **copula** (静か→静かだった). いい fires the irregular lantern, きれい the false-friend lantern; Sino な-adjectives (有名→유명) badge 漢. The thesis is the bridge — **Korean draws neither line**: its adjectives ARE verbs (비싸다 conjugates exactly like 가다), so both classes collapse into the verb forge. |
 | **助詞 · particle cabinet** (`#/ja/particles`) | The Korean cabinet inverted — 28 cards in five pigment-coded drawers, Japanese headword + Korean twin (한), one uniform plate each (fitting rule, specimen, why, faces, traps), with a clickable index (chip → scroll-and-flash). Two themes mirror the Korean folio: JP particles **never tailor** (は is は), and where JP spends one particle **Korean spends several** (に→에/에게, で→에서/으로, から→에서/부터/한테서, と→와·과/하고/랑). And a drawer Korean has no single answer for — the **終助詞** (か・ね・よ・な・の・かな) — bridged to Korean verb *endings* (-까, -네, -거든, -지 마, -(으)ㄹ까), not particles. |
 | **語彙 · word bank** (`#/ja/vocab`) | The same two vocabulary instruments as `#/ko/vocab` (they're language-blind), maintenance-flavored: 18-entry pilot bank stratified 漢語/和語/外来語 — the mirror of Korean's 한자어/고유어/외래어 — with kana+romaji as the readings layer and no bridge column. State: `atlas.ja.vocab.v1`, backend-persisted like Korean. |
@@ -81,7 +82,8 @@ src/
   pages/
     JapaneseKana.jsx       ja folio — kana foundry (gojūon grid, drill, bench)
     JapaneseGrammar.jsx    ja folio — grammar engine
-    JapaneseVerbs.jsx      ja folio — verb forge (class fork, 한국어 bridge)
+    JapaneseVerbs.jsx      ja folio — verb forge (forge tense-lanes · negation · politeness · voice)
+    JapaneseForms.jsx      ja folio — 活用 constructions (te-form · conditional · volitional/imperative)
     JapaneseAdjectives.jsx ja folio — the い/な adjective bench
     JapaneseParticles.jsx  ja folio — particle cabinet (reverse bridge + 終助詞)
     KoreanHangul.jsx       ko folio — hangul forge (block builder, drill, bench)
@@ -100,7 +102,13 @@ src/
     VerbDial.jsx           ja voice dial
     HagaSpotlight.jsx      ja は/が
     japanese/              ja conjugation + cabinet instruments (한국어 reverse bridge)
-      JapaneseVerbForge.jsx       class fork (一段/五段/不規則) + conjugation assembly
+      JapaneseVerbForge.jsx       class fork (一段/五段/不規則) + tense × plain|polite lanes
+      CopulaDive.jsx              だ・です builder — copula × polarity/tense/register × 終助詞 (ね/よ/よね)
+      Negation.jsx                ない/ません tense×lane grid + the "can't" row → 안/못 bridge
+      Politeness.jsx              the plain⟷polite lane; "only the final verb carries it" demo
+      TeForm.jsx                  the て-form head (音便) + the compound rack (ている/てみる/…)
+      Conditional.jsx             the four "if"s — ば/たら/と/なら, each niche + example
+      VolitionalImperative.jsx    let's (よう/ましょう) + the imperative ladder (ろ→なさい→てください)
       JapaneseAdjectiveForge.jsx  the い/な bench — two conjugations in parallel
       JapaneseParticleCabinet.jsx ja particle index (drawers + chips → scroll)
       JapaneseParticleCard.jsx    ja one-particle plate (JP head, KO twin)
@@ -158,9 +166,12 @@ src/
       DictionBench.jsx     written ≠ sung — liaison/nasalization/tensification, reveal cards
       Harvest.jsx          the song's vocab + grammar, cross-linked to the teaching folios
   data/
-    grammarData.js         ja content (loom, voice dial, は/が)
+    grammarData.js         ja grammar content (loom, the だ/です COPULA dive, voice-dial data, は/が)
     japaneseKana.js        ja kana foundry — gojūon + 濁音/拗音, tap-pad layout, 外来語 word list
-    japaneseVerbs.js       ja verb forge — 9 verbs × 5 forms, class + Korean twin
+    japaneseVerbs.js       ja verb forge — 9 verbs × forms, class; tense-lane/negation derivations
+                           (tenseCells/negCells) + POLITENESS data + Korean twins
+    japaneseForms.js       ja 活用 folio — the te-compounds, the 4 conditionals, volitional+imperative
+                           (reuses the verb te-forms; Korean -고/-아 stems authored)
     japaneseAdjectives.js  ja adjective bench — い/な exemplars × 6 forms + Korean twin
     japaneseParticles.js   ja particle cabinet — 28 cards, JP head + KO bridge (inverts koreanParticles.js)
     koreanHangul.js        ko hangul forge — jamo (+RR+voiceable exemplars), builder inventories, 자모 pad, 외래어

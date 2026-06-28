@@ -1,6 +1,6 @@
 import React from 'react'
 import LoomInstrument from '../components/LoomInstrument.jsx'
-import VerbDial from '../components/VerbDial.jsx'
+import CopulaDive from '../components/japanese/CopulaDive.jsx'
 import HagaSpotlight from '../components/HagaSpotlight.jsx'
 
 function GrammarColophon() {
@@ -13,7 +13,7 @@ function GrammarColophon() {
   )
 }
 
-export default function JapaneseGrammar({ showReadings }) {
+export default function JapaneseGrammar({ showReadings, showJp }) {
   return (
     <div className="page" data-screen-label="Japanese — Grammar engine">
 
@@ -59,21 +59,23 @@ export default function JapaneseGrammar({ showReadings }) {
       </div>
       <LoomInstrument showReadings={showReadings} />
 
-      {/* INSTRUMENT II — the dial */}
+      {/* INSTRUMENT II — the copula */}
       <div className="instr-head">
         <div className="no">II</div>
-        <h2>The verb dial</h2>
-        <div className="latin">態 · the same 私, four roles</div>
+        <h2>だ &amp; です — the copula</h2>
+        <div className="latin">繋辞と終助詞 · “it is,” and the tail that aims it</div>
       </div>
       <p className="gram-sub" style={{ marginBottom: 0 }}>
-        The causative-passive — 〜させられる — is the form that tangles fluent speakers mid-sentence.
-        It untangles the moment you stop translating and watch where{' '}
-        <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>私</b> stands.
+        The smallest word in the sentence carries the most social weight. Conjugate だ — じゃない, だった —
+        then stack a <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>終助詞</b> on
+        the very end, and watch そうだ become そうじゃないよね. (The verb dial — passive &amp; causative — has
+        moved to the <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>動詞</b> folio,
+        where it belongs.)
       </p>
       <div className="try-strip">
-        <span className="dot"></span> turn the dial left to right — follow 私
+        <span className="dot"></span> set the toggles, then tap a tail — ね / よ / よね
       </div>
-      <VerbDial />
+      <CopulaDive showJp={showJp} />
 
       {/* INSTRUMENT III — は / が */}
       <div className="instr-head">

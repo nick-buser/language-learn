@@ -1,5 +1,8 @@
 import React from 'react'
 import JapaneseVerbForge from '../components/japanese/JapaneseVerbForge.jsx'
+import Negation from '../components/japanese/Negation.jsx'
+import Politeness from '../components/japanese/Politeness.jsx'
+import VerbDial from '../components/VerbDial.jsx'
 
 function VerbColophon() {
   return (
@@ -55,12 +58,51 @@ export default function JapaneseVerbs({ showReadings, showJp }) {
       <div className="instr-head">
         <div className="no">I</div>
         <h2>The forge</h2>
-        <div className="latin">活用 (katsuyō) · conjugation — the class decides the shift</div>
+        <div className="latin">活用 (katsuyō) · tense by class — and politeness pulled out as a lane</div>
       </div>
       <div className="try-strip">
-        <span className="dot"></span> pick a verb, pull a form — watch the stem shift, and the bridge cross
+        <span className="dot"></span> pick a verb, pull a tense — read plain and polite side by side, and watch the past split into 音便 vs 連用形
       </div>
       <JapaneseVerbForge showReadings={showReadings} showJp={showJp} />
+
+      {/* INSTRUMENT II — negation */}
+      <div className="instr-head" style={{ marginTop: 56 }}>
+        <div className="no">II</div>
+        <h2>Negation</h2>
+        <div className="latin">否定 (hitei) · one ない — where Korean keeps two no’s</div>
+      </div>
+      <div className="try-strip">
+        <span className="dot"></span> pick a verb — read ない/ません across tense, and watch the “can’t” row cross to 못
+      </div>
+      <Negation showReadings={showReadings} showJp={showJp} />
+
+      {/* INSTRUMENT III — politeness */}
+      <div className="instr-head" style={{ marginTop: 56 }}>
+        <div className="no">III</div>
+        <h2>Politeness</h2>
+        <div className="latin">丁寧さ (teineisa) · the lane — and it lands only once</div>
+      </div>
+      <div className="try-strip">
+        <span className="dot"></span> flip plain ⟷ polite — only the final verb moves; every clause before it stays plain
+      </div>
+      <Politeness showReadings={showReadings} showJp={showJp} />
+
+      {/* INSTRUMENT IV — voice (the verb dial, moved here from grammar) */}
+      <div className="instr-head" style={{ marginTop: 56 }}>
+        <div className="no">IV</div>
+        <h2>Voice — the verb dial</h2>
+        <div className="latin">態 (tai) · the same 私, four roles — passive, causative, the knot</div>
+      </div>
+      <p className="gram-sub" style={{ marginBottom: 0 }}>
+        Voice is a verb’s business, so the dial lives here now. The causative-passive — 〜させられる — is
+        the form that tangles fluent speakers mid-sentence; it untangles the moment you stop translating
+        and watch where{' '}
+        <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>私</b> stands.
+      </p>
+      <div className="try-strip">
+        <span className="dot"></span> turn the dial left to right — follow 私
+      </div>
+      <VerbDial />
 
       {/* Closing marginalia */}
       <section className="plate" style={{ marginTop: 64 }}>
@@ -92,23 +134,20 @@ export default function JapaneseVerbs({ showReadings, showJp }) {
           <aside className="marginalia">
             <h4>For the next plate</h4>
             <div className="note">
-              <span className="date">politeness, as a dial</span>
-              ます / です against plain だ — and the Korean register dial it faces (해요체 / 합쇼체 /
-              반말). Two levels here, four there: the gap subtitles flatten.
+              <span className="date">the constructions next door</span>
+              the te-form economy (ている / ておく / てしまう…), the four “if”s (ば / たら / と / なら), and
+              volitional + imperative (ましょう / 食べろ) live on the new <b>活用 · constructions</b> folio —
+              each given room to make its one point clear.
             </div>
             <div className="note">
-              <span className="date">the て-form economy</span>
-              て + いる / ある / おく / しまう / みる — what an action leaves behind, and where Korean’s
-              -고 있다 / -아 있다 agree and where they split.
-            </div>
-            <div className="note">
-              <span className="date">voice — delivered</span>
-              passive, causative, the causative-passive knot: already a working dial on the{' '}
-              <b>文法 · grammar engine</b> folio. The verb dial that tracks 私.
+              <span className="date">Korean, catching up</span>
+              Korean already had this folio’s politeness (the register dial) and negation (안 / 못). What it
+              lacks is the <i>constructions</i> — the connective -아서 / -고, the conditional -(으)면, the
+              voice it has no instrument for yet. Those mirror over next.
             </div>
             <div className="note">
               <span className="date">adjectives conjugate too</span>
-              い-adjectives carry their own tense like quasi-verbs (高かった); see the new{' '}
+              い-adjectives carry their own tense like quasi-verbs (高かった); see the{' '}
               <b>形容詞 · adjectives</b> folio — where Korean stops splitting and merges them back into
               verbs entirely.
             </div>
