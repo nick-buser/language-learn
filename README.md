@@ -19,7 +19,7 @@ npm run build    # production build to dist/
 
 ## The atlas — two-level navigation
 
-Hash-routed: **language → folio (page)**. e.g. `#/ko/grammar`, `#/ko/verbs`, `#/ko/particles`, `#/ja/grammar`, `#/ja/verbs`, `#/ja/particles`.
+Hash-routed: **language → folio (page)**. e.g. `#/ko/hangul`, `#/ko/grammar`, `#/ko/verbs`, `#/ko/particles`, `#/ja/kana`, `#/ja/grammar`, `#/ja/verbs`, `#/ja/particles`.
 The binding (top bar) selects the language; the sub-strip below it selects the folio.
 Default route is `#/ko/grammar` — Korean is the active study.
 
@@ -27,6 +27,7 @@ Default route is `#/ko/grammar` — Korean is the active study.
 
 | Folio | Instruments |
 |---|---|
+| **한글 · the hangul forge** (`#/ko/hangul`) | The script, gamified — the entry folio, persisted to `localStorage` (`atlas.ko.scripts.v1`), spoken by the browser's Web Speech voices (the `speech.js` seam — a recorded/Kokoro engine swaps in later, no instrument change). **The block builder** — hangul's whole idea as a machine: a syllable is a 초성 + 중성 (+ 받침) you *stack*, composed by real Unicode arithmetic (the inverse of `romanize.js`, via `ime.js`'s `composeBlock`), heard and read in RR; the 받침 panel makes the **seven-sounds rule** *felt* — pick ㅅ/ㅈ/ㅌ as a final and the block still sounds [t] — and fires the lantern that ties neutralization to liaison/assimilation. **The drill** — the 40 jamo to reflex: four-option recognition in three directions (jamo→sound · sound→jamo · hear→jamo), weighted toward the least-mastered, a streak + a lamp strip that fills faint→gold, scoped to 자음(plain · aspirate/tense)/모음(basic · y·w). **The transliteration bench** — 18 hand-checked 외래어 (커피, 아이스크림, 맥도날드, 택시, 핑크…) crossing into 한글 — typed on a **keyboardless romaja IME** (an inline composition automaton; g=ㄱ, k=ㅋ, ng=받침 ㅇ) or a 자모 tap pad — and back to English, each landing rewarded with the adaptation rule (no f→ㅍ, the echo ㅡ, the seven-sounds 받침). The **仮名 bridge** frames it: kana is ~100 syllables to *memorize*, hangul ~40 parts to *assemble*. The deliberate mirror of `#/ja/kana`'s bench (ㅡ-padding vs ウ-padding, the same loanwords adapted twice). |
 | **문법 · grammar engine** (`#/ko/grammar`) | **The loom** — drag particle-tagged phrases; word order is free, the verb anchors the end. **The gate** — 받침 (batchim) particle allomorphy: pick a noun, watch 은/는·이/가·을/를·과/와·(으)로 re-tailor themselves, with jamo decomposition and liaison romanization. **은/는 & 이/가 spotlight** — topic vs. selection, with the elephant sentence (코끼리는 코가 길어요 / 象は鼻が長い) aligned in both languages. |
 | **동사 · verb forge** (`#/ko/verbs`) | **The forge** — vowel-harmony conjugation (6 verbs × present/past/future) showing the bright/dark/하 fork and every fusion. **The register dial** — the four speech levels (합쇼체/해요체/해체/해라체) on one sentence, with a 2×2 formality×politeness map, social-distance scene, K-drama field notes, and an independent **-시-** subject-honor toggle. **안 & 못 spotlight** — the two negations: will vs. ability. |
 | **조사 · particle cabinet** (`#/ko/particles`) | The particle deep dive — 33 particles in five pigment-coded drawers (skeleton case particles · place/time/direction · pairing & comparing · the focus set · the social set), one uniform card each: forms + 받침 fitting rule, Japanese twin, specimen sentence (hangul/RR/bridge/EN), why-it-matters, and trap footnotes. **The cabinet** — clickable index, chip → scroll-and-flash to card. **에 vs 에서 spotlight** — the に/で border. **The stack** — particle compounding: delimiters 는/도/만 *stack* after adverbial particles (에는 = には) but *replace* case particles (를+는 → 는, mirroring ✗をは), with live JP mirror equations, a ready-made stack catalogue (엔/에선/만이/께서는…), and contraction notes (난/널/전). |
@@ -39,12 +40,14 @@ Default route is `#/ko/grammar` — Korean is the active study.
 
 ### 日本語 Japanese (maintained — and now a Korean-study mirror via the 한국어 bridge)
 
-The conjugation and particle folios run the atlas's bridge **backward**: the learner owns Japanese,
-so these plates lay the familiar system out plainly and show the **Korean twin** beside it (toggled by
-the **한국어 bridge** switch). They double as Korean reinforcement from the side you already know.
+The **仮名 foundry** is the script entry — where the language starts. The conjugation and particle
+folios run the atlas's bridge **backward**: the learner owns Japanese, so these plates lay the familiar
+system out plainly and show the **Korean twin** beside it (toggled by the **한국어 bridge** switch). They
+double as Korean reinforcement from the side you already know.
 
 | Folio | Instruments |
 |---|---|
+| **仮名 · the kana foundry** (`#/ja/kana`) | The script entry — ひらがな + カタカナ, gamified and persisted (`atlas.ja.scripts.v1`), spoken via the browser's Web Speech voices. **The gojūon grid** — the 五十音 as the machine it is (five vowels × the consonant series), a ひらがな/カタカナ toggle over one shared skeleton, 濁音/拗音 drawers, tap-to-hear with the twin script shown (ぢ/づ faint, kept out of the drill). **The drill** — the shared recognition engine, with per-script mastery (か and カ learned separately), scoped 基本/濁音/拗音. **The transliteration bench** — 18 hand-checked 外来語 (コーヒー, ブラック, パーティー, マクドナルド…) into カタカナ and back, each romaji **verified to round-trip** the IME, each teaching its adaptation rule (long ー, the small っ, vowel padding, ティ/フォ). The mirror of `#/ko/hangul`'s bench. |
 | **文法 · grammar engine** (`#/ja/grammar`) | **The loom** — particles carry roles, order carries emphasis. **The verb dial** — 食べる through plain/passive/causative/causative-passive, tracking 私. **は & が spotlight** — topic vs. selection, plus 象は鼻が長い. |
 | **動詞 · verb forge** (`#/ja/verbs`) | **The forge** — nine verbs (2 一段, 5 五段 spanning every 音便 family, both irregulars) × five forms (polite ます / negative ない / past た / te-form て / potential). The central fork is the verb **class** (一段/五段/不規則), and the gold syllable in each equation is the class-driven stem shift — the mirror of the Korean forge's vowel-harmony fork. Lantern notes: 活用 (class, not vowel), 音便 (the euphonic shift), 不規則 (only two — する is 하다's verb-factory). Every form carries its register-matched Korean twin (ます↔해요체, plain↔반말): Japanese sorts the verbs, Korean sorts the endings. |
 | **形容詞 · adjectives** (`#/ja/adjectives`) | **The bench** — one い-adjective and one な-adjective conjugated in lockstep across six forms (present/negative/past/past-neg/te/adverb), so the split is *seen*: the い-type inflects **itself** (高い→高かった), the な-type inflects the **copula** (静か→静かだった). いい fires the irregular lantern, きれい the false-friend lantern; Sino な-adjectives (有名→유명) badge 漢. The thesis is the bridge — **Korean draws neither line**: its adjectives ARE verbs (비싸다 conjugates exactly like 가다), so both classes collapse into the verb forge. |
@@ -76,10 +79,12 @@ src/
   main.jsx                 entry
   App.jsx                  shell: binding, two-level nav, hash router, global toggles
   pages/
+    JapaneseKana.jsx       ja folio — kana foundry (gojūon grid, drill, bench)
     JapaneseGrammar.jsx    ja folio — grammar engine
     JapaneseVerbs.jsx      ja folio — verb forge (class fork, 한국어 bridge)
     JapaneseAdjectives.jsx ja folio — the い/な adjective bench
     JapaneseParticles.jsx  ja folio — particle cabinet (reverse bridge + 終助詞)
+    KoreanHangul.jsx       ko folio — hangul forge (block builder, drill, bench)
     KoreanGrammar.jsx      ko folio — grammar engine
     KoreanVerbs.jsx        ko folio — verb forge
     KoreanParticles.jsx    ko folio — particle cabinet
@@ -99,6 +104,7 @@ src/
       JapaneseAdjectiveForge.jsx  the い/な bench — two conjugations in parallel
       JapaneseParticleCabinet.jsx ja particle index (drawers + chips → scroll)
       JapaneseParticleCard.jsx    ja one-particle plate (JP head, KO twin)
+      KanaGrid.jsx                the 五十音 grid (hira/kata toggle, 濁音/拗音 drawers, tap-to-hear)
     korean/
       KoLoom.jsx           ko loom (with batchim-aware particle swaps)
       BatchimGate.jsx      ko particle allomorphy + jamo decomposition
@@ -117,6 +123,14 @@ src/
       WaymarkDossier.jsx   ko per-phase deep chart (strands, checklists, effort mix)
       PracticeLedger.jsx   ko habit dots + weekly check-in journal
       useRoadmapStore.js   ko progress persistence (localStorage; backend-shaped)
+      HangulBuilder.jsx    ko block builder (초성+중성+받침 → Unicode compose, 받침 seven-sounds)
+    scripts/               language-blind script foundry (fed per-lang data — かな / 한글)
+      speech.js            Web Speech wrapper — THE audio seam (recorded/Kokoro engine swaps in here)
+      useScriptStore.js    per-glyph mastery (0–5 lamp) + game scores — localStorage atlas.<lang>.scripts.v1
+      ime.js               romaji→kana table + romaja→hangul composition automaton; composeBlock + jamo arrays
+      RomajiInput.jsx      the keyboardless inline-IME input (romaji field + glyph tap pad)
+      ScriptDrill.jsx      gamified recognition — 3 modes, weighted questions, streak + mastery lamps
+      Transliterator.jsx   the EN↔script loanword bench (build via IME · read back in English)
     vocab/                 language-blind vocabulary instruments (fed by per-lang data)
       WordLedger.jsx       the holdings ledger — census, search, filters, sortable table
       ReviewDrawer.jsx     the review drawer — due queue, flip cards, four grades
@@ -145,9 +159,11 @@ src/
       Harvest.jsx          the song's vocab + grammar, cross-linked to the teaching folios
   data/
     grammarData.js         ja content (loom, voice dial, は/が)
+    japaneseKana.js        ja kana foundry — gojūon + 濁音/拗音, tap-pad layout, 外来語 word list
     japaneseVerbs.js       ja verb forge — 9 verbs × 5 forms, class + Korean twin
     japaneseAdjectives.js  ja adjective bench — い/な exemplars × 6 forms + Korean twin
     japaneseParticles.js   ja particle cabinet — 28 cards, JP head + KO bridge (inverts koreanParticles.js)
+    koreanHangul.js        ko hangul forge — jamo (+RR+voiceable exemplars), builder inventories, 자모 pad, 외래어
     koreanData.js          ko content (hangul + RR + JP bridges, hand-checked)
     koreanParticles.js     ko particle cabinet content (33 cards + stack data)
     koreanCognates.js      ko cognate bridge content — schema piloted for the future
@@ -180,6 +196,7 @@ src/
     vocab.css              word bank (census, ledger table, review drawer & grade bar)
     reading.css            the reading room (import, coverage gauge, lit passage, gloss panel)
     song.css               the song (transport, lyric band, melody roll, diction, harvest)
+    scripts.css            the script foundries (keyboardless IME, drill, gojūon grid, hangul builder, bench)
 tools/
   seed-dictionary.mjs      frequency list + gloss adapter → DictionaryEntry JSON (the seeder);
                            --adapter=manual (offline, the hand bank) | krdict (key + licensing)

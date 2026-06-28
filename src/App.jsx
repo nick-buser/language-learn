@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import JapaneseGrammar from './pages/JapaneseGrammar.jsx'
+import KoreanHangul from './pages/KoreanHangul.jsx'
 import KoreanGrammar from './pages/KoreanGrammar.jsx'
 import KoreanVerbs from './pages/KoreanVerbs.jsx'
 import KoreanParticles from './pages/KoreanParticles.jsx'
@@ -9,6 +10,7 @@ import KoreanReading from './pages/KoreanReading.jsx'
 import KoreanSong from './pages/KoreanSong.jsx'
 import KoreanCustom from './pages/KoreanCustom.jsx'
 import KoreanRoadmap from './pages/KoreanRoadmap.jsx'
+import JapaneseKana from './pages/JapaneseKana.jsx'
 import JapaneseVerbs from './pages/JapaneseVerbs.jsx'
 import JapaneseAdjectives from './pages/JapaneseAdjectives.jsx'
 import JapaneseParticles from './pages/JapaneseParticles.jsx'
@@ -25,12 +27,14 @@ import './styles/roadmap.css'
 import './styles/vocab.css'
 import './styles/reading.css'
 import './styles/song.css'
+import './styles/scripts.css'
 
 // Two-level atlas: language → folio pages within it.
 const LANGS = [
   {
     id: 'ko', glyph: '한국어', name: 'Korean', metaGlyph: '문법', font: 'var(--font-kr-serif)',
     pages: [
+      { id: 'hangul',    glyph: '한글', label: 'hangul forge',     component: KoreanHangul },
       { id: 'grammar',   glyph: '문법', label: 'grammar engine',   component: KoreanGrammar },
       { id: 'verbs',     glyph: '동사', label: 'verb forge',       component: KoreanVerbs },
       { id: 'particles', glyph: '조사', label: 'particle cabinet', component: KoreanParticles },
@@ -45,6 +49,7 @@ const LANGS = [
   {
     id: 'ja', glyph: '日本語', name: 'Japanese', metaGlyph: '文法', font: 'var(--font-cjk-serif)',
     pages: [
+      { id: 'kana',    glyph: '仮名', label: 'kana foundry',   component: JapaneseKana },
       { id: 'grammar', glyph: '文法', label: 'grammar engine', component: JapaneseGrammar },
       { id: 'verbs',      glyph: '動詞', label: 'verb forge',      component: JapaneseVerbs },
       { id: 'adjectives', glyph: '形容詞', label: 'adjectives',     component: JapaneseAdjectives },
