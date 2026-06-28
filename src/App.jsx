@@ -12,6 +12,7 @@ import KoreanCustom from './pages/KoreanCustom.jsx'
 import KoreanRoadmap from './pages/KoreanRoadmap.jsx'
 import JapaneseKana from './pages/JapaneseKana.jsx'
 import JapaneseVerbs from './pages/JapaneseVerbs.jsx'
+import JapaneseForms from './pages/JapaneseForms.jsx'
 import JapaneseAdjectives from './pages/JapaneseAdjectives.jsx'
 import JapaneseParticles from './pages/JapaneseParticles.jsx'
 import JapaneseVocab from './pages/JapaneseVocab.jsx'
@@ -52,6 +53,7 @@ const LANGS = [
       { id: 'kana',    glyph: '仮名', label: 'kana foundry',   component: JapaneseKana },
       { id: 'grammar', glyph: '文法', label: 'grammar engine', component: JapaneseGrammar },
       { id: 'verbs',      glyph: '動詞', label: 'verb forge',      component: JapaneseVerbs },
+      { id: 'forms',      glyph: '活用', label: 'constructions',   component: JapaneseForms },
       { id: 'adjectives', glyph: '形容詞', label: 'adjectives',     component: JapaneseAdjectives },
       { id: 'particles',  glyph: '助詞', label: 'particle cabinet', component: JapaneseParticles },
       { id: 'vocab',      glyph: '語彙', label: 'word bank',        component: JapaneseVocab },
