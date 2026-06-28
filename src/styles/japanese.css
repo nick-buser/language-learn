@@ -117,3 +117,88 @@
 @media (max-width: 720px) {
   .fq-ko .kr { font-size: 19px; }
 }
+
+/* =====================================================================
+   THE ADJECTIVE FORGE — the い / な split, side by side
+   ===================================================================== */
+/* six forms in the selector */
+.forge-tenses.adj-forms { grid-template-columns: repeat(6, 1fr); }
+@media (max-width: 620px) {
+  .forge-tenses.adj-forms { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* the 漢 cognate badge + the false-friend な? badge on na chips */
+.forge-stage.ja .specimen-chip .chip-cog {
+  font-family: var(--font-cjk-serif);
+  font-size: 10px;
+  color: var(--st-travel);
+  margin-left: 6px;
+  letter-spacing: 0;
+  text-transform: none;
+}
+.forge-stage.ja .specimen-chip .chip-irr.trap {
+  font-family: var(--font-cjk-serif);
+  color: var(--signal-lit);
+}
+
+/* the two columns */
+.adj-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 26px;
+  align-items: start;
+  margin-top: 22px;
+}
+@media (max-width: 760px) { .adj-cols { grid-template-columns: 1fr; gap: 18px; } }
+
+.adj-col {
+  background: var(--paper-deep);
+  border: 1px solid var(--rule);
+  border-top: 2px solid var(--accent);
+  padding: 16px 20px 18px;
+}
+.adj-col.na { border-top-color: var(--st-travel); }
+
+.adj-col-head {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  padding-bottom: 12px;
+  margin-bottom: 6px;
+  border-bottom: 1px dotted var(--rule-soft);
+}
+.adj-mark {
+  display: inline-grid;
+  place-items: center;
+  width: 24px; height: 24px;
+  border: 1px solid var(--accent);
+  color: var(--accent);
+  font-size: 14px;
+  flex: none;
+  align-self: center;
+}
+.adj-col.na .adj-mark { border-color: var(--st-travel); color: var(--st-travel); }
+.adj-hw { font-size: 26px; color: var(--ink); font-weight: 500; }
+.adj-hw-gloss {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 14px;
+  color: var(--ink-soft);
+}
+.adj-col .forge-eq { margin-top: 4px; }
+.adj-col .fq-result { font-size: 32px; }
+.adj-col-note {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-size: 13px;
+  color: var(--ink-faded);
+  margin-top: 10px;
+}
+
+/* the per-form contrast line, full width under the columns */
+.adj-contrast { margin-top: 22px; }
+.adj-contrast b { color: var(--accent); font-weight: 600; }
+
+@media (max-width: 720px) {
+  .adj-col .fq-result { font-size: 27px; }
+}
