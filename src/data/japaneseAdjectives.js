@@ -138,8 +138,9 @@ export const ADJ_EUREKAS = {
   irregular: {
     head: 'いい — the one irregular adjective',
     body: 'The present is いい, but every inflected form reverts to the older stem <b>良 (よ)</b>: よくない, ' +
-          'よかった, よく — never ✗いくない, ✗いかった. It is the only irregular い-adjective you must flag (and ' +
-          'かっこいい, ださいい-types inherit it). Korean’s match <b>좋다 is perfectly regular</b> — 좋아, 좋았어, ' +
+          'よかった, よく — never ✗いくない, ✗いかった. It is the only irregular い-adjective you must flag (any ' +
+          'compound ending in いい inherits it: かっこいい → かっこよくない, 気持ちいい → 気持ちよかった). ' +
+          'Korean’s match <b>좋다 is perfectly regular</b> — 좋아, 좋았어, ' +
           '좋게. Japanese’s lone adjective exception lands on a Korean word that has none.',
   },
   falseFriend: {
