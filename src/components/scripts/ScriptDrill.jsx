@@ -30,12 +30,12 @@ const shuffle = (a) => {
   return r
 }
 
-export default function ScriptDrill({ lang, glyphs, groups = [], store, rate = 0.8, title = 'The drill' }) {
+export default function ScriptDrill({ lang, glyphs, groups = [], store, rate = 0.8, defaultScope = 'all' }) {
   const voice = speechSupported() && hasVoice(lang.slice(0, 2))
   const modes = useMemo(() => MODES.filter(m => !m.needsVoice || voice), [voice])
 
   const [mode, setMode] = useState('recall')
-  const [scope, setScope] = useState('all')
+  const [scope, setScope] = useState(defaultScope)
   const [q, setQ] = useState(null)
   const [picked, setPicked] = useState(null)
   const [status, setStatus] = useState('asking') // asking | right | wrong

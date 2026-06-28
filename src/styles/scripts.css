@@ -239,7 +239,83 @@
 .tl-sum-sub { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-faded); }
 .tl-dir-row { display: flex; gap: 10px; margin-top: 8px; flex-wrap: wrap; justify-content: center; }
 
+/* =====================================================================
+   THE GOJŪON GRID (KanaGrid)
+   ===================================================================== */
+.kana-grid { display: flex; flex-direction: column; gap: 18px; }
+.kg-controls { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.kg-seg { display: flex; gap: 4px; background: var(--plate-bg); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--rule); }
+.kg-segbtn {
+  font-size: 0.96rem; color: var(--ink-faded); background: transparent; border: none;
+  border-radius: var(--radius-sm); padding: 7px 16px; cursor: pointer; transition: all var(--dur-quick) var(--ease-drift);
+}
+.kg-segbtn:hover { color: var(--ink-soft); }
+.kg-segbtn.active { color: var(--accent); background: var(--paper-deep); }
+/* drill script toggle (かな page) — reuses .kg-segbtn */
+.drill-script-seg { display: inline-flex; gap: 4px; background: var(--plate-bg); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--rule); margin-bottom: 14px; }
+
+.kg-toggles { display: flex; gap: 8px; }
+.kg-toggle {
+  font-family: var(--font-mono); font-size: 0.76rem; color: var(--ink-faded);
+  background: var(--paper-deep); border: 1px solid var(--rule); border-radius: 999px;
+  padding: 5px 14px; cursor: pointer; transition: all var(--dur-quick) var(--ease-drift);
+}
+.kg-toggle:hover { color: var(--ink-soft); border-color: var(--gilt-line); }
+.kg-toggle.on { color: var(--accent); border-color: var(--accent-deep); background: var(--abu-hover-wash); }
+
+.kg-tablewrap { display: flex; flex-direction: column; gap: 8px; }
+.kg-table { border-collapse: separate; border-spacing: 5px; width: 100%; }
+.kg-corner { width: 34px; }
+.kg-vh { font-family: var(--font-mono); font-size: 0.84rem; color: var(--accent); font-weight: 400; padding-bottom: 2px; }
+.kg-ch { font-family: var(--font-mono); font-size: 0.84rem; color: var(--ink-faded); text-align: center; width: 34px; }
+.kg-cell { padding: 0; }
+.kg-cell.empty { background: transparent; }
+.kg-btn {
+  width: 100%; min-width: 56px; aspect-ratio: 1; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; gap: 2px;
+  background: var(--paper-deep); border: 1px solid var(--rule); border-radius: var(--radius-md);
+  cursor: pointer; transition: all var(--dur-quick) var(--ease-drift);
+}
+.kg-btn:hover { border-color: var(--accent-deep); background: var(--abu-hover-wash); transform: translateY(-1px); }
+.kg-cell.sel .kg-btn { border-color: var(--accent); box-shadow: 0 0 18px -6px rgba(242,166,90,0.4); }
+.kg-cell.rare .kg-btn { opacity: 0.45; }
+.kgc-glyph { font-size: 1.9rem; line-height: 1; color: var(--ink); }
+.kgc-rr { font-family: var(--font-mono); font-size: 0.66rem; color: var(--ink-faded); }
+
+.kg-ncell {
+  display: inline-flex; align-items: center; gap: 12px; align-self: flex-start;
+  margin-left: 39px; padding: 8px 16px; background: var(--paper-deep);
+  border: 1px solid var(--rule); border-radius: var(--radius-md); cursor: pointer;
+  transition: all var(--dur-quick) var(--ease-drift);
+}
+.kg-ncell:hover { border-color: var(--accent-deep); background: var(--abu-hover-wash); }
+.kg-ncell.sel { border-color: var(--accent); }
+.kg-ncell .kgc-glyph { font-size: 1.6rem; }
+.kg-ncell .kgc-rr { font-size: 0.78rem; }
+
+.kg-drawer { display: flex; flex-direction: column; gap: 10px; padding: 16px; background: var(--plate-bg); border: 1px solid var(--rule); border-radius: var(--radius-md); animation: tl-rise var(--dur-base) var(--ease-enter); }
+.kg-drawer-head { font-size: 0.86rem; color: var(--ink-soft); line-height: 1.5; }
+.kg-rare-note { color: var(--ink-faded); font-style: italic; }
+
+.kg-detail {
+  display: flex; align-items: center; gap: 22px; min-height: 96px;
+  padding: 16px 22px; background: var(--plate-bg); border: 1px solid var(--rule);
+  border-radius: var(--radius-lg); box-shadow: var(--abu-card-shadow);
+}
+.kg-detail.has { border-color: var(--gilt-line); }
+.kgd-main { background: var(--paper-deep); border: 1px solid var(--gilt-line); border-radius: var(--radius-md); width: 84px; height: 84px; cursor: pointer; transition: all var(--dur-quick) var(--ease-drift); }
+.kgd-main:hover { background: var(--abu-hover-wash); box-shadow: 0 0 22px -8px rgba(242,166,90,0.35); }
+.kgd-glyph { font-size: 3.4rem; line-height: 1; color: var(--ink); }
+.kgd-info { display: flex; flex-direction: column; gap: 8px; }
+.kgd-rr { font-family: var(--font-mono); font-size: 1.3rem; color: var(--accent); }
+.kgd-twin { display: flex; align-items: center; gap: 10px; }
+.kgd-twin-lbl { font-family: var(--font-mono); font-size: 0.72rem; color: var(--ink-faded); }
+.kgd-twin-glyph { font-size: 1.6rem; color: var(--ink-soft); }
+.kgd-play { font-family: var(--font-mono); font-size: 0.78rem; color: var(--accent); background: var(--paper-deep); border: 1px solid var(--gilt-line); border-radius: var(--radius-sm); padding: 5px 14px; cursor: pointer; align-self: flex-start; transition: all var(--dur-quick) var(--ease-drift); }
+.kgd-play:hover { background: var(--abu-hover-wash); }
+.kgd-empty { font-family: var(--font-mono); font-size: 0.84rem; color: var(--ink-faded); font-style: italic; }
+
 @media (prefers-reduced-motion: reduce) {
-  .tl-reveal { animation: none; }
-  .drill-stage, .lamp, .tl-bar span { transition: none; }
+  .tl-reveal, .kg-drawer { animation: none; }
+  .drill-stage, .lamp, .tl-bar span, .kg-btn { transition: none; }
 }
