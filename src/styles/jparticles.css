@@ -1,0 +1,78 @@
+/* ===========================================================
+   The Polyglot's Atlas — Japanese · the particle cabinet (助詞)
+   Layered on top of particles.css + japanese.css. It REUSES the
+   Korean cabinet's plates (.pcab, .pcard, .pc-*, .pf-*) and only
+   inverts the bridge: the Japanese particle is the headword, the
+   Korean twin is the bridge, marked "한" the way the Korean folio
+   marks its Japanese bridge "日".
+   =========================================================== */
+
+/* the Korean twin in the index chips */
+.pcab.ja .chip-ko {
+  font-family: var(--font-kr-serif);
+  font-size: 11px;
+  color: var(--ink-faded);
+}
+
+/* header twin box — the mirror of .pc-jp */
+.pc-ko {
+  align-self: flex-start;
+  padding: 4px 9px 5px;
+  border: 1px dotted var(--rule-soft);
+  background: color-mix(in srgb, var(--plate-bg) 70%, transparent);
+  text-align: right;
+}
+.pc-ko .kr { font-family: var(--font-kr-serif); font-size: 17px; color: var(--ink-soft); }
+.pc-ko::before {
+  content: "한 ";
+  font-family: var(--font-kr-serif);
+  font-size: 9px;
+  color: var(--accent-deep);
+  vertical-align: 3px;
+}
+.pc-ko-rr {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.04em;
+  color: var(--ink-faded);
+  margin-top: 2px;
+}
+
+/* example bridge line — the mirror of .pc-ex-jp */
+.pc-ex-ko {
+  display: flex;
+  align-items: baseline;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 8px;
+  padding-top: 7px;
+  border-top: 1px dotted var(--rule-soft);
+}
+.pc-ex-ko::before {
+  content: "한";
+  font-family: var(--font-kr-serif);
+  font-size: 9px;
+  color: var(--accent-deep);
+  align-self: center;
+}
+.pc-ex-ko .kr { font-family: var(--font-kr-serif); font-size: 16px; color: var(--ink-soft); }
+.pc-ex-ko .ko-rr {
+  font-family: var(--font-mono);
+  font-size: 9.5px;
+  letter-spacing: 0.04em;
+  color: var(--ink-faded);
+}
+
+/* faces: the bridge column, in Korean */
+.pf-ko {
+  grid-column: 3;
+  grid-row: 1;
+  font-family: var(--font-kr-serif);
+  font-size: 14px;
+  color: var(--ink-faded);
+  text-align: right;
+}
+@media (max-width: 720px) {
+  .pf-ko { grid-column: 1; grid-row: auto; text-align: left; }
+}

@@ -11,12 +11,14 @@ import KoreanCustom from './pages/KoreanCustom.jsx'
 import KoreanRoadmap from './pages/KoreanRoadmap.jsx'
 import JapaneseVerbs from './pages/JapaneseVerbs.jsx'
 import JapaneseAdjectives from './pages/JapaneseAdjectives.jsx'
+import JapaneseParticles from './pages/JapaneseParticles.jsx'
 import JapaneseVocab from './pages/JapaneseVocab.jsx'
 import './styles/base.css'
 import './styles/aburaya.css'
 import './styles/grammar.css'
 import './styles/korean.css'
 import './styles/japanese.css'
+import './styles/jparticles.css'
 import './styles/particles.css'
 import './styles/cognates.css'
 import './styles/roadmap.css'
@@ -44,9 +46,10 @@ const LANGS = [
     id: 'ja', glyph: '日本語', name: 'Japanese', metaGlyph: '文法', font: 'var(--font-cjk-serif)',
     pages: [
       { id: 'grammar', glyph: '文法', label: 'grammar engine', component: JapaneseGrammar },
-      { id: 'verbs',     glyph: '動詞', label: 'verb forge',     component: JapaneseVerbs },
-      { id: 'adjectives', glyph: '形容詞', label: 'adjectives',   component: JapaneseAdjectives },
-      { id: 'vocab',     glyph: '語彙', label: 'word bank',      component: JapaneseVocab },
+      { id: 'verbs',      glyph: '動詞', label: 'verb forge',      component: JapaneseVerbs },
+      { id: 'adjectives', glyph: '形容詞', label: 'adjectives',     component: JapaneseAdjectives },
+      { id: 'particles',  glyph: '助詞', label: 'particle cabinet', component: JapaneseParticles },
+      { id: 'vocab',      glyph: '語彙', label: 'word bank',        component: JapaneseVocab },
     ],
   },
 ]
