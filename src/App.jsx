@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react'
 import JapaneseGrammar from './pages/JapaneseGrammar.jsx'
 import KoreanHangul from './pages/KoreanHangul.jsx'
 import KoreanGrammar from './pages/KoreanGrammar.jsx'
+import KoreanDeixis from './pages/KoreanDeixis.jsx'
 import KoreanVerbs from './pages/KoreanVerbs.jsx'
 import KoreanForms from './pages/KoreanForms.jsx'
 import KoreanParticles from './pages/KoreanParticles.jsx'
@@ -12,6 +13,7 @@ import KoreanSong from './pages/KoreanSong.jsx'
 import KoreanCustom from './pages/KoreanCustom.jsx'
 import KoreanRoadmap from './pages/KoreanRoadmap.jsx'
 import JapaneseKana from './pages/JapaneseKana.jsx'
+import JapaneseDeixis from './pages/JapaneseDeixis.jsx'
 import JapaneseVerbs from './pages/JapaneseVerbs.jsx'
 import JapaneseForms from './pages/JapaneseForms.jsx'
 import JapaneseAdjectives from './pages/JapaneseAdjectives.jsx'
@@ -30,6 +32,7 @@ import './styles/vocab.css'
 import './styles/reading.css'
 import './styles/song.css'
 import './styles/scripts.css'
+import './styles/deixis.css'
 
 // Two-level atlas: language → folio pages within it.
 const LANGS = [
@@ -38,6 +41,7 @@ const LANGS = [
     pages: [
       { id: 'hangul',    glyph: '한글', label: 'hangul forge',     component: KoreanHangul },
       { id: 'grammar',   glyph: '문법', label: 'grammar engine',   component: KoreanGrammar },
+      { id: 'deixis',    glyph: '이그저', label: 'this · that · what', component: KoreanDeixis },
       { id: 'verbs',     glyph: '동사', label: 'verb forge',       component: KoreanVerbs },
       { id: 'forms',     glyph: '활용', label: 'constructions',    component: KoreanForms },
       { id: 'particles', glyph: '조사', label: 'particle cabinet', component: KoreanParticles },
@@ -54,6 +58,7 @@ const LANGS = [
     pages: [
       { id: 'kana',    glyph: '仮名', label: 'kana foundry',   component: JapaneseKana },
       { id: 'grammar', glyph: '文法', label: 'grammar engine', component: JapaneseGrammar },
+      { id: 'deixis',  glyph: 'こそあど', label: 'this · that · what', component: JapaneseDeixis },
       { id: 'verbs',      glyph: '動詞', label: 'verb forge',      component: JapaneseVerbs },
       { id: 'forms',      glyph: '活用', label: 'constructions',   component: JapaneseForms },
       { id: 'adjectives', glyph: '形容詞', label: 'adjectives',     component: JapaneseAdjectives },
