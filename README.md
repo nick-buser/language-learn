@@ -19,7 +19,7 @@ npm run build    # production build to dist/
 
 ## The atlas — two-level navigation
 
-Hash-routed: **language → folio (page)**. e.g. `#/ko/hangul`, `#/ko/phonetics`, `#/ko/grammar`, `#/ko/deixis`, `#/ko/verbs`, `#/ko/forms`, `#/ko/particles`, `#/ja/kana`, `#/ja/grammar`, `#/ja/deixis`, `#/ja/verbs`, `#/ja/forms`, `#/ja/particles`.
+Hash-routed: **language → folio (page)**. e.g. `#/ko/hangul`, `#/ko/phonetics`, `#/ko/grammar`, `#/ko/deixis`, `#/ko/verbs`, `#/ko/forms`, `#/ko/particles`, `#/ja/kana`, `#/ja/phonetics`, `#/ja/grammar`, `#/ja/deixis`, `#/ja/verbs`, `#/ja/forms`, `#/ja/particles`.
 The binding (top bar) selects the language; the sub-strip below it selects the folio.
 Default route is `#/ko/grammar` — Korean is the active study.
 
@@ -51,6 +51,7 @@ double as Korean reinforcement from the side you already know.
 | Folio | Instruments |
 |---|---|
 | **仮名 · the kana foundry** (`#/ja/kana`) | The script entry — ひらがな + カタカナ, gamified and persisted (`atlas.ja.scripts.v1`), spoken via the browser's Web Speech voices. **The gojūon grid** — the 五十音 as the machine it is (five vowels × the consonant series), a ひらがな/カタカナ toggle over one shared skeleton, 濁音/拗音 drawers, tap-to-hear with the twin script shown (ぢ/づ faint, kept out of the drill). **The drill** — the shared recognition engine, with per-script mastery (か and カ learned separately), scoped 基本/濁音/拗音. **The transliteration bench** — 18 hand-checked 外来語 (コーヒー, ブラック, パーティー, マクドナルド…) into カタカナ and back, each romaji **verified to round-trip** the IME, each teaching its adaptation rule (long ー, the small っ, vowel padding, ティ/フォ). The mirror of `#/ko/hangul`'s bench. |
+| **発音 · sound & pitch** (`#/ja/phonetics`) | Phonetics — the honest inverse of `#/ko/phonetics`: hangul *draws* the mouth, but kana is arbitrary (の hides how [no] is made), so this folio is **the sound the script keeps to itself**. Three instruments. **The gojūon mouth-map** — the kana laid over the *shared* side-view (midsagittal) mouth: rows are the consonant series by place (velar カ · alveolar サ/タ · labial/glottal ハ · the sonorants ナ/マ/ラ/ヤ/ワ/ん), columns the **voicing ladder** — 清音 → ＋゛濁音 (voiced) → ＋゜半濁音 (the lone p-series). Tap a kana and its place lights on the mouth while the readout says what the glyph won't: the IPA, the dakuten relation (the ゛ *is* featural — "voice this same place", か→が), and the ✦ **allophones the row hides** (し [ɕ], ち [tɕ], つ [ts], ふ [ɸ], ひ [ç]). The deep cut: only obstruents take ゛ — sonorants are already voiced. **The five-vowel compass** — the real **IPA trapezoid** with the five monophthongs plotted, the thesis being **う = [ɯ]**, close-back but *unrounded*. With the 한국어 bridge on, Korean's **ten** vowels ghost in underneath with connector lines and the **split** vowels lit gold — the promised 5→10 mirror: Korean carves ㅡ/ㅜ and ㅗ/ㅓ apart where Japanese hears one. Plus the length and devoicing footnotes the kana don't show. **The pitch ridge** — lexical **pitch accent**, the layer kana can't write at all: **箸/橋/端** (はし) and **雨/飴** (あめ) are spelling-identical, pitch-distinct. A High/Low ridge over the morae with the accent **drop** marked; tap a mora for its tone or play the ridge (the song folio's tone synth sounds the pitch, the speech seam says the word) — 橋 vs 端 differ *only* on the が, and the graph shows it. The **한국어 bridge** runs the whole way: JP splits consonants by **voice** where KO splits by **breath** (ㄱ/ㅋ/ㄲ), KO splits the back vowels where JP hears one, and JP marks **pitch** where Seoul KO — having lost it — does not. Data: `japanesePhonetics.js` (PLACES, CONSONANTS + SERIES/VOICE_LADDER, VOWELS with the Korean 5→10 bridge, PITCH_WORDS); the side-view mouth is the shared `components/phonetics/SagittalMouth.jsx`, the tones are the song folio's `audio.js`. |
 | **文法 · grammar engine** (`#/ja/grammar`) | **The loom** — particles carry roles, order carries emphasis. **だ・です — the copula** — the copula deep-dive: pick a base (そう / 学生 / きれい), conjugate だ on its own axis (polarity だ/じゃない · tense だ/だった · register だ/です), then cap it with a 終助詞 — ね / よ / よね / か — and the form assembles live (そうだ → そうじゃない → そうだよね → そうじゃないよね), each tail carrying a nuance note (ね seeks agreement, よ asserts, よね both), the plain+か だ-drop called out, and a 한국어 bridge tying the 終助詞 to Korean's verb endings (-지/-네/-거든). **は & が spotlight** — topic vs. selection, plus 象は鼻が長い. (The voice dial moved to 動詞, where it belongs.) |
 | **こそあど · this · that · what** (`#/ja/deixis`) | Pro-forms — the words that point instead of name — the mirror of `#/ko/deixis`. Three instruments. **The こそあど grid** — the demonstrative system as a 4×6 machine: a deictic prefix (こ near me · そ near you · あ yonder · ど the unknown) × a category suffix (れ thing · の this-N · こ place · ちら direction · んな kind · う manner). Tap a cell and it decomposes into prefix + suffix, a diagram lights the post it points at, and the 이것/그것/저것 twin sits inline. The lantern: four prefixes × six suffixes = 24 words for ten parts, the ど-row **is** the question set, and Korean 이/그/저 line up with こ/そ/あ (mid term: そ↔그). Irregular cells (あそこ, ああ) flagged. **Question words** — the non-grid 疑問詞 (何·誰·いつ·なぜ·いくら·いくつ) with a specimen Q each, plus the indefinite machine (＋か *some* · ＋でも *any* · ＋も *none*) bridged to Korean's ＋ㄴ가/든지 / 아무…도. **Personal pronouns** — the formal→blunt rail: 私/僕/俺, the あなた trap, 彼/彼女, with a pro-drop demo (the pronoun struck out), bridged to Korean's humility split (저/나). Data is `japaneseDeixis.js`; the instruments are language-blind, shared with the Korean folio. |
 | **動詞 · verb forge** (`#/ja/verbs`) | The everyday paradigm, in four instruments. **The forge** — the class fork (一段/五段/不規則) drives the stem; tense (non-past · past · progressive) reads down the side, and politeness is pulled out as the **plain \| polite two-lane** across — which surfaces a contrast the old single axis couldn't: the plain past takes 音便 (飲んだ) while the polite past keeps the clean 連用形 (飲みました). Lanterns 活用/音便/不規則; tense-lane cells **derived** from the hand-checked forms. **Negation** — ない/ません as a tense × lane grid + the "can't" row (potential-negative), bridged to Korean's two no's (안 won't / 못 can't — and 못 is exactly where the potential-negative lands). **Politeness** — the lane as its own axis, demonstrating the rule English speakers miss: in a long sentence politeness lands ONCE, on the final verb; every te-form/-고/-아서 clause before it is register-neutral (toggle and only the last word moves). **Voice — the verb dial** — 食べる through plain/passive/causative/causative-passive, tracking 私 (moved here from grammar). |
@@ -85,6 +86,7 @@ src/
   App.jsx                  shell: binding, two-level nav, hash router, global toggles
   pages/
     JapaneseKana.jsx       ja folio — kana foundry (gojūon grid, drill, bench)
+    JapanesePhonetics.jsx  ja folio — phonetics (the mouth-map · vowel compass · pitch ridge)
     JapaneseGrammar.jsx    ja folio — grammar engine
     JapaneseDeixis.jsx     ja folio — こそあど (the grid · question words · pronouns)
     JapaneseVerbs.jsx      ja folio — verb forge (forge tense-lanes · negation · politeness · voice)
@@ -121,6 +123,9 @@ src/
       JapaneseParticleCabinet.jsx ja particle index (drawers + chips → scroll)
       JapaneseParticleCard.jsx    ja one-particle plate (JP head, KO twin)
       KanaGrid.jsx                the 五十音 grid (hira/kata toggle, 濁音/拗音 drawers, tap-to-hear)
+      JapaneseMouthMap.jsx        the gojūon as a mouth-map (place rows × ゛/゜ voicing ladder + allophone ✦ flags)
+      JapaneseVowelChart.jsx      the five-vowel trapezoid + the Korean 5→10 ghost overlay (the う=[ɯ] truth)
+      PitchRidge.jsx              pitch accent — H/L ridge over the morae, the accent drop, tones + speech
     korean/
       KoLoom.jsx           ko loom (with batchim-aware particle swaps)
       BatchimGate.jsx      ko particle allomorphy + jamo decomposition
@@ -188,6 +193,9 @@ src/
   data/
     grammarData.js         ja grammar content (loom, the だ/です COPULA dive, voice-dial data, は/が)
     japaneseKana.js        ja kana foundry — gojūon + 濁音/拗音, tap-pad layout, 外来語 word list
+    japanesePhonetics.js   ja phonetics folio — PLACES, CONSONANTS (+ SERIES/VOICE_LADDER,
+                           the hidden allophones), VOWELS (+ the Korean 5→10 vowel bridge),
+                           PITCH_WORDS (standard-Tokyo accent); the sound the kana hides, hand-checked
     japaneseVerbs.js       ja verb forge — 9 verbs × forms, class; tense-lane/negation derivations
                            (tenseCells/negCells) + POLITENESS data + Korean twins
     japaneseForms.js       ja 活用 folio — the te-compounds, the 4 conditionals, volitional+imperative
@@ -240,7 +248,8 @@ src/
     song.css               the song (transport, lyric band, melody roll, diction, harvest)
     scripts.css            the script foundries (keyboardless IME, drill, gojūon grid, hangul builder, bench)
     deixis.css             the deixis folio (grid + readout & diagram, question/indefinite tables, pronoun rail)
-    phonetics.css          the phonetics folio (consonant ladder + sagittal mouth, vowel trapezoid + racks)
+    phonetics.css          the 소리 phonetics folio (consonant ladder + sagittal mouth, vowel trapezoid + racks)
+    jphonetics.css         the 発音 phonetics folio (mouth-map, vowel compass, pitch ridge) — extends phonetics.css
 tools/
   seed-dictionary.mjs      frequency list + gloss adapter → DictionaryEntry JSON (the seeder);
                            --adapter=manual (offline, the hand bank) | krdict (key + licensing)
@@ -264,6 +273,14 @@ The **소리 (phonetics) folio**'s shape↔sound correspondences — the five or
 stroke-ladder, and the ·/ㅡ/ㅣ vowel geometry — are sourced from the **訓民正音 해례본 (Hunminjeongeum
 Haerye, 1446)**, the explanatory volume in which the script's inventors set down how each letter
 depicts its articulation. IPA values are broad Seoul-standard; the vowel-trapezoid plot is schematic.
+
+The **発音 (Japanese phonetics) folio** plots broad Tokyo-standard IPA values; its pitch-accent
+patterns (箸/橋/端, 雨/飴, and one word of each of the four accent types) are standard Tokyo
+(NHK-style) accentuation. The vowel-trapezoid plot and the Korean 5→10 overlay are schematic, and
+the dakuten/handakuten "featural" reading is the systematic truth of the *gojūon order*, not of the
+arbitrary kana glyph shapes. Pitch is heard as synthesized tones (the song folio's `audio.js`),
+so it plays independent of any installed system voice. The IPA, allophony, and bridge content are
+hand-authored.
 
 ## Design system
 
