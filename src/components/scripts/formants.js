@@ -58,6 +58,18 @@ function loadLib() {
   return libPromise
 }
 
+// ---- debug logging ------------------------------------------------------
+// The mic path is hard to debug blind: mel-bin units, ~2s segment latency, a
+// worklet fetched off a CDN. So every reading, capture, and fit funnels through
+// flog() — ON by default; set localStorage 'atlas.formant.debug' = '0' to
+// silence it. Prefixed [発声] so it filters cleanly in the console.
+export const FORMANT_DEBUG = (() => {
+  try { return window.localStorage.getItem('atlas.formant.debug') !== '0' } catch { return true }
+})()
+export function flog(...args) {
+  if (FORMANT_DEBUG) console.log('%c[発声]', 'color:#A9CBE4;font-weight:bold', ...args)
+}
+
 // Median of a numeric array (the steady centre of a held vowel beats the
 // onset/offset wobble that a mean would smear).
 function median(xs) {
@@ -68,31 +80,37 @@ function median(xs) {
 }
 
 // Reduce one voiced segment (an array of 9-wide frames) to a single steady
-// reading. Trim the outer 20% of frames (vowel transitions in and out), keep
-// only frames where both F1 and F2 are actually present, then take medians.
-// Returns null if the segment was too thin or noisy to trust.
+// reading, keeping frames where both F1 and F2 are present and taking medians.
+// Deliberately lax — one usable frame is enough — so short or noisy utterances
+// still yield SOMETHING to look at rather than silently vanishing; the reading
+// carries its own frame bookkeeping (nRaw/dropped) for the debug log.
 function reduceSegment(frames) {
-  if (!Array.isArray(frames) || frames.length < 3) return null
-  const lo = Math.floor(frames.length * 0.2)
-  const hi = Math.ceil(frames.length * 0.8)
-  const core = frames.slice(lo, hi)
+  if (!Array.isArray(frames) || frames.length < 1) return null
+  // Trim onset/offset transitions only when the segment is long enough to spare
+  // them — short utterances keep every frame rather than starve the medians.
+  const core = frames.length >= 6
+    ? frames.slice(Math.floor(frames.length * 0.2), Math.ceil(frames.length * 0.8))
+    : frames
   const f1 = [], f2 = [], f3 = [], en = []
+  let dropped = 0
   for (const fr of core) {
-    if (!fr || fr.length < 6) continue
+    if (!fr || fr.length < 6) { dropped++; continue }
     const a = fr[F1_BIN], b = fr[F2_BIN]
-    if (a > 0 && b > 0 && b > a) {          // both formants found, F2 above F1
+    if (a > 0 && b > 0 && b > a) {          // both formants present, F2 above F1
       f1.push(a); f2.push(b)
       if (fr[F3_BIN] > 0) f3.push(fr[F3_BIN])
       en.push((fr[F1_EN] || 0) + (fr[F2_EN] || 0))
-    }
+    } else dropped++
   }
-  if (f1.length < 2) return null
+  if (!f1.length) return null
   return {
     f1: median(f1),
     f2: median(f2),
     f3: f3.length ? median(f3) : null,
     energy: median(en),
     nFrames: f1.length,
+    nRaw: frames.length,
+    dropped,
   }
 }
 
@@ -141,11 +159,19 @@ export function fitCalibration(samples) {
     tx1 += f1 * x; tx2 += f2 * x; tx += x
     ty1 += f1 * y; ty2 += f2 * y; ty += y
   }
-  const M = [[s11, s12, s1], [s12, s22, s2], [s1, s2, n]]
+  // A tiny ridge on the diagonal keeps the fit from HARD-failing on a thin or
+  // degenerate vowel triangle (two anchors that landed on the same bins). The
+  // map may be rough, but the learner gets a dot instead of a dead end — and the
+  // log below shows exactly which anchors collided. λ is negligible against the
+  // data scale (mel bins ~0–127), so a clean triple is essentially unchanged.
+  const lambda = 1e-3
+  const M = [[s11 + lambda, s12, s1], [s12, s22 + lambda, s2], [s1, s2, n + lambda]]
   const px = solve3(M, [tx1, tx2, tx])
   const py = solve3(M, [ty1, ty2, ty])
-  if (!px || !py) return null
-  return { ax: px[0], bx: px[1], cx: px[2], ay: py[0], by: py[1], cy: py[2] }
+  if (!px || !py) { flog('fit FAILED — singular even with ridge', samples); return null }
+  const cal = { ax: px[0], bx: px[1], cx: px[2], ay: py[0], by: py[1], cy: py[2] }
+  flog('fit OK from', samples.map(s => `(${s.f1},${s.f2})→(${s.x},${s.y})`).join('  '))
+  return cal
 }
 
 /** Apply a fitted calibration to a reading → trapezoid {x,y} (unclamped). */
@@ -217,7 +243,15 @@ export async function startListening({ onReading, onError, onStop } = {}) {
   // The callback fires per segment: (index, label, [start,dur], frames).
   async function onSegment(_i, _label, _ts, frames) {
     const reading = reduceSegment(frames)
-    if (reading) onReading?.(reading)
+    if (reading) {
+      flog('segment →',
+        `F1=${reading.f1} F2=${reading.f2} F3=${reading.f3 ?? '–'}`,
+        `(${reading.nFrames}/${reading.nRaw} frames, ${reading.dropped} dropped, E=${Math.round(reading.energy)})`)
+      onReading?.(reading)
+    } else {
+      flog('segment dropped — no usable F1+F2 frames',
+        Array.isArray(frames) ? `(raw=${frames.length})` : '(no frames)')
+    }
   }
 
   active = true

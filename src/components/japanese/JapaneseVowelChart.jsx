@@ -6,7 +6,7 @@ import {
   VOICE_CALIBRATION, VOICE_LANTERN,
 } from '../../data/japanesePhonetics.js'
 import { speak, primeSpeech, speechSupported, hasVoice } from '../scripts/speech.js'
-import { formantsSupported, startListening, fitCalibration, mapFormants } from '../scripts/formants.js'
+import { formantsSupported, startListening, fitCalibration, mapFormants, flog } from '../scripts/formants.js'
 
 // INSTRUMENT II — 母音 the vowel compass.
 // One trapezoid, three views the learner switches between:
@@ -277,14 +277,17 @@ export default function JapaneseVowelChart({ showReadings = true, showJp = true 
     const job = calibratingRef.current
     if (job) {
       const anchor = VOICE_CALIBRATION.anchors[job.step]
+      const n = VOICE_CALIBRATION.anchors.length
+      flog(`capture ${job.step + 1}/${n} [${anchor.vowel}] → F1=${r.f1} F2=${r.f2} F3=${r.f3 ?? '–'}`)
       const samples = [...job.samples, { vowel: anchor.vowel, f1: r.f1, f2: r.f2 }]
       const nextStep = job.step + 1
-      if (nextStep >= VOICE_CALIBRATION.anchors.length) {
+      if (nextStep >= n) {
+        flog('calibration triple:', samples.map(s => `${s.vowel}(${s.f1},${s.f2})`).join('  '))
         const fitPts = samples.map(s => { const t = byId[s.vowel]; return { f1: s.f1, f2: s.f2, x: t.x, y: t.y } })
         const coeffs = fitCalibration(fitPts)
         stopMic()
         if (coeffs) { calRef.current = coeffs; setCal(coeffs); saveCal(coeffs); setReading(null); setDots([]) }
-        else { setMicError('Calibration didn’t take — try again, holding each vowel steadily in a quiet spot.') }
+        else { setMicError('Calibration couldn’t fit those three — open the console (filter “発声”) to see what was captured.') }
       } else {
         calibratingRef.current = { step: nextStep, samples }
         setCalStep(nextStep)
@@ -295,6 +298,7 @@ export default function JapaneseVowelChart({ showReadings = true, showJp = true 
     const p = mapFormants(calRef.current, r.f1, r.f2)
     if (!p) return
     const x = clamp01(p.x), y = clamp01(p.y)
+    flog(`reading → F1=${r.f1} F2=${r.f2} → x=${p.x.toFixed(2)} y=${p.y.toFixed(2)}${(x !== p.x || y !== p.y) ? ' (clamped)' : ''}`)
     setDots(prev => [...prev, { x, y }].slice(-6))
     setReading(describePlacement(x, y))
     if (!litVoiceRef.current) { litVoiceRef.current = true; setLitVoice(true) }
