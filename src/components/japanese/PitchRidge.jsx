@@ -24,27 +24,68 @@ const Y_LOW = 96
 // ── the learner's voice trace ──
 // Pitch accent is RELATIVE, so we normalise the spoken F0 into the 高/低 band
 // (robust 10–90th percentile, with a floor so a near-monotone take doesn't blow
-// up) and lay time out left→right at a fixed rate from the first voiced frame —
-// shape over the target, not snapped to morae. Voiced runs break at consonants.
+// up) and lay time out left→right at a fixed rate — shape over the target, not
+// snapped to morae. These are single words, so we DON'T want every millisecond
+// of drift: raw MPM jitters and throws the odd octave glitch, and the clarity
+// gate punches a gap at each voiceless consonant. So we bridge short gaps, fold
+// octave errors toward the median, then median-despike + moving-average smooth.
 const PX_PER_SEC = 150
+const GAP_BRIDGE_MS = 200   // unvoiced gaps shorter than this are drawn through
+const MED_WIN = 5           // median despike window (samples)
+const SMOOTH_WIN = 7        // moving-average window (samples)
+
+function median(arr) {
+  const s = [...arr].sort((a, b) => a - b)
+  const m = s.length >> 1
+  return s.length % 2 ? s[m] : (s[m - 1] + s[m]) / 2
+}
+function windowed(xs, win, fn) {
+  const half = win >> 1
+  return xs.map((_, i) => fn(xs.slice(Math.max(0, i - half), Math.min(xs.length, i + half + 1))))
+}
+
 function contourFromTrace(trace) {
   const voiced = trace.filter(f => f.voiced && f.hz)
-  if (voiced.length < 2) return { paths: [], head: null }
-  const sorted = voiced.map(f => f.hz).sort((a, b) => a - b)
-  const pct = p => sorted[Math.min(sorted.length - 1, Math.max(0, Math.round(p * (sorted.length - 1))))]
+  if (voiced.length < 3) return { paths: [], head: null }
+
+  // 1) split into segments only at LONG gaps; short ones (voiceless consonants)
+  //    stay in one segment so the line draws through them.
+  const segs = []
+  let cur = [voiced[0]]
+  for (let i = 1; i < voiced.length; i++) {
+    if (voiced[i].t - voiced[i - 1].t > GAP_BRIDGE_MS) { segs.push(cur); cur = [] }
+    cur.push(voiced[i])
+  }
+  if (cur.length) segs.push(cur)
+
+  // 2) per segment: fold octave glitches toward the median, then despike + smooth.
+  const smoothed = segs.map(seg => {
+    const med = median(seg.map(f => f.hz))
+    let hz = seg.map(f => {
+      let v = f.hz
+      while (v > med * 1.6) v /= 2
+      while (v < med / 1.6) v *= 2
+      return v
+    })
+    hz = windowed(hz, MED_WIN, median)
+    hz = windowed(hz, SMOOTH_WIN, a => a.reduce((s, v) => s + v, 0) / a.length)
+    return seg.map((f, i) => ({ t: f.t, hz: hz[i] }))
+  }).filter(s => s.length >= 2)
+  if (!smoothed.length) return { paths: [], head: null }
+
+  // 3) normalise the smoothed F0 into the 高/低 band, lay time out from the start.
+  const all = smoothed.flat().map(p => p.hz).sort((a, b) => a - b)
+  const pct = p => all[Math.min(all.length - 1, Math.max(0, Math.round(p * (all.length - 1))))]
   let lo = pct(0.1), hi = pct(0.9)
   if (hi - lo < 12) { const m = (hi + lo) / 2; lo = m - 8; hi = m + 8 }
-  const t0 = voiced[0].t
+  const t0 = smoothed[0][0].t
   const mapX = t => X0 + ((t - t0) / 1000) * PX_PER_SEC
   const mapY = hz => Y_LOW - Math.max(0, Math.min(1, (hz - lo) / (hi - lo))) * (Y_LOW - Y_HIGH)
-  const runs = []; let cur = []
-  for (const f of trace) {
-    if (f.voiced && f.hz && f.t >= t0) cur.push(`${mapX(f.t).toFixed(1)},${mapY(f.hz).toFixed(1)}`)
-    else if (cur.length) { runs.push(cur); cur = [] }
-  }
-  if (cur.length) runs.push(cur)
-  const last = voiced[voiced.length - 1]
-  return { paths: runs.filter(r => r.length >= 2).map(r => r.join(' ')), head: [mapX(last.t), mapY(last.hz)] }
+
+  const paths = smoothed.map(seg => seg.map(p => `${mapX(p.t).toFixed(1)},${mapY(p.hz).toFixed(1)}`).join(' '))
+  const lastSeg = smoothed[smoothed.length - 1]
+  const lastPt = lastSeg[lastSeg.length - 1]
+  return { paths, head: [mapX(lastPt.t), mapY(lastPt.hz)] }
 }
 
 function pitchErrText(err) {
