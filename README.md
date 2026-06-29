@@ -19,7 +19,7 @@ npm run build    # production build to dist/
 
 ## The atlas — two-level navigation
 
-Hash-routed: **language → folio (page)**. e.g. `#/ko/hangul`, `#/ko/grammar`, `#/ko/deixis`, `#/ko/verbs`, `#/ko/forms`, `#/ko/particles`, `#/ja/kana`, `#/ja/grammar`, `#/ja/deixis`, `#/ja/verbs`, `#/ja/forms`, `#/ja/particles`.
+Hash-routed: **language → folio (page)**. e.g. `#/ko/hangul`, `#/ko/phonetics`, `#/ko/grammar`, `#/ko/deixis`, `#/ko/verbs`, `#/ko/forms`, `#/ko/particles`, `#/ja/kana`, `#/ja/grammar`, `#/ja/deixis`, `#/ja/verbs`, `#/ja/forms`, `#/ja/particles`.
 The binding (top bar) selects the language; the sub-strip below it selects the folio.
 Default route is `#/ko/grammar` — Korean is the active study.
 
@@ -28,6 +28,7 @@ Default route is `#/ko/grammar` — Korean is the active study.
 | Folio | Instruments |
 |---|---|
 | **한글 · the hangul forge** (`#/ko/hangul`) | The script, gamified — the entry folio, persisted to `localStorage` (`atlas.ko.scripts.v1`), spoken by the browser's Web Speech voices (the `speech.js` seam — a recorded/Kokoro engine swaps in later, no instrument change). **The block builder** — hangul's whole idea as a machine: a syllable is a 초성 + 중성 (+ 받침) you *stack*, composed by real Unicode arithmetic (the inverse of `romanize.js`, via `ime.js`'s `composeBlock`), heard and read in RR; the 받침 panel makes the **seven-sounds rule** *felt* — pick ㅅ/ㅈ/ㅌ as a final and the block still sounds [t] — and fires the lantern that ties neutralization to liaison/assimilation. **The drill** — the 40 jamo to reflex: four-option recognition in three directions (jamo→sound · sound→jamo · hear→jamo), weighted toward the least-mastered, a streak + a lamp strip that fills faint→gold, scoped to 자음(plain · aspirate/tense)/모음(basic · y·w). **The transliteration bench** — 18 hand-checked 외래어 (커피, 아이스크림, 맥도날드, 택시, 핑크…) crossing into 한글 — typed on a **keyboardless romaja IME** (an inline composition automaton; g=ㄱ, k=ㅋ, ng=받침 ㅇ) or a 자모 tap pad — and back to English, each landing rewarded with the adaptation rule (no f→ㅍ, the echo ㅡ, the seven-sounds 받침). The **仮名 bridge** frames it: kana is ~100 syllables to *memorize*, hangul ~40 parts to *assemble*. The deliberate mirror of `#/ja/kana`'s bench (ㅡ-padding vs ウ-padding, the same loanwords adapted twice). |
+| **소리 · sound & shape** (`#/ko/phonetics`) | Phonetics — the **featural** script read as what it is: a diagram of the mouth. Two instruments. **The articulators** — the 자음 as a map of the speech organs: rows are the five 오음 (velar ㄱ · alveolar ㄴ · labial ㅁ · sibilant ㅅ · glottal ㅇ), columns the **stroke-ladder** (base pictograph → ＋획 stop → ＋획 aspirate → doubled tense). Tap a letter and its place lights on a **side-view (midsagittal) mouth** while the readout tells the shape story from the 訓民正音 해례본 (ㄱ *draws the tongue-root blocking the throat*, ㅁ *the mouth*, ㅅ *a tooth*; ＋one stroke = ＋one breath) — or flags the renegades: **ㄹ** drawn off the system (이체자), the **tense** series doubling instead of adding a stroke, initial **ㅇ** a silent seat. **The vowel compass** — the real **IPA trapezoid** (front↔back × close↔open) with every monophthong plotted, laid *under* the ·/ㅡ/ㅣ geometry. The thesis is honest: the dot's side is **음양 (yin-yang harmony)**, not tongue height — and for the four basic vowels (ㅏㅗ bright → -아, ㅓㅜ dark → -어) that split **is** the verb forge's 아/어 fork — while a **doubled dot** = a y-glide (ㅏ→ㅑ), an added **ㅣ** = the front vowels ㅐ/ㅔ, a **stacked pair** = a w-glide (ㅗ+ㅏ=ㅘ). Both views sit at once so you can see where shape and mouth rhyme — and where the geometry, being cosmological, politely parts from the trapezoid. Data: `koreanPhonetics.js` — the phonetics-API schema (PLACES, CONSONANTS with iconic origins + exception flags, VOWELS with trapezoid coords + build + harmony), hand-checked against the 해례본. |
 | **문법 · grammar engine** (`#/ko/grammar`) | **The loom** — drag particle-tagged phrases; word order is free, the verb anchors the end. **The gate** — 받침 (batchim) particle allomorphy: pick a noun, watch 은/는·이/가·을/를·과/와·(으)로 re-tailor themselves, with jamo decomposition and liaison romanization. **은/는 & 이/가 spotlight** — topic vs. selection, with the elephant sentence (코끼리는 코가 길어요 / 象は鼻が長い) aligned in both languages. |
 | **이·그·저 · this · that · what** (`#/ko/deixis`) | The pro-forms — words that fill a noun slot by *pointing* instead of naming — mirrored against Japanese こそあど. Three instruments. **The 이·그·저 grid** — the demonstrative system as a 4×6 machine: a deictic prefix (이 near me · 그 by you · 저 yonder · 어- the unknown) × a category suffix (thing/this-N/place/direction/kind/manner). Tap a cell and it splits into prefix + suffix, a speaker/listener/yonder diagram lights the post it points at, and the これ/それ/あれ twin slots in beside it. The lantern is the transfer — 이/그/저 map onto こ/そ/あ almost square for square (trust the *mid* term: 그↔そ, not あ), and the 어-row **is** the question set — set against Korean's counter-lesson, looser bolts: the place row fuses (여기·거기, not ✗이기) and the 어-question row (어디·어떤·어떻게, 무엇) shares no clean suffix, where Japanese keeps its ど-row perfectly regular. **Question words** — the non-grid 의문사 (무엇·누구·언제·왜·얼마·몇) each with a specimen Q&A, plus the indefinite machine (＋ㄴ가 *some* · ＋든지 *any* vs the 아무…도 *none* stem-swap), bridged to Japanese's ＋か/でも/も. **Personal pronouns** — the register ladder: 저/나, the 당신 trap, 그/그녀, ranked formal→blunt with a pro-drop demo (the pronoun struck out); the thesis is humility-not-gender against Japanese 私/僕/俺, plus the 저 = "I" / "that" pun that ties back to the grid. Data: `koreanDeixis.js`; the grid/question/pronoun instruments are language-blind (`components/deixis/`), shared with `#/ja/deixis`. |
 | **동사 · verb forge** (`#/ko/verbs`) | **The forge** — vowel-harmony conjugation (6 verbs × present/past/future) showing the bright/dark/하 fork and every fusion. **The register dial** — the four speech levels (합쇼체/해요체/해체/해라체) on one sentence, with a 2×2 formality×politeness map, social-distance scene, K-drama field notes, and an independent **-시-** subject-honor toggle. **안 & 못 spotlight** — the two negations: will vs. ability. |
@@ -91,6 +92,7 @@ src/
     JapaneseAdjectives.jsx ja folio — the い/な adjective bench
     JapaneseParticles.jsx  ja folio — particle cabinet (reverse bridge + 終助詞)
     KoreanHangul.jsx       ko folio — hangul forge (block builder, drill, bench)
+    KoreanPhonetics.jsx    ko folio — phonetics (the articulators · the vowel compass)
     KoreanGrammar.jsx      ko folio — grammar engine
     KoreanDeixis.jsx       ko folio — 이·그·저 (the grid · question words · pronouns)
     KoreanVerbs.jsx        ko folio — verb forge
@@ -142,6 +144,9 @@ src/
       PracticeLedger.jsx   ko habit dots + weekly check-in journal
       useRoadmapStore.js   ko progress persistence (localStorage; backend-shaped)
       HangulBuilder.jsx    ko block builder (초성+중성+받침 → Unicode compose, 받침 seven-sounds)
+      SagittalMouth.jsx    ko midsagittal vocal-tract diagram (lights the active place)
+      ConsonantArticulators.jsx ko the 5-organ consonant map + stroke ladder + IPA + mouth
+      VowelCompass.jsx     ko IPA vowel trapezoid + the ·/ㅡ/ㅣ geometry + 음양 harmony
     deixis/                language-blind pro-form instruments (fed per-lang: こそあど / 이·그·저)
       DeixisGrid.jsx       the demonstrative grid — prefix+suffix decomposition, deixis diagram, inline twin
       QuestionWords.jsx    interrogatives + specimen Q&A + the indefinite paradigm (some/any/none)
@@ -191,6 +196,9 @@ src/
     japaneseDeixis.js      ja こそあど folio — SERIES×CATEGORIES+GRID, question words + indefinites,
                            pronouns; CONFIG names script vs. bridge so components stay language-blind
     koreanHangul.js        ko hangul forge — jamo (+RR+voiceable exemplars), builder inventories, 자모 pad, 외래어
+    koreanPhonetics.js     ko phonetics folio — PLACES (오음), CONSONANTS (iconic origin +
+                           exception flags), VOWELS (IPA trapezoid coords + ·/ㅡ/ㅣ build +
+                           음양 harmony); the featural shape↔sound map, hand-checked vs the 해례본
     koreanData.js          ko content (hangul + RR + JP bridges, hand-checked)
     koreanForms.js         ko 활용 folio — connective compounds, the conditional family,
                            vol/imp forms, voice (lexical + productive); imports FORGE_VERBS
@@ -231,6 +239,7 @@ src/
     song.css               the song (transport, lyric band, melody roll, diction, harvest)
     scripts.css            the script foundries (keyboardless IME, drill, gojūon grid, hangul builder, bench)
     deixis.css             the deixis folio (grid + readout & diagram, question/indefinite tables, pronoun rail)
+    phonetics.css          the phonetics folio (consonant ladder + sagittal mouth, vowel trapezoid + racks)
 tools/
   seed-dictionary.mjs      frequency list + gloss adapter → DictionaryEntry JSON (the seeder);
                            --adapter=manual (offline, the hand bank) | krdict (key + licensing)
@@ -249,6 +258,11 @@ Open API, the Basic Korean Dictionary of the **National Institute of Korean Lang
 (<https://krdict.korean.go.kr>). Used here for private study with gratitude; the institute and the
 dictionary are credited in the app itself (the 어휘 folio) and in the generated `ko.json`. The
 Japanese bridges, specimen sentences, and the cognate/grammar/song content are hand-authored.
+
+The **소리 (phonetics) folio**'s shape↔sound correspondences — the five organ-pictographs, the
+stroke-ladder, and the ·/ㅡ/ㅣ vowel geometry — are sourced from the **訓民正音 해례본 (Hunminjeongeum
+Haerye, 1446)**, the explanatory volume in which the script's inventors set down how each letter
+depicts its articulation. IPA values are broad Seoul-standard; the vowel-trapezoid plot is schematic.
 
 ## Design system
 
