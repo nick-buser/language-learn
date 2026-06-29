@@ -400,6 +400,21 @@ export const PITCH_PAIRS = {
   ame:   { kana: 'あめ', en: 'あめ is 雨 (rain) falling or 飴 (candy) rising — same two kana.' },
 }
 
+/** The 発声 overlay for the pitch ridge — say a word, trace your own melody over
+ *  the target. Pitch accent is RELATIVE, so this needs no calibration: the
+ *  contour is normalised into the 高/低 band and lined up by SHAPE, not snapped
+ *  to each mora. Copy only; the mechanics live in the pitch seam. */
+export const PITCH_VOICE = {
+  say: 'say it',
+  stop: 'stop',
+  again: 'say again',
+  clear: 'clear',
+  listening: 'listening — say the word',
+  hint: 'Your voice traces in sky over the target. Watch whether your pitch drops where the accent does — the shape is the point, not the exact spot.',
+  noMic: 'No microphone here — the ridge still plays its tones; the live trace needs mic access over a secure (https / localhost) connection.',
+  experimental: 'experimental · read live and lined up by shape, not snapped to each mora',
+}
+
 /** The 한국어 bridge for the consonants — the reverse of the Korean folio's
  *  "Japanese gives you one k". Chosen by category in the mouth-map readout. */
 export const CONSONANT_BRIDGE = {
