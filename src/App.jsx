@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import JapaneseGrammar from './pages/JapaneseGrammar.jsx'
 import KoreanHangul from './pages/KoreanHangul.jsx'
+import KoreanPhonetics from './pages/KoreanPhonetics.jsx'
 import KoreanGrammar from './pages/KoreanGrammar.jsx'
 import KoreanDeixis from './pages/KoreanDeixis.jsx'
 import KoreanVerbs from './pages/KoreanVerbs.jsx'
@@ -33,6 +34,7 @@ import './styles/reading.css'
 import './styles/song.css'
 import './styles/scripts.css'
 import './styles/deixis.css'
+import './styles/phonetics.css'
 
 // Two-level atlas: language → folio pages within it.
 const LANGS = [
@@ -40,6 +42,7 @@ const LANGS = [
     id: 'ko', glyph: '한국어', name: 'Korean', metaGlyph: '문법', font: 'var(--font-kr-serif)',
     pages: [
       { id: 'hangul',    glyph: '한글', label: 'hangul forge',     component: KoreanHangul },
+      { id: 'phonetics', glyph: '소리', label: 'sound & shape',     component: KoreanPhonetics },
       { id: 'grammar',   glyph: '문법', label: 'grammar engine',   component: KoreanGrammar },
       { id: 'deixis',    glyph: '이그저', label: 'this · that · what', component: KoreanDeixis },
       { id: 'verbs',     glyph: '동사', label: 'verb forge',       component: KoreanVerbs },

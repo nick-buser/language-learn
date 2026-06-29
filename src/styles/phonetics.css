@@ -1,0 +1,273 @@
+/* ===========================================================
+   The Polyglot's Atlas — 소리 · phonetics (sound ↔ shape)
+   Two instruments: the consonant articulators (organ map + side-view
+   mouth + stroke ladder) and the vowel compass (IPA trapezoid + the
+   ·/ㅡ/ㅣ geometry). Reuses .loom-prompt, .lantern-note, .kr; all colour
+   from aburaya.css tokens.
+   =========================================================== */
+
+/* ---- shared readout shell ---------------------------------------- */
+.cn-readout, .vc-readout, .vc-main {
+  display: flex;
+  gap: 26px;
+}
+.cn-readout, .vc-main { margin-top: 22px; flex-wrap: wrap; align-items: stretch; }
+
+/* harmony pigments (within tokens) */
+.harm-bright  { --harm: var(--amber); }
+.harm-dark    { --harm: var(--st-travel); }
+.harm-neutral { --harm: var(--ink-faded); }
+
+/* =====================================================================
+   INSTRUMENT I — 자음 the articulators
+   ===================================================================== */
+.cn-grid-wrap { overflow-x: auto; margin-top: 16px; }
+.cn-grid {
+  width: 100%;
+  border-collapse: separate;
+  border-spacing: 6px;
+  min-width: 560px;
+}
+.cn-grid thead th {
+  vertical-align: bottom;
+  padding: 4px 6px 8px;
+  text-align: center;
+}
+.cn-corner {
+  text-align: left !important;
+  font-family: var(--font-mono);
+  font-size: 9px; letter-spacing: 0.16em; text-transform: uppercase;
+  color: var(--ink-faded);
+}
+.cn-col-k {
+  display: block; font-family: var(--font-kr-serif);
+  font-size: 15px; color: var(--accent); margin-bottom: 3px;
+}
+.cn-col-k:not(.kr) { font-family: var(--font-display); }
+.cn-col-l {
+  display: block; font-family: var(--font-mono);
+  font-size: 8.5px; letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--ink-faded); line-height: 1.4;
+}
+
+.cn-rowhead {
+  text-align: left;
+  padding: 6px 12px 6px 4px;
+  border-right: 1px solid var(--rule-soft);
+  white-space: nowrap;
+}
+.cn-rowhead .cn-hanja {
+  display: block; font-family: var(--font-cjk-serif);
+  font-size: 18px; color: var(--ink-soft);
+}
+.cn-rowhead.active .cn-hanja { color: var(--accent); }
+.cn-place-en { display: block; font-size: 11.5px; color: var(--ink-soft); margin-top: 1px; }
+.cn-place-ko { display: block; font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.04em; color: var(--ink-faded); }
+
+.cn-cell { text-align: center; vertical-align: middle; }
+.cn-cell.empty { opacity: 0.5; }
+.cn-dash { color: var(--ink-faded); font-size: 18px; }
+.cn-cell.tense-bin { display: flex; gap: 5px; justify-content: center; align-items: center; flex-wrap: wrap; }
+
+/* the glyph tile (used in cells and the tense bin) */
+.cn-glyph {
+  display: inline-flex; flex-direction: column; align-items: center; gap: 1px;
+  width: 100%; min-width: 56px; padding: 8px 6px 6px;
+  background: var(--paper-deep);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  transition: border-color var(--dur-quick) var(--ease-drift),
+              background var(--dur-quick) var(--ease-drift),
+              box-shadow var(--dur-quick) var(--ease-drift);
+}
+.cn-cell.tense-bin .cn-glyph { width: auto; min-width: 44px; }
+.cn-glyph:hover { background: var(--abu-hover-wash); border-color: var(--abu-card-border-hover); }
+.cn-glyph.active {
+  border-color: var(--accent);
+  background: var(--abu-current-wash);
+  box-shadow: 0 0 22px -8px rgba(242,166,90,0.55);
+}
+.cn-glyph .cn-jamo { font-size: 26px; line-height: 1; color: var(--ink); }
+.cn-glyph.active .cn-jamo { color: var(--accent); }
+.cn-glyph .cn-ipa { font-family: var(--font-mono); font-size: 10px; color: var(--ink-faded); }
+.cn-glyph.flagged { border-style: dashed; }
+.cn-flag {
+  position: absolute; margin: -8px 0 0 30px;
+  color: var(--signal-lit); font-size: 9px;
+}
+.cn-glyph { position: relative; }
+
+/* readout */
+.cn-readout-left { flex: 1 1 320px; min-width: 280px; }
+.cn-readout-right {
+  flex: 0 1 260px; display: flex; flex-direction: column; align-items: center;
+  justify-content: center; gap: 8px;
+  border: 1px solid var(--gilt-line); border-radius: var(--radius-md);
+  background:
+    radial-gradient(120% 90% at 50% 0%, rgba(242,166,90,0.05) 0%, transparent 60%),
+    var(--paper-deep);
+  padding: 14px;
+}
+.cn-headline { display: flex; align-items: center; gap: 18px; }
+.cn-big { font-size: 76px; line-height: 0.9; color: var(--accent); text-shadow: 0 0 26px rgba(242,166,90,0.3); }
+.cn-headmeta { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.cn-big-ipa { font-family: var(--font-mono); font-size: 22px; color: var(--ink); }
+.cn-rr { font-family: var(--font-mono); font-size: 12px; color: var(--ink-faded); letter-spacing: 0.06em; }
+.cn-hear, .vc-hear {
+  margin-top: 2px; padding: 4px 10px;
+  font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em;
+  color: var(--ink-soft); background: transparent;
+  border: 1px solid var(--rule); border-radius: 999px; cursor: pointer;
+  transition: color var(--dur-quick), border-color var(--dur-quick);
+}
+.cn-hear:hover, .vc-hear:hover { color: var(--accent); border-color: var(--gilt-line); }
+.cn-hear .kr, .vc-hear .kr { font-size: 12px; }
+
+.cn-tags, .vc-tags { display: flex; flex-wrap: wrap; gap: 7px; margin-top: 14px; }
+.cn-tag, .vc-tag {
+  font-family: var(--font-mono); font-size: 9.5px; letter-spacing: 0.05em;
+  text-transform: uppercase; color: var(--ink-soft);
+  padding: 3px 9px; border: 1px solid var(--rule); border-radius: 999px;
+}
+.cn-tag.phon-aspirate { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 50%, transparent); }
+.cn-tag.phon-tense { color: var(--signal-lit); border-color: color-mix(in srgb, var(--signal-lit) 50%, transparent); }
+.cn-tag.phon-silent, .cn-tag.phon-sonorant { color: var(--st-travel); border-color: color-mix(in srgb, var(--st-travel) 45%, transparent); }
+.vc-tag.harm-bright { color: var(--amber); border-color: color-mix(in srgb, var(--amber) 50%, transparent); }
+.vc-tag.harm-dark { color: var(--st-travel); border-color: color-mix(in srgb, var(--st-travel) 50%, transparent); }
+.vc-tag.harm-neutral { color: var(--ink-faded); }
+
+.cn-ipa-note { margin-top: 10px; font-family: var(--font-body); font-size: 13px; font-style: italic; color: var(--ink-faded); }
+
+.cn-shape { margin-top: 16px; }
+.cn-shape-head, .vc-rack-head .vc-rack-l {
+  font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.18em;
+  text-transform: uppercase; color: var(--accent); margin-bottom: 5px;
+}
+.cn-shape p { font-family: var(--font-body); font-size: 15px; line-height: 1.55; color: var(--ink); }
+.cn-ladder-trace { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+.cn-ladder-trace .kr { font-size: 34px; color: var(--ink-soft); }
+.cn-ladder-trace .kr.lit { color: var(--accent); }
+.cn-arrow { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.08em; color: var(--ink-faded); }
+
+.cn-exception {
+  margin-top: 16px; padding: 11px 14px;
+  border-left: 2px solid var(--signal);
+  background: rgba(178,58,46,0.07);
+  font-family: var(--font-body); font-size: 14px; line-height: 1.5; color: var(--ink-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.cn-exception-mark {
+  display: block; font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--signal-lit); margin-bottom: 4px;
+}
+.cn-diagram-cap, .vc-chart-cap {
+  font-family: var(--font-body); font-size: 12.5px; line-height: 1.45;
+  color: var(--ink-faded); text-align: center;
+}
+.cn-diagram-cap b { color: var(--ink-soft); font-weight: 600; }
+.cn-novoice {
+  margin-top: 14px; font-size: 12.5px; color: var(--ink-faded); font-style: italic;
+}
+
+/* ---- the side-view mouth (SVG) ----------------------------------- */
+.sag-mouth { width: 100%; max-width: 240px; height: auto; }
+.sag-roof, .sag-tongue, .sag-jaw, .sag-soft { fill: none; }
+.sag-roof { stroke: var(--rule); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+.sag-tongue { fill: color-mix(in srgb, var(--signal) 14%, transparent); stroke: var(--rule); stroke-width: 1.4; }
+.sag-jaw { stroke: var(--rule-soft); stroke-width: 1.4; }
+.sag-soft { fill: var(--paper); stroke: var(--rule-soft); stroke-width: 1; }
+.sag-accent-tongue { fill: none; stroke: var(--accent); stroke-width: 2.6; stroke-linecap: round; opacity: 0.9; }
+.sag-dot { fill: var(--ink-faded); }
+.sag-spot.lit .sag-dot { fill: var(--accent); }
+.sag-halo { fill: rgba(242,166,90,0.18); }
+.sag-spot.lit .sag-halo { animation: sag-pulse 2.4s var(--ease-drift) infinite; }
+@keyframes sag-pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+.sag-caption {
+  font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.1em;
+  text-transform: uppercase; fill: var(--accent);
+}
+.sag-orient { font-family: var(--font-mono); font-size: 7.5px; letter-spacing: 0.08em; fill: var(--ink-faded); text-transform: uppercase; }
+@media (prefers-reduced-motion: reduce) { .sag-spot.lit .sag-halo { animation: none; opacity: 0.8; } }
+
+/* =====================================================================
+   INSTRUMENT II — 모음 the vowel compass
+   ===================================================================== */
+.vc-chart { flex: 1 1 320px; min-width: 300px; }
+.vc-trapezoid { width: 100%; height: auto; }
+.vc-axis { font-family: var(--font-mono); font-size: 8px; letter-spacing: 0.1em; text-transform: uppercase; fill: var(--ink-faded); }
+.vc-quad { fill: var(--paper-deep); stroke: var(--rule); stroke-width: 1.4; }
+.vc-grid { stroke: var(--rule-soft); stroke-width: 1; stroke-dasharray: 3 4; }
+
+.vc-node { cursor: pointer; }
+.vc-dot { fill: var(--plate-bg); stroke: var(--ink-faded); stroke-width: 1.4; transition: fill var(--dur-quick), stroke var(--dur-quick); }
+.vc-node:hover .vc-dot { stroke: var(--accent); }
+.vc-node.lit .vc-dot { fill: var(--accent); stroke: var(--accent); }
+.vc-round-ring { fill: none; stroke: var(--ink-faded); stroke-width: 1; stroke-dasharray: 2 2.5; }
+.vc-node.lit .vc-round-ring { stroke: var(--highlight); }
+.vc-halo { fill: rgba(242,166,90,0.16); }
+.vc-node-glyph { font-size: 13px; fill: var(--ink); pointer-events: none; }
+.vc-node.lit .vc-node-glyph { fill: var(--paper); font-weight: 600; }
+.vc-arrow line { stroke: var(--accent); stroke-width: 1.6; opacity: 0.7; }
+.vc-arrow path { fill: var(--accent); }
+.vc-chart-cap { margin-top: 8px; text-align: left; }
+
+.vc-readout { flex: 1 1 320px; min-width: 290px; display: block; }
+.vc-headline { display: flex; align-items: center; gap: 18px; }
+.vc-big { font-size: 76px; line-height: 0.9; color: var(--accent); text-shadow: 0 0 26px rgba(242,166,90,0.3); }
+.vc-headmeta { display: flex; flex-direction: column; gap: 4px; align-items: flex-start; }
+.vc-big-ipa { font-family: var(--font-mono); font-size: 22px; color: var(--ink); }
+.vc-rr { font-family: var(--font-mono); font-size: 12px; color: var(--ink-faded); letter-spacing: 0.06em; }
+
+.vc-build { margin-top: 16px; }
+.vc-build-parts { display: flex; align-items: center; gap: 9px; flex-wrap: wrap; }
+.vc-part { font-size: 38px; color: var(--ink-soft); }
+.vc-part.result { color: var(--accent); }
+.vc-plus, .vc-eq { font-family: var(--font-mono); font-size: 18px; color: var(--ink-faded); }
+.vc-build-prose { margin-top: 9px; font-family: var(--font-body); font-size: 15px; line-height: 1.55; color: var(--ink); }
+
+.vc-harmony-link {
+  margin-top: 16px; padding: 11px 14px;
+  border-left: 2px solid var(--gilt-line);
+  background: rgba(242,166,90,0.05);
+  font-family: var(--font-body); font-size: 13.5px; line-height: 1.5; color: var(--ink-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.vc-harm-mark {
+  display: inline-block; margin-right: 8px; font-family: var(--font-kr-serif);
+  font-size: 15px; color: var(--accent); border: 1px solid var(--gilt-line);
+  border-radius: var(--radius-sm); padding: 0 6px;
+}
+.vc-harmony-link a { color: var(--accent); text-decoration: none; border-bottom: 1px solid var(--gilt-line); }
+.vc-harmony-link a:hover { color: var(--highlight); }
+
+/* ---- the racks --------------------------------------------------- */
+.vc-racks { margin-top: 24px; display: flex; flex-direction: column; gap: 12px; }
+.vc-rack { display: flex; align-items: baseline; gap: 16px; flex-wrap: wrap; }
+.vc-rack-head { flex: 0 0 150px; }
+.vc-rack-head .kr { font-size: 17px; color: var(--accent); margin-right: 8px; }
+.vc-rack-head .vc-rack-l { display: inline; }
+.vc-rack-row { display: flex; gap: 7px; flex-wrap: wrap; }
+.vc-chip {
+  display: inline-flex; flex-direction: column; align-items: center; gap: 1px;
+  min-width: 42px; padding: 6px 8px 5px;
+  background: var(--paper-deep); border: 1px solid var(--rule);
+  border-radius: var(--radius-sm); cursor: pointer;
+  border-bottom: 2px solid var(--harm, var(--rule));
+  transition: border-color var(--dur-quick), background var(--dur-quick);
+}
+.vc-chip:hover { background: var(--abu-hover-wash); }
+.vc-chip.active { border-color: var(--accent); background: var(--abu-current-wash); box-shadow: 0 0 18px -8px rgba(242,166,90,0.5); }
+.vc-chip .kr { font-size: 22px; color: var(--ink); }
+.vc-chip.active .kr { color: var(--accent); }
+.vc-chip.mono .kr { font-weight: 500; }
+.vc-chip-rr { font-family: var(--font-mono); font-size: 8.5px; color: var(--ink-faded); }
+.vc-chip.arae {
+  font-size: 22px; color: var(--ink-faded); padding: 6px 12px;
+  border-style: dashed; cursor: help; align-self: stretch; display: flex; align-items: center;
+}
+
+@media (max-width: 720px) {
+  .cn-big, .vc-big { font-size: 60px; }
+  .vc-rack-head { flex-basis: 100%; }
+}
