@@ -28,12 +28,15 @@
 // permission ask touches a learner who never opens the voice view.
 // =====================================================================
 
-// Per-frame column layout of an output_level-4 segment: 3 formants, each
-// [mel-bin, energy, span], sorted low→high. F1 is the lowest formant, F2 the
-// next. (Indices, not Hz — see header.)
-const F1_BIN = 0, F1_EN = 1
-const F2_BIN = 3, F2_EN = 4
-const F3_BIN = 6
+// Per-frame layout of an output_level-4 segment: 3 formant peaks, each
+// [mel-bin, energy, span], sorted low→high. EMPIRICALLY (from the 発声 logs) the
+// LOWEST peak (index 0) is a dead band — it sits at ~the same bin for every
+// vowel, even open あ, so it tracks nothing — so we drop it and read the 2nd and
+// 3rd peaks, the ones that actually move with the mouth: peak 1 rises as the jaw
+// OPENS (≈ true F1), peak 2 spreads FRONT→BACK (≈ true F2). Indices, not Hz.
+const OPEN_BIN = 3, OPEN_EN = 4   // openness  (≈ F1) — climbs for あ
+const BACK_BIN = 6, BACK_EN = 7   // backness  (≈ F2) — high for い, low for う
+const JUNK_BIN = 0                // the dead low band — kept only for the debug log
 
 /** Is live formant analysis even possible here? (mic + Web Audio present) */
 export function formantsSupported() {
@@ -58,6 +61,18 @@ function loadLib() {
   return libPromise
 }
 
+// ---- debug logging ------------------------------------------------------
+// The mic path is hard to debug blind: mel-bin units, ~2s segment latency, a
+// worklet fetched off a CDN. So every reading, capture, and fit funnels through
+// flog() — ON by default; set localStorage 'atlas.formant.debug' = '0' to
+// silence it. Prefixed [発声] so it filters cleanly in the console.
+export const FORMANT_DEBUG = (() => {
+  try { return window.localStorage.getItem('atlas.formant.debug') !== '0' } catch { return true }
+})()
+export function flog(...args) {
+  if (FORMANT_DEBUG) console.log('%c[発声]', 'color:#A9CBE4;font-weight:bold', ...args)
+}
+
 // Median of a numeric array (the steady centre of a held vowel beats the
 // onset/offset wobble that a mean would smear).
 function median(xs) {
@@ -68,31 +83,37 @@ function median(xs) {
 }
 
 // Reduce one voiced segment (an array of 9-wide frames) to a single steady
-// reading. Trim the outer 20% of frames (vowel transitions in and out), keep
-// only frames where both F1 and F2 are actually present, then take medians.
-// Returns null if the segment was too thin or noisy to trust.
+// reading, keeping frames where both F1 and F2 are present and taking medians.
+// Deliberately lax — one usable frame is enough — so short or noisy utterances
+// still yield SOMETHING to look at rather than silently vanishing; the reading
+// carries its own frame bookkeeping (nRaw/dropped) for the debug log.
 function reduceSegment(frames) {
-  if (!Array.isArray(frames) || frames.length < 3) return null
-  const lo = Math.floor(frames.length * 0.2)
-  const hi = Math.ceil(frames.length * 0.8)
-  const core = frames.slice(lo, hi)
-  const f1 = [], f2 = [], f3 = [], en = []
+  if (!Array.isArray(frames) || frames.length < 1) return null
+  // Trim onset/offset transitions only when the segment is long enough to spare
+  // them — short utterances keep every frame rather than starve the medians.
+  const core = frames.length >= 6
+    ? frames.slice(Math.floor(frames.length * 0.2), Math.ceil(frames.length * 0.8))
+    : frames
+  const open = [], back = [], lo = [], en = []
+  let dropped = 0
   for (const fr of core) {
-    if (!fr || fr.length < 6) continue
-    const a = fr[F1_BIN], b = fr[F2_BIN]
-    if (a > 0 && b > 0 && b > a) {          // both formants found, F2 above F1
-      f1.push(a); f2.push(b)
-      if (fr[F3_BIN] > 0) f3.push(fr[F3_BIN])
-      en.push((fr[F1_EN] || 0) + (fr[F2_EN] || 0))
-    }
+    if (!fr || fr.length < 8) { dropped++; continue }
+    const a = fr[OPEN_BIN], b = fr[BACK_BIN]
+    if (a > 0 && b > 0 && b > a) {          // both useful peaks present (sorted)
+      open.push(a); back.push(b)
+      if (fr[JUNK_BIN] > 0) lo.push(fr[JUNK_BIN])
+      en.push((fr[OPEN_EN] || 0) + (fr[BACK_EN] || 0))
+    } else dropped++
   }
-  if (f1.length < 2) return null
+  if (!open.length) return null
   return {
-    f1: median(f1),
-    f2: median(f2),
-    f3: f3.length ? median(f3) : null,
+    f1: median(open),   // openness  (the trapezoid's y / height)
+    f2: median(back),   // backness  (the trapezoid's x / front↔back)
+    lo: lo.length ? median(lo) : null,   // the dead low band — debug only
     energy: median(en),
-    nFrames: f1.length,
+    nFrames: open.length,
+    nRaw: frames.length,
+    dropped,
   }
 }
 
@@ -141,11 +162,19 @@ export function fitCalibration(samples) {
     tx1 += f1 * x; tx2 += f2 * x; tx += x
     ty1 += f1 * y; ty2 += f2 * y; ty += y
   }
-  const M = [[s11, s12, s1], [s12, s22, s2], [s1, s2, n]]
+  // A tiny ridge on the diagonal keeps the fit from HARD-failing on a thin or
+  // degenerate vowel triangle (two anchors that landed on the same bins). The
+  // map may be rough, but the learner gets a dot instead of a dead end — and the
+  // log below shows exactly which anchors collided. λ is negligible against the
+  // data scale (mel bins ~0–127), so a clean triple is essentially unchanged.
+  const lambda = 1e-3
+  const M = [[s11 + lambda, s12, s1], [s12, s22 + lambda, s2], [s1, s2, n + lambda]]
   const px = solve3(M, [tx1, tx2, tx])
   const py = solve3(M, [ty1, ty2, ty])
-  if (!px || !py) return null
-  return { ax: px[0], bx: px[1], cx: px[2], ay: py[0], by: py[1], cy: py[2] }
+  if (!px || !py) { flog('fit FAILED — singular even with ridge', samples); return null }
+  const cal = { ax: px[0], bx: px[1], cx: px[2], ay: py[0], by: py[1], cy: py[2] }
+  flog('fit OK from', samples.map(s => `(${s.f1},${s.f2})→(${s.x},${s.y})`).join('  '))
+  return cal
 }
 
 /** Apply a fitted calibration to a reading → trapezoid {x,y} (unclamped). */
@@ -155,6 +184,32 @@ export function mapFormants(cal, f1, f2) {
     x: cal.ax * f1 + cal.bx * f2 + cal.cx,
     y: cal.ay * f1 + cal.by * f2 + cal.cy,
   }
+}
+
+/**
+ * Rate how cleanly the three calibration vowels separated in formant space.
+ * A thin triangle means two of them landed nearly on top of each other, so the
+ * compass can barely tell those two apart — usually a mic or formant-tracking
+ * limit, not the speaker. Scale-free: the ratio of the closest pair to the
+ * widest, so it doesn't matter how loud or what mic. Returns the rating, that
+ * closest pair, and the geometry for the readout to explain.
+ * @param {{vowel:string,f1:number,f2:number}[]} samples
+ * @returns {?{rating:('strong'|'fair'|'weak'),aspect:number,minDist:number,closest:[string,string]}}
+ */
+export function calibrationQuality(samples) {
+  if (!Array.isArray(samples) || samples.length < 3) return null
+  let min = Infinity, max = 0, closest = null
+  for (let i = 0; i < samples.length; i++) {
+    for (let j = i + 1; j < samples.length; j++) {
+      const d = Math.hypot(samples[i].f1 - samples[j].f1, samples[i].f2 - samples[j].f2)
+      if (d > max) max = d
+      if (d < min) { min = d; closest = [samples[i].vowel, samples[j].vowel] }
+    }
+  }
+  const aspect = max > 0 ? min / max : 0    // 1 = roomy/equilateral, 0 = collinear
+  const rating = aspect >= 0.45 ? 'strong' : aspect >= 0.22 ? 'fair' : 'weak'
+  flog('calibration quality:', rating, `(aspect ${aspect.toFixed(2)}, closest ${closest?.join('/')} @ ${min.toFixed(1)})`)
+  return { rating, aspect, minDist: min, closest }
 }
 
 let active = false   // the library is single-stream; guard against double-start
@@ -217,7 +272,15 @@ export async function startListening({ onReading, onError, onStop } = {}) {
   // The callback fires per segment: (index, label, [start,dur], frames).
   async function onSegment(_i, _label, _ts, frames) {
     const reading = reduceSegment(frames)
-    if (reading) onReading?.(reading)
+    if (reading) {
+      flog('segment →',
+        `open=${reading.f1} back=${reading.f2} (lo=${reading.lo ?? '–'})`,
+        `(${reading.nFrames}/${reading.nRaw} frames, ${reading.dropped} dropped, E=${Math.round(reading.energy)})`)
+      onReading?.(reading)
+    } else {
+      flog('segment dropped — no usable F1+F2 frames',
+        Array.isArray(frames) ? `(raw=${frames.length})` : '(no frames)')
+    }
   }
 
   active = true

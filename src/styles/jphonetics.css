@@ -186,6 +186,21 @@
   50%      { opacity: 0.26; r: 18px; }
 }
 
+/* WIP disclaimer — the whole 発声 view is a rough first pass; dashed amber
+   keyline reads "provisional" without shouting error. */
+.vc-voice-wip {
+  margin: 12px 0 4px; padding: 10px 13px;
+  border: 1px dashed var(--gilt-line); border-radius: var(--radius-sm);
+  background: rgba(242,166,90,0.05);
+  font-family: var(--font-body); font-size: 12.5px; line-height: 1.55; color: var(--ink-soft);
+}
+.vc-voice-wip-tag {
+  display: inline-block; margin-right: 7px; vertical-align: 1px;
+  font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--amber);
+}
+.vc-voice-wip-tag.jp { font-family: var(--font-cjk-serif); font-size: 13px; letter-spacing: 0.04em; text-transform: none; }
+
 /* the readout column in voice mode */
 .vc-voice { display: flex; flex-direction: column; gap: 14px; }
 
@@ -234,6 +249,27 @@
 .vc-voice-read-desc { font-family: var(--font-body); font-size: 14px; line-height: 1.55; color: var(--ink); margin: 0; }
 
 .vc-voice-ready { font-family: var(--font-body); font-size: 13.5px; line-height: 1.55; color: var(--ink-soft); margin: 0; }
+
+/* calibration quality — how cleanly the three corners separated. Colour rides
+   the rating: sky (strong), amber (fair), vermilion (weak) — signal, not body. */
+.vc-voice-qual {
+  margin-top: 2px; padding: 10px 13px;
+  border-left: 2px solid var(--rule); background: var(--paper-deep);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.vc-voice-qual.strong { border-left-color: var(--st-travel); }
+.vc-voice-qual.fair   { border-left-color: var(--amber); }
+.vc-voice-qual.weak   { border-left-color: var(--signal); }
+.vc-voice-qual-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+.vc-voice-qual-label { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faded); }
+.vc-voice-qual-rating { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+.vc-voice-qual.strong .vc-voice-qual-rating { color: var(--st-travel); }
+.vc-voice-qual.fair   .vc-voice-qual-rating { color: var(--amber); }
+.vc-voice-qual.weak   .vc-voice-qual-rating { color: var(--signal-lit); }
+.vc-voice-qual-pair { font-family: var(--font-body); font-size: 11px; color: var(--ink-faded); margin-left: auto; }
+.vc-voice-qual-pair .jp { font-family: var(--font-cjk-serif); font-size: 14px; color: var(--ink-soft); }
+.vc-voice-qual-dot { color: var(--ink-faded); margin: 0 1px; }
+.vc-voice-qual-note { margin: 6px 0 0; font-family: var(--font-body); font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); }
 
 /* =====================================================================
    INSTRUMENT III — the pitch ridge
