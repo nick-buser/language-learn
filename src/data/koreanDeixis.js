@@ -112,30 +112,30 @@ export const GRID_LANTERN = {
  * @property {string} bridge      Japanese twin
  * @property {string} bridgeRr    romaji
  * @property {string} [also]      a common variant
- * @property {{q:string, qRr:string, en:string, jpQ:string, jpQRr:string}} ex
+ * @property {{q:string, qRr:string, en:string, bridgeQ:string, bridgeQRr:string}} ex
  */
 export const QUESTION_WORDS = [
   { word: '무엇', reading: 'mueot', gloss: 'what', bridge: '何', bridgeRr: 'nani / nan', also: '口語: 뭐 (mwo)',
     ex: { q: '이것은 무엇입니까?', qRr: 'igeoseun mueosimnikka', en: 'What is this?',
-          jpQ: 'これは何ですか。', jpQRr: 'kore wa nan desu ka' } },
+          bridgeQ: 'これは何ですか。', bridgeQRr: 'kore wa nan desu ka' } },
   { word: '누구', reading: 'nugu', gloss: 'who', bridge: '誰', bridgeRr: 'dare', also: 'honorific: 어느 분 / どなた',
     ex: { q: '저 사람은 누구예요?', qRr: 'jeo sarameun nuguyeyo', en: 'Who is that person?',
-          jpQ: 'あの人は誰ですか。', jpQRr: 'ano hito wa dare desu ka' } },
+          bridgeQ: 'あの人は誰ですか。', bridgeQRr: 'ano hito wa dare desu ka' } },
   { word: '언제', reading: 'eonje', gloss: 'when', bridge: 'いつ', bridgeRr: 'itsu',
     ex: { q: '생일은 언제예요?', qRr: 'saengireun eonjeyeyo', en: 'When is your birthday?',
-          jpQ: '誕生日はいつですか。', jpQRr: 'tanjōbi wa itsu desu ka' } },
+          bridgeQ: '誕生日はいつですか。', bridgeQRr: 'tanjōbi wa itsu desu ka' } },
   { word: '왜', reading: 'wae', gloss: 'why', bridge: 'なぜ', bridgeRr: 'naze', also: '口語: どうして / 어째서',
     ex: { q: '왜 안 왔어요?', qRr: 'wae an wasseoyo', en: 'Why didn’t you come?',
-          jpQ: 'なぜ来なかったの。', jpQRr: 'naze konakatta no' } },
+          bridgeQ: 'なぜ来なかったの。', bridgeQRr: 'naze konakatta no' } },
   { word: '얼마', reading: 'eolma', gloss: 'how much (cost)', bridge: 'いくら', bridgeRr: 'ikura',
     ex: { q: '이거 얼마예요?', qRr: 'igeo eolmayeyo', en: 'How much is this?',
-          jpQ: 'これはいくらですか。', jpQRr: 'kore wa ikura desu ka' } },
+          bridgeQ: 'これはいくらですか。', bridgeQRr: 'kore wa ikura desu ka' } },
   { word: '몇', reading: 'myeot', gloss: 'how many', bridge: 'いくつ', bridgeRr: 'ikutsu', also: '+ counter: 몇 개, 몇 살',
     ex: { q: '몇 살이에요?', qRr: 'myeot sarieyo', en: 'How old are you?',
-          jpQ: 'おいくつですか。', jpQRr: 'o-ikutsu desu ka' } },
+          bridgeQ: 'おいくつですか。', bridgeQRr: 'o-ikutsu desu ka' } },
   { word: '얼마나', reading: 'eolmana', gloss: 'how much / how long', bridge: 'どれくらい', bridgeRr: 'dore kurai',
     ex: { q: '얼마나 걸려요?', qRr: 'eolmana geollyeoyo', en: 'How long does it take?',
-          jpQ: 'どれくらいかかりますか。', jpQRr: 'dore kurai kakarimasu ka' } },
+          bridgeQ: 'どれくらいかかりますか。', bridgeQRr: 'dore kurai kakarimasu ka' } },
 ]
 
 // the 어-words that already live in the grid — shown as a recall strip
@@ -150,16 +150,16 @@ export const QW_INDEFINITES = {
   rows: [
     { base: '무엇',
       some: ['뭔가', 'mwonga', 'something'], any: ['뭐든지', 'mwodeunji', 'anything'], none: ['아무것도', 'amugeotdo', 'nothing'],
-      jp: { some: '何か', any: '何でも', none: '何も' } },
+      bridge: { some: '何か', any: '何でも', none: '何も' } },
     { base: '누구',
       some: ['누군가', 'nugunga', 'someone'], any: ['누구나', 'nuguna', 'anyone'], none: ['아무도', 'amudo', 'no one'],
-      jp: { some: '誰か', any: '誰でも', none: '誰も' } },
+      bridge: { some: '誰か', any: '誰でも', none: '誰も' } },
     { base: '어디',
       some: ['어딘가', 'eodinga', 'somewhere'], any: ['어디든지', 'eodideunji', 'anywhere'], none: ['아무 데도', 'amu dedo', 'nowhere'],
-      jp: { some: 'どこか', any: 'どこでも', none: 'どこも' } },
+      bridge: { some: 'どこか', any: 'どこでも', none: 'どこも' } },
     { base: '언제',
       some: ['언젠가', 'eonjenga', 'sometime'], any: ['언제든지', 'eonjedeunji', 'anytime'], none: ['언제나', 'eonjena', 'always*'],
-      jp: { some: 'いつか', any: 'いつでも', none: 'いつも' } },
+      bridge: { some: 'いつか', any: 'いつでも', none: 'いつも' } },
   ],
   note: '언제나 is the odd one: with a time word the “none” column means “always,” not “never” (and it’s ' +
         'affirmative). Japanese いつも lands exactly the same way.',
@@ -222,8 +222,8 @@ export const PRONOUNS = {
     dropWord: '저는',
     rr: '(jeoneun) haksaeng-ieyo',
     en: '“(I’m) a student.” — the 저는 is normally left off; the listener already knows.',
-    ko: '(私は)学生です',
-    koRr: '(watashi wa) gakusei desu',
+    bridge: '(私は)学生です',
+    bridgeRr: '(watashi wa) gakusei desu',
   },
 }
 
