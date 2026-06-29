@@ -101,7 +101,7 @@ export default function JapanesePhonetics({ showReadings = true, showJp = true }
         <div className="latin">高低アクセント · the melody kana can’t write — 箸 / 橋 / 端 told apart by pitch</div>
       </div>
       <div className="try-strip">
-        <span className="dot"></span> pick a word and play its ridge — the synth sounds the pitch, the voice says the word · the accent is where High drops to Low · watch 橋 vs 端 split only on the が
+        <span className="dot"></span> pick a word and play its ridge — the synth sounds the pitch, the voice says the word · the accent is where High drops to Low · watch 橋 vs 端 split only on the が · or tap <b>say it</b> and trace your own pitch over the target
       </div>
       <PitchRidge showReadings={showReadings} showJp={showJp} />
 
