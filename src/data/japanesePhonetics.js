@@ -324,6 +324,41 @@ export const SPANISH_COMPARE = {
 }
 
 // =====================================================================
+// 発声 — your own voice on the trapezoid. The compass's third overlay: it
+// measures the speaker's vowel formants off the live microphone (F1 ≈ how
+// OPEN the mouth is, F2 ≈ how FRONT the tongue is) and drops a dot among the
+// five ideal vowels. But formants are speaker-relative — a deep voice puts
+// every vowel at a lower frequency than a high one — so the dot is only
+// meaningful once it's ANCHORED to your voice. Saying the three corner vowels
+// pins your vowel space to the trapezoid (an exact affine fit; see the
+// `formants` seam). The engine reports mel-bin indices, not hertz, and the
+// fit absorbs that — the learner never has to think in numbers.
+//
+// @typedef {Object} CalibAnchor       one stop in the calibration walk
+// @property {string} vowel            a VOWELS id — its x,y is the fit target
+// @property {string} say              the prompt: what to hold, and how
+// =====================================================================
+export const VOICE_CALIBRATION = {
+  // The three EXTREME corners — non-collinear on the trapezoid, so three
+  // measured points fix the affine map exactly: い (front, close), あ (open,
+  // low), う (back, close). Targets (x,y) are read from VOWELS by id.
+  anchors: [
+    { vowel: 'i', say: 'a long, bright “いー” — tongue high and forward, lips spread' },
+    { vowel: 'a', say: 'an open “あー” — jaw dropped, tongue low and slack' },
+    { vowel: 'u', say: 'a long “うー” — tongue high and back, lips flat (don’t purse!)' },
+  ],
+  intro: 'The dot means nothing until the compass learns YOUR voice — the same vowel sits at very different frequencies for a low voice and a high one. Say the three corner vowels once and it pins your vowel space onto the trapezoid.',
+  hold: 'hold it steady for about a second, then pause',
+  done: 'Calibrated to your voice. Say any vowel now and watch where it lands among the five.',
+  recalibrate: 'recalibrate',
+  needCal: 'Calibrate first so the dot lands in the right place.',
+  noMic: 'No microphone available here — the chart and the other two views work; the live dot needs mic access over a secure (https / localhost) connection.',
+  listen: 'listen',
+  stop: 'stop',
+  listening: 'listening — say a vowel',
+}
+
+// =====================================================================
 // 高低アクセント — pitch accent. Each mora carries a High or Low tone; the
 // accent is the place where a High DROPS to Low. はし is the famous trio:
 // same kana, three words, told apart by pitch (and, for two of them, only
@@ -372,6 +407,10 @@ export const MOUTH_LANTERN = {
 export const VOWEL_LANTERN = {
   head: 'five clean vowels — and one is a trap',
   body: 'Japanese has just five, all short and pure (no English-style glides), which is the easy half. The trap is <b>う</b>: it is close and back like English "oo", but <b>unrounded</b> — the lips stay flat. Now run it the other way for Korean: lay the real trapezoid down and Korean splits this same vowel-space into <b>ten</b>. Where Japanese hears one back-high vowel, Korean separates unrounded <b>ㅡ</b> from rounded <b>ㅜ</b>; where Japanese hears one back-mid, Korean splits rounded <b>ㅗ</b> from unrounded <b>ㅓ</b>. Those two gaps — ㅡ/ㅜ and ㅗ/ㅓ — are exactly the vowels a Japanese ear must learn to <i>hear</i> before it can say them.',
+}
+export const VOICE_LANTERN = {
+  head: 'the trapezoid was never a diagram — it’s a map of your own mouth',
+  body: 'The frame you’ve been reading is a plot of two resonances of your vocal tract. <b>F1</b> rises as your jaw drops, so it falls down the page from close to open; <b>F2</b> rises as your tongue comes forward, so it runs front-to-back across it. When your dot lands on a vowel, that’s your mouth and the ideal sharing the same two numbers. Watch the trap from the lede go live: a real English/Korean <b>u</b> rounds the lips and pulls F2 up and forward, drifting off the back corner — but Japanese <b>う</b> keeps the lips <i>flat</i>, so a true う should sit hard in the back, close and high, right where the compass plots it (near Korean unrounded ㅡ, not rounded ㅜ). The dot doesn’t lie about your lips. Round, and you’ll see it leave the corner.',
 }
 export const PITCH_LANTERN = {
   head: 'the word the kana cannot write',
