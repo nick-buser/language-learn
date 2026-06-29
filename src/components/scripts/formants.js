@@ -185,16 +185,33 @@ export async function startListening({ onReading, onError, onStop } = {}) {
   }
 
   // Our own readout, on our own SVG — disable the library's canvas plotter.
-  // output_level 4 = raw segment formants; the rest are the defaults that
-  // already suit a close-mic single speaker (50–4000 Hz, 128 mel bins).
+  //
+  // configure() must be passed a COMPLETE config. The library guards several
+  // fields with `!== null` (not `!= null`), so OMITTING one overwrites its own
+  // default with `undefined`. Leaving out spec_type was fatal: the worklet only
+  // accepts a settings message when `e.data.spec_type` is truthy, so an
+  // undefined spec_type made it reject the config ("Unrecognized Rx on worklet
+  // port") and run unconfigured — the main thread then expected 256 FFT bins
+  // while the worklet emitted 128 mel bins ("Bins count mismatch: 256, 128"),
+  // which rejected the whole launch. So: every `!== null`-guarded field is set
+  // explicitly here (spec_type, f_min, high_f_emph, auto_noise_gate, voiced_min_dB).
   FA.configure({
     plot_enable: false,
-    output_level: 4,
+    spec_type: 1,          // 1 = mel filterbank (must be explicit — see note)
+    output_level: 4,       // per-segment raw formants: F1/F2/F3 × [bin, energy, span]
     f_min: 50,
     f_max: 4000,
-    N_mel_bins: 128,
+    N_fft_bins: 256,
+    N_mel_bins: 128,       // → spec_bands; must match what the worklet sends
+    window_width: 25,
+    window_step: 25,
+    pre_norm_gain: 1000,
+    high_f_emph: 0.0,
     pause_length: 180,     // ms of quiet that closes a segment
     min_seg_length: 60,    // ms — ignore clicks and lip smacks
+    auto_noise_gate: true,
+    voiced_max_dB: 100,
+    voiced_min_dB: 10,
   })
 
   // The callback fires per segment: (index, label, [start,dur], frames).
