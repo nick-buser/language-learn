@@ -178,6 +178,152 @@ export const VOWEL_NOTES = {
 }
 
 // =====================================================================
+// 母音の組み合わせ — what happens when two vowels meet. The compass's second
+// view. Kana writes every vowel as its own glyph, but a vowel pair resolves
+// one of two ways the script never marks:
+//   • long (長音) — ONE vowel quality, held for two morae. The doubled
+//     spellings (ああ いい うう ええ おお) are the open case; the traps are
+//     えい and おう, written as a sequence but heard as a held [eː]/[oː]
+//     (先生 = [seːseː], not se-n-se-i).
+//   • seq (連母音) — TWO different vowels, each its OWN mora. Japanese has no
+//     true diphthongs: あい is a·i (two beats), never the single glide of
+//     English "eye" [aɪ].
+// The kana is honest about the morae count and silent about hold-vs-step.
+//
+// `from`/`to` are base-vowel ids (the two written letters); `held` is the
+// quality a long vowel sustains (null for sequences). `lie:true` flags the
+// spellings that look like a sequence but sound long (えい/おう). morae = 2.
+//
+// @typedef {Object} VowelCombo
+// @property {string} id, kana, rr, ipa
+// @property {('long'|'seq')} kind
+// @property {string} from, to        base-vowel ids of the two written letters
+// @property {?string} held           long: the sustained vowel id; seq: null
+// @property {boolean} lie            written as a sequence, heard as long
+// @property {number} morae
+// @property {string} note
+// @property {{kanji:string,kana:string,rr:string,en:string}[]} examples
+// =====================================================================
+export const VOWEL_COMBOS = [
+  // ── 長音 · the spellings that lie (sequence on paper, long vowel in the mouth) ──
+  { id: 'ei', kana: 'えい', rr: 'ei → ē', ipa: 'eː', kind: 'long', from: 'e', to: 'i', held: 'e', lie: true, morae: 2,
+    note: 'Written え→い, but ordinary speech just holds the え: [eː]. 先生 is [seːseː], not se-n-se-i. (Song or very deliberate speech can pull the い back out.) This is the default long-e spelling.',
+    examples: [
+      { kanji: '先生', kana: 'せんせい', rr: 'sensei', en: 'teacher' },
+      { kanji: '映画', kana: 'えいが',   rr: 'eiga',   en: 'movie' },
+      { kanji: '時計', kana: 'とけい',   rr: 'tokei',  en: 'clock' },
+    ] },
+  { id: 'ou', kana: 'おう', rr: 'ou → ō', ipa: 'oː', kind: 'long', from: 'o', to: 'u', held: 'o', lie: true, morae: 2,
+    note: 'Written お→う, heard as a held [oː]. The workhorse long-o spelling — Sino-Japanese readings, verb endings, counters. 学校 is gak-kō, とうきょう is tō-kyō.',
+    examples: [
+      { kanji: '学校', kana: 'がっこう',   rr: 'gakkō',   en: 'school' },
+      { kanji: '東京', kana: 'とうきょう', rr: 'Tōkyō',   en: 'Tokyo' },
+      { kanji: '',     kana: 'ありがとう', rr: 'arigatō', en: 'thank you' },
+    ] },
+  // ── 長音 · the doubled letters (one vowel, written twice, held) ──
+  { id: 'aa', kana: 'ああ', rr: 'ā', ipa: 'aː', kind: 'long', from: 'a', to: 'a', held: 'a', lie: false, morae: 2,
+    note: 'Doubled あ, held two beats — and the length is the meaning: おばさん (aunt) and おばあさん (grandmother) differ by this one extra mora and nothing else.',
+    examples: [
+      { kanji: '', kana: 'おばあさん', rr: 'obāsan', en: 'grandmother' },
+      { kanji: '', kana: 'おかあさん', rr: 'okāsan', en: 'mother' },
+    ] },
+  { id: 'ii', kana: 'いい', rr: 'ī', ipa: 'iː', kind: 'long', from: 'i', to: 'i', held: 'i', lie: false, morae: 2,
+    note: 'Held い. いい (good) is two morae; お兄さん stretches the same い.',
+    examples: [
+      { kanji: '',       kana: 'いい',       rr: 'ii',     en: 'good' },
+      { kanji: 'お兄さん', kana: 'おにいさん', rr: 'onīsan', en: 'older brother' },
+    ] },
+  { id: 'uu', kana: 'うう', rr: 'ū', ipa: 'ɯː', kind: 'long', from: 'u', to: 'u', held: 'u', lie: false, morae: 2,
+    note: 'Held う — still unrounded [ɯ], just longer. 空気 kūki, 数学 sūgaku.',
+    examples: [
+      { kanji: '空気', kana: 'くうき',   rr: 'kūki',   en: 'air' },
+      { kanji: '数学', kana: 'すうがく', rr: 'sūgaku', en: 'mathematics' },
+    ] },
+  { id: 'ee', kana: 'ええ', rr: 'ē', ipa: 'eː', kind: 'long', from: 'e', to: 'e', held: 'e', lie: false, morae: 2,
+    note: 'Native long e, spelled with a doubled え — rare, only a handful of words: お姉さん, ええ (yeah). Most long e is the えい spelling instead.',
+    examples: [
+      { kanji: 'お姉さん', kana: 'おねえさん', rr: 'onēsan', en: 'older sister' },
+      { kanji: '',       kana: 'ええ',       rr: 'ē',      en: 'yeah / yes' },
+    ] },
+  { id: 'oo', kana: 'おお', rr: 'ō', ipa: 'oː', kind: 'long', from: 'o', to: 'o', held: 'o', lie: false, morae: 2,
+    note: 'The OTHER long o — a small, closed list of native words spelled おお, not おう. You memorize which: 大きい, 遠い, 氷, 通り.',
+    examples: [
+      { kanji: '大きい', kana: 'おおきい', rr: 'ōkii', en: 'big' },
+      { kanji: '遠い',   kana: 'とおい',   rr: 'tōi',  en: 'far' },
+      { kanji: '氷',     kana: 'こおり',   rr: 'kōri', en: 'ice' },
+    ] },
+  // ── 連母音 · true sequences — two vowels, two morae, no glide ──
+  { id: 'ai', kana: 'あい', rr: 'a·i', ipa: 'a.i', kind: 'seq', from: 'a', to: 'i', held: null, lie: false, morae: 2,
+    note: 'Two beats: a·i. English collapses this to the glide of "eye" [aɪ]; Japanese keeps each vowel a full mora and never slides. 愛 is a·i; 高い is ta·ka·i.',
+    examples: [
+      { kanji: '愛',   kana: 'あい',   rr: 'ai',    en: 'love' },
+      { kanji: '',     kana: 'はい',   rr: 'hai',   en: 'yes' },
+      { kanji: '高い', kana: 'たかい', rr: 'takai', en: 'high / expensive' },
+    ] },
+  { id: 'ao', kana: 'あお', rr: 'a·o', ipa: 'a.o', kind: 'seq', from: 'a', to: 'o', held: null, lie: false, morae: 2,
+    note: 'a·o, two clean beats. 青 a·o (blue); 顔 ka·o (face).',
+    examples: [
+      { kanji: '青',   kana: 'あお',   rr: 'ao',  en: 'blue' },
+      { kanji: '青い', kana: 'あおい', rr: 'aoi', en: 'blue (adj.)' },
+      { kanji: '顔',   kana: 'かお',   rr: 'kao', en: 'face' },
+    ] },
+  { id: 'oi', kana: 'おい', rr: 'o·i', ipa: 'o.i', kind: 'seq', from: 'o', to: 'i', held: null, lie: false, morae: 2,
+    note: 'o·i, two morae — not the English "oy". 恋 ko·i; 美味しい is o·i·shi·i, four beats.',
+    examples: [
+      { kanji: '恋',       kana: 'こい',     rr: 'koi',    en: 'love (romantic)' },
+      { kanji: '美味しい', kana: 'おいしい', rr: 'oishii', en: 'delicious' },
+    ] },
+  { id: 'ue', kana: 'うえ', rr: 'u·e', ipa: 'ɯ.e', kind: 'seq', from: 'u', to: 'e', held: null, lie: false, morae: 2,
+    note: 'u·e, two beats. 上 u·e (above); 植える u·e·ru (to plant).',
+    examples: [
+      { kanji: '上',     kana: 'うえ',   rr: 'ue',   en: 'above / up' },
+      { kanji: '植える', kana: 'うえる', rr: 'ueru', en: 'to plant' },
+    ] },
+  { id: 'ie', kana: 'いえ', rr: 'i·e', ipa: 'i.e', kind: 'seq', from: 'i', to: 'e', held: null, lie: false, morae: 2,
+    note: 'i·e, two morae. 家 i·e (house). いいえ (no) stacks a long い in front: ī·e, three beats.',
+    examples: [
+      { kanji: '家', kana: 'いえ',   rr: 'ie',  en: 'house / home' },
+      { kanji: '',  kana: 'いいえ', rr: 'iie', en: 'no' },
+    ] },
+]
+
+/** The combination chip racks, grouped by what the pair DOES. Member ids
+ *  resolve against VOWEL_COMBOS; the grouping itself is the lesson. */
+export const COMBO_GROUPS = [
+  { id: 'lie',     ja: '長音', l: 'the spellings that lie — held, not stepped', ids: ['ei', 'ou'] },
+  { id: 'doubled', ja: '長音', l: 'doubled letters — one vowel, two beats',      ids: ['aa', 'ii', 'uu', 'ee', 'oo'] },
+  { id: 'seq',     ja: '連母音', l: 'true sequences — two vowels, two morae',     ids: ['ai', 'ao', 'oi', 'ue', 'ie'] },
+]
+
+export const VOWEL_COMBO_LANTERN = {
+  head: 'two vowels — held, or two beats?',
+  body: 'When two vowels meet, Japanese does one of exactly two things, and the kana marks neither. It can <b>hold one vowel longer</b> — <b>えい</b> is [eː] and <b>おう</b> is [oː], the second letter a silent stretch (先生 = [seːseː], not se-n-se-i); the doubled spellings ああ・いい・うう・ええ・おお do the same in the open. And length is meaning: <b>おばさん</b> (aunt) vs <b>おばあさん</b> (grandmother) differ by one held beat. Or it keeps the two vowels <b>separate</b> — <b>あい</b> is a·i, <b>two morae</b>, never the single gliding [aɪ] of English "eye." That is the whole rule: Japanese has <b>no true diphthongs</b>. Every vowel you see is its own beat — <i>unless</i> the spelling is a long-vowel pattern, where the extra letter just buys time on the vowel before it.',
+}
+
+// =====================================================================
+// Español — the compass's second overlay (the "for fun" comparison). Spanish
+// is the other clean five-vowel system: a e i o u, all pure, no glides, no
+// reduction — the same skeleton as Japanese. Four land almost on top; the one
+// real gap is u, which Spanish ROUNDS [u] where Japanese keeps う unrounded
+// [ɯ] — the very rounded back corner Korean splits off as ㅜ. Coordinates
+// share the trapezoid geometry; `jp` is the Japanese vowel id it shadows,
+// `gap:true` marks the one that does NOT line up.
+// =====================================================================
+export const SPANISH_VOWELS = [
+  { id: 'a', letter: 'a', ipa: 'a', x: 0.36, y: 0.96, round: false, jp: 'a', gap: false, note: 'Spanish a [a] sits right on あ — a clean central open vowel in both.' },
+  { id: 'e', letter: 'e', ipa: 'e', x: 0.13, y: 0.44, round: false, jp: 'e', gap: false, note: 'Spanish e [e] ≈ え, pure with no off-glide (opened a touch to [e̞] beside a stop, as in papel).' },
+  { id: 'i', letter: 'i', ipa: 'i', x: 0.05, y: 0.07, round: false, jp: 'i', gap: false, note: 'Spanish i [i] = い. Identical close front vowel.' },
+  { id: 'o', letter: 'o', ipa: 'o', x: 0.87, y: 0.45, round: true,  jp: 'o', gap: false, note: 'Spanish o [o] ≈ お — both lightly rounded, close-mid back.' },
+  { id: 'u', letter: 'u', ipa: 'u', x: 0.97, y: 0.07, round: true,  jp: 'u', gap: true,  note: 'THE gap. Spanish u is firmly ROUNDED [u], lips pursed; Japanese う is [ɯ], lips flat. Spanish u lands exactly where Korean splits off rounded ㅜ.' },
+]
+
+export const SPANISH_COMPARE = {
+  mark: 'Español',
+  overview: 'Spanish is the other five clean vowels — a e i o u, all pure, no glides, no reduction to schwa — so four of them drop almost on top of Japanese.',
+  gap: 'The one gap is u: Spanish rounds it [u], Japanese keeps う unrounded [ɯ]. And when vowels meet, Spanish freely builds true diphthongs (baile, peine, ciudad — two vowels gliding into one syllable) where Japanese gives each its own mora. Same five vowels, opposite habit.',
+}
+
+// =====================================================================
 // 高低アクセント — pitch accent. Each mora carries a High or Low tone; the
 // accent is the place where a High DROPS to Low. はし is the famous trio:
 // same kana, three words, told apart by pitch (and, for two of them, only

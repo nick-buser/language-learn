@@ -87,10 +87,10 @@ export default function JapanesePhonetics({ showReadings = true, showJp = true }
       <div className="instr-head" style={{ marginTop: 56 }}>
         <div className="no">II</div>
         <h2>The five-vowel compass</h2>
-        <div className="latin">母音 · five pure vowels on the real trapezoid — and the う that isn’t rounded</div>
+        <div className="latin">母音 · five pure vowels on the real trapezoid — then what they do when they combine</div>
       </div>
       <div className="try-strip">
-        <span className="dot"></span> tap a vowel on the real mouth-space · う is close-back but unrounded · with the 한국어 bridge on, Korean’s ten ghost in underneath — see which one vowel splits into two
+        <span className="dot"></span> switch between <b>the five</b> and their <b>combinations</b> · in the five, tap a vowel (う is close-back but unrounded) and compare against Korean’s ten or Spanish’s near-identical five · in combinations, see whether a pair holds long (えい→ē) or stays two beats (あい)
       </div>
       <JapaneseVowelChart showReadings={showReadings} showJp={showJp} />
 

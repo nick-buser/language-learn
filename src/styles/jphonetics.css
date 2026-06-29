@@ -49,6 +49,34 @@
    ===================================================================== */
 .vc-node-glyph.jp { font-size: 15px; }
 
+/* ---- the view / comparison switches ------------------------------ */
+.vc-modebar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 2px 0 14px; }
+.vc-seg {
+  display: inline-flex; align-items: center; gap: 2px;
+  padding: 3px; background: var(--paper-deep);
+  border: 1px solid var(--rule); border-radius: 999px;
+}
+.vc-seg-label {
+  font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--ink-faded); padding: 0 6px 0 8px;
+}
+.vc-seg-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-body); font-size: 12px; color: var(--ink-soft);
+  background: transparent; border: none; border-radius: 999px;
+  padding: 5px 13px; cursor: pointer;
+  transition: color var(--dur-quick), background var(--dur-quick);
+}
+.vc-seg-btn .jp { font-family: var(--font-cjk-serif); font-size: 14px; letter-spacing: 0.02em; }
+.vc-seg-btn .kr { font-family: var(--font-kr-serif); font-size: 14px; }
+.vc-seg-btn:hover { color: var(--accent); }
+.vc-seg-btn.on { background: var(--abu-current-wash); color: var(--accent); box-shadow: 0 0 16px -8px rgba(242,166,90,0.5); }
+
+/* ---- the comparison ghosts shared markers ------------------------ */
+.jvc-mk { fill: var(--accent); }
+.jvc-mk-lie { fill: var(--ink-faded); }
+
+/* the Korean 5→10 ghosts */
 .jvb-link { stroke: var(--ink-faded); stroke-width: 1; stroke-dasharray: 2 3; opacity: 0.5; }
 .jvb-ghost.split .jvb-link { stroke: var(--accent); opacity: 0.7; }
 .jvb-dot { fill: var(--plate-bg); stroke: var(--ink-faded); stroke-width: 1; opacity: 0.85; }
@@ -62,6 +90,73 @@
 .jvb-twin { font-size: 19px; color: var(--ink-soft); }
 .jvb-twin em { font-family: var(--font-mono); font-size: 9px; color: var(--ink-faded); font-style: normal; margin-left: 1px; }
 .jvb-twin.split { color: var(--accent); }
+
+/* the Spanish overlay — square ghosts; the gap (u) lit gold like a split */
+.es-link { stroke: var(--ink-faded); stroke-width: 1; stroke-dasharray: 2 3; opacity: 0.55; }
+.es-ghost.gap .es-link { stroke: var(--accent); opacity: 0.8; }
+.es-dot { fill: var(--plate-bg); stroke: var(--ink-faded); stroke-width: 1.2; opacity: 0.85; }
+.es-ghost.lit .es-dot { stroke: var(--ink-soft); }
+.es-ghost.gap .es-dot { stroke: var(--accent); }
+.es-glyph { font-family: var(--font-mono); font-size: 10px; fill: var(--ink-faded); pointer-events: none; }
+.es-ghost.gap .es-glyph { fill: var(--accent); }
+.esbridge { border-left-color: var(--rule); background: rgba(242,166,90,0.04); }
+.jbridge-mark.es { font-family: var(--font-body); font-style: italic; letter-spacing: 0.01em; }
+
+/* ---- the combinations view --------------------------------------- */
+/* the five vowels, faint, as a backdrop */
+.vc-anchor-dot { fill: none; stroke: var(--rule); stroke-width: 1; opacity: 0.55; }
+.vc-anchor-glyph { font-size: 12px; fill: var(--ink-faded); opacity: 0.6; pointer-events: none; }
+
+/* a lit combination endpoint */
+.vc-cdot { fill: var(--plate-bg); stroke: var(--ink-soft); stroke-width: 1.6; }
+.vc-cglyph { font-size: 14px; fill: var(--ink); font-weight: 600; pointer-events: none; }
+.vc-cnode.held .vc-cdot { fill: var(--accent); stroke: var(--accent); }
+.vc-cnode.held .vc-cglyph { fill: var(--paper); }
+.vc-cnode.faint .vc-cdot { fill: transparent; stroke: var(--ink-faded); stroke-dasharray: 2 2; opacity: 0.65; }
+.vc-cnode.faint .vc-cglyph { fill: var(--ink-faded); opacity: 0.7; }
+
+/* the held double-ring (= "this vowel, held two morae") */
+.vc-hold { fill: none; }
+.vc-hold.outer { stroke: var(--accent); stroke-width: 1.3; opacity: 0.5; }
+.vc-hold.inner { stroke: var(--accent); stroke-width: 1.2; opacity: 0.85; }
+
+/* the dashed "lie" arrow (えい/おう → the letter you don't pronounce) */
+.vc-arrow.lie line { stroke: var(--ink-faded); stroke-width: 1.4; stroke-dasharray: 3 3; opacity: 0.7; }
+
+/* the combo result token (romaji, not kana) */
+.vc-part.result:not(.jp) { font-family: var(--font-cjk-serif); }
+.vc-big.combo { font-size: 56px; letter-spacing: -0.01em; }
+
+/* the chips that carry the lie get a hairline signal underline */
+.vc-chip.lie { border-style: dashed; }
+
+/* the tappable example words */
+.vco-ex { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.vco-ex-chip {
+  display: inline-flex; flex-direction: column; align-items: flex-start; gap: 1px;
+  padding: 6px 11px; background: var(--paper-deep);
+  border: 1px solid var(--rule); border-radius: var(--radius-sm); cursor: pointer; text-align: left;
+  transition: border-color var(--dur-quick), background var(--dur-quick);
+}
+.vco-ex-chip:hover { background: var(--abu-hover-wash); border-color: var(--gilt-line); }
+.vco-ex-w { font-size: 17px; color: var(--ink); line-height: 1.1; }
+.vco-ex-w.jp { font-family: var(--font-cjk-serif); }
+.vco-ex-rr { font-family: var(--font-mono); font-size: 9px; color: var(--ink-faded); letter-spacing: 0.04em; }
+.vco-ex-en { font-family: var(--font-body); font-size: 11px; font-style: italic; color: var(--ink-soft); }
+
+/* the "spelling lies" callout under a long-vowel readout */
+.vc-lie-note {
+  margin-top: 14px; padding: 10px 13px;
+  border-left: 2px solid var(--amber);
+  background: color-mix(in srgb, var(--amber) 7%, transparent);
+  font-family: var(--font-body); font-size: 13.5px; line-height: 1.5; color: var(--ink-soft);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.vc-lie-mark {
+  display: inline-block; margin-right: 8px;
+  font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--amber);
+}
 
 /* the length / devoicing footnotes under the chart */
 .jvc-notes { margin-top: 22px; display: flex; flex-direction: column; gap: 10px; }
