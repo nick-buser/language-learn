@@ -359,6 +359,9 @@ export const VOICE_CALIBRATION = {
   // How separated the three corner vowels came out. The compass can only tell
   // two vowels apart as well as your mic + the formant detector separated them
   // at calibration — so we say so plainly, and never blame the speaker.
+  // Set expectations up front: round one rides a lightweight in-browser formant
+  // detector, which is rough. Honest about the limits, never down on the learner.
+  disclaimer: 'Rough edges. This first pass rides a lightweight in-browser formant detector, so the dot drifts, some vowels (え especially) are hard to catch, and あ/い can blur. Read it as a playful compass, not a verdict on your mouth — proper, reliable vowel coaching wants its own voice lab, which is a someday project.',
   qualityLabel: 'calibration',
   quality: {
     strong: 'Your three corners came out well separated — the compass can place a vowel confidently.',

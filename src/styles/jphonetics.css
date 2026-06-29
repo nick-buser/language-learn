@@ -186,6 +186,21 @@
   50%      { opacity: 0.26; r: 18px; }
 }
 
+/* WIP disclaimer — the whole 発声 view is a rough first pass; dashed amber
+   keyline reads "provisional" without shouting error. */
+.vc-voice-wip {
+  margin: 12px 0 4px; padding: 10px 13px;
+  border: 1px dashed var(--gilt-line); border-radius: var(--radius-sm);
+  background: rgba(242,166,90,0.05);
+  font-family: var(--font-body); font-size: 12.5px; line-height: 1.55; color: var(--ink-soft);
+}
+.vc-voice-wip-tag {
+  display: inline-block; margin-right: 7px; vertical-align: 1px;
+  font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--amber);
+}
+.vc-voice-wip-tag.jp { font-family: var(--font-cjk-serif); font-size: 13px; letter-spacing: 0.04em; text-transform: none; }
+
 /* the readout column in voice mode */
 .vc-voice { display: flex; flex-direction: column; gap: 14px; }
 

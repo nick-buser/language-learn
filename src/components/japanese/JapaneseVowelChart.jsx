@@ -406,6 +406,14 @@ export default function JapaneseVowelChart({ showReadings = true, showJp = true 
         )}
       </div>
 
+      {mode === 'voice' && (
+        <div className="vc-voice-wip" role="note">
+          <span className="vc-voice-wip-tag jp">試作</span>
+          <span className="vc-voice-wip-tag">experimental</span>
+          {VOICE_CALIBRATION.disclaimer}
+        </div>
+      )}
+
       <div className="vc-main">
         <div className="vc-chart">
           <svg viewBox="0 0 312 224" className="vc-trapezoid" role="img" aria-label="IPA vowel trapezoid with the Japanese vowels plotted">
