@@ -14,6 +14,7 @@ import KoreanSong from './pages/KoreanSong.jsx'
 import KoreanCustom from './pages/KoreanCustom.jsx'
 import KoreanRoadmap from './pages/KoreanRoadmap.jsx'
 import JapaneseKana from './pages/JapaneseKana.jsx'
+import JapanesePhonetics from './pages/JapanesePhonetics.jsx'
 import JapaneseDeixis from './pages/JapaneseDeixis.jsx'
 import JapaneseVerbs from './pages/JapaneseVerbs.jsx'
 import JapaneseForms from './pages/JapaneseForms.jsx'
@@ -35,6 +36,7 @@ import './styles/song.css'
 import './styles/scripts.css'
 import './styles/deixis.css'
 import './styles/phonetics.css'
+import './styles/jphonetics.css'
 
 // Two-level atlas: language → folio pages within it.
 const LANGS = [
@@ -59,8 +61,9 @@ const LANGS = [
   {
     id: 'ja', glyph: '日本語', name: 'Japanese', metaGlyph: '文法', font: 'var(--font-cjk-serif)',
     pages: [
-      { id: 'kana',    glyph: '仮名', label: 'kana foundry',   component: JapaneseKana },
-      { id: 'grammar', glyph: '文法', label: 'grammar engine', component: JapaneseGrammar },
+      { id: 'kana',      glyph: '仮名', label: 'kana foundry',     component: JapaneseKana },
+      { id: 'phonetics', glyph: '発音', label: 'sound & pitch',    component: JapanesePhonetics },
+      { id: 'grammar',   glyph: '文法', label: 'grammar engine',   component: JapaneseGrammar },
       { id: 'deixis',  glyph: 'こそあど', label: 'this · that · what', component: JapaneseDeixis },
       { id: 'verbs',      glyph: '動詞', label: 'verb forge',      component: JapaneseVerbs },
       { id: 'forms',      glyph: '活用', label: 'constructions',   component: JapaneseForms },

@@ -1,5 +1,5 @@
 import React, { useRef, useState } from 'react'
-import SagittalMouth from './SagittalMouth.jsx'
+import SagittalMouth from '../phonetics/SagittalMouth.jsx'
 import { PLACES, CONSONANTS, CONSONANT_LADDER, CONSONANT_LANTERN } from '../../data/koreanPhonetics.js'
 import { speak, primeSpeech, speechSupported, hasVoice } from '../scripts/speech.js'
 
