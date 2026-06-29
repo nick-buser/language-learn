@@ -6,7 +6,7 @@ import {
   VOICE_CALIBRATION, VOICE_LANTERN,
 } from '../../data/japanesePhonetics.js'
 import { speak, primeSpeech, speechSupported, hasVoice } from '../scripts/speech.js'
-import { formantsSupported, startListening, fitCalibration, mapFormants, flog } from '../scripts/formants.js'
+import { formantsSupported, startListening, fitCalibration, mapFormants, calibrationQuality, flog } from '../scripts/formants.js'
 
 // INSTRUMENT II — 母音 the vowel compass.
 // One trapezoid, three views the learner switches between:
@@ -28,7 +28,12 @@ const comboById = Object.fromEntries(VOWEL_COMBOS.map(c => [c.id, c]))
 const esByJp = Object.fromEntries(SPANISH_VOWELS.map(s => [s.jp, s]))
 const MACRON = { a: 'ā', i: 'ī', u: 'ū', e: 'ē', o: 'ō' }
 
-const CAL_KEY = 'atlas.formant.cal'
+// v2: the formant-index pick changed (we now read peaks 2+3, dropping the dead
+// low band), so a calibration saved against the old signals is meaningless —
+// bumping the key retires it and prompts a fresh calibration instead of mapping
+// through stale coefficients.
+const CAL_KEY = 'atlas.formant.cal.v2'
+const CALQ_KEY = 'atlas.formant.calq.v2'
 const clamp01 = v => Math.max(0, Math.min(1, v))
 
 function loadCal() {
@@ -44,6 +49,14 @@ function saveCal(c) {
     if (c) window.localStorage.setItem(CAL_KEY, JSON.stringify(c))
     else window.localStorage.removeItem(CAL_KEY)
   } catch { /* private mode: this session only */ }
+}
+// The calibration's separation quality, persisted alongside the coeffs so the
+// readout can keep explaining how trustworthy the mapping is across reloads.
+function loadCalInfo() {
+  try { const r = window.localStorage.getItem(CALQ_KEY); return r ? JSON.parse(r) : null } catch { return null }
+}
+function saveCalInfo(q) {
+  try { q ? window.localStorage.setItem(CALQ_KEY, JSON.stringify(q)) : window.localStorage.removeItem(CALQ_KEY) } catch { /* ignore */ }
 }
 
 // Turn a mic error into one plain sentence for the quiet note.
@@ -224,6 +237,7 @@ export default function JapaneseVowelChart({ showReadings = true, showJp = true 
   // ── voice (発声) state ──
   const formantsOk = formantsSupported()
   const [cal, setCal] = useState(loadCal)            // fitted affine map, or null
+  const [calInfo, setCalInfo] = useState(loadCalInfo) // calibration separation quality, or null
   const [listening, setListening] = useState(false)
   const [calStep, setCalStep] = useState(null)       // null, or 0..anchors-1 during calibration
   const [dots, setDots] = useState([])               // trail of mapped {x,y}
@@ -278,16 +292,22 @@ export default function JapaneseVowelChart({ showReadings = true, showJp = true 
     if (job) {
       const anchor = VOICE_CALIBRATION.anchors[job.step]
       const n = VOICE_CALIBRATION.anchors.length
-      flog(`capture ${job.step + 1}/${n} [${anchor.vowel}] → F1=${r.f1} F2=${r.f2} F3=${r.f3 ?? '–'}`)
+      flog(`capture ${job.step + 1}/${n} [${anchor.vowel}] → open=${r.f1} back=${r.f2} (lo=${r.lo ?? '–'})`)
       const samples = [...job.samples, { vowel: anchor.vowel, f1: r.f1, f2: r.f2 }]
       const nextStep = job.step + 1
       if (nextStep >= n) {
         flog('calibration triple:', samples.map(s => `${s.vowel}(${s.f1},${s.f2})`).join('  '))
         const fitPts = samples.map(s => { const t = byId[s.vowel]; return { f1: s.f1, f2: s.f2, x: t.x, y: t.y } })
         const coeffs = fitCalibration(fitPts)
+        const quality = calibrationQuality(samples)
         stopMic()
-        if (coeffs) { calRef.current = coeffs; setCal(coeffs); saveCal(coeffs); setReading(null); setDots([]) }
-        else { setMicError('Calibration couldn’t fit those three — open the console (filter “発声”) to see what was captured.') }
+        if (coeffs) {
+          calRef.current = coeffs; setCal(coeffs); saveCal(coeffs)
+          setCalInfo(quality); saveCalInfo(quality)
+          setReading(null); setDots([])
+        } else {
+          setMicError('Calibration couldn’t fit those three — open the console (filter “発声”) to see what was captured.')
+        }
       } else {
         calibratingRef.current = { step: nextStep, samples }
         setCalStep(nextStep)
@@ -591,6 +611,24 @@ export default function JapaneseVowelChart({ showReadings = true, showJp = true 
                   </div>
                 ) : (
                   <p className="vc-voice-ready">{listening ? VOICE_CALIBRATION.listening : VOICE_CALIBRATION.done}</p>
+                )}
+
+                {cal && calStep === null && calInfo && (
+                  <div className={'vc-voice-qual ' + calInfo.rating}>
+                    <div className="vc-voice-qual-head">
+                      <span className="vc-voice-qual-label">{VOICE_CALIBRATION.qualityLabel}</span>
+                      <span className="vc-voice-qual-rating">{calInfo.rating}</span>
+                      {calInfo.closest && (
+                        <span className="vc-voice-qual-pair">
+                          {VOICE_CALIBRATION.closest}{' '}
+                          <span className="jp">{byId[calInfo.closest[0]]?.kana}</span>
+                          <span className="vc-voice-qual-dot">·</span>
+                          <span className="jp">{byId[calInfo.closest[1]]?.kana}</span>
+                        </span>
+                      )}
+                    </div>
+                    <p className="vc-voice-qual-note">{VOICE_CALIBRATION.quality[calInfo.rating]}</p>
+                  </div>
                 )}
 
                 {micError && <div className="cn-novoice">{micError}</div>}

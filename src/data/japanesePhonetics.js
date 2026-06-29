@@ -356,6 +356,16 @@ export const VOICE_CALIBRATION = {
   listen: 'listen',
   stop: 'stop',
   listening: 'listening — say a vowel',
+  // How separated the three corner vowels came out. The compass can only tell
+  // two vowels apart as well as your mic + the formant detector separated them
+  // at calibration — so we say so plainly, and never blame the speaker.
+  qualityLabel: 'calibration',
+  quality: {
+    strong: 'Your three corners came out well separated — the compass can place a vowel confidently.',
+    fair: 'Two of your vowels landed fairly close, so telling those two apart is a little sensitive — readings near that edge may wander.',
+    weak: 'Two vowels came out nearly on top of each other, so the compass can barely separate them. This is usually the microphone or the formant detection, not your pronunciation — recalibrating, exaggerating the vowels, or a better mic tends to help.',
+  },
+  closest: 'closest pair',
 }
 
 // =====================================================================
