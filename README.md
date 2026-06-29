@@ -144,9 +144,10 @@ src/
       PracticeLedger.jsx   ko habit dots + weekly check-in journal
       useRoadmapStore.js   ko progress persistence (localStorage; backend-shaped)
       HangulBuilder.jsx    ko block builder (초성+중성+받침 → Unicode compose, 받침 seven-sounds)
-      SagittalMouth.jsx    ko midsagittal vocal-tract diagram (lights the active place)
       ConsonantArticulators.jsx ko the 5-organ consonant map + stroke ladder + IPA + mouth
       VowelCompass.jsx     ko IPA vowel trapezoid + the ·/ㅡ/ㅣ geometry + 음양 harmony
+    phonetics/             language-blind phonetics primitives (shared 소리 / 発音)
+      SagittalMouth.jsx    midsagittal vocal-tract diagram (lights the active articulation place)
     deixis/                language-blind pro-form instruments (fed per-lang: こそあど / 이·그·저)
       DeixisGrid.jsx       the demonstrative grid — prefix+suffix decomposition, deixis diagram, inline twin
       QuestionWords.jsx    interrogatives + specimen Q&A + the indefinite paradigm (some/any/none)

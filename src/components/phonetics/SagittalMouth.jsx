@@ -3,27 +3,34 @@ import React from 'react'
 // A midsagittal (side-view) schematic of the vocal tract — the "mouth
 // position" diagram. Lips face LEFT, the throat drops away at the RIGHT,
 // as in every phonetics textbook. It lights the active articulation place
-// so a consonant's SHAPE can be read against where it is actually made.
+// so a letter's SHAPE (Korean) or a kana's hidden ARTICULATION (Japanese)
+// can be read against where the sound is actually made.
+//
+// Language-blind: fed only a `region` key, shared by the Korean 소리 folio
+// (ㄱ tongue-root, ㅁ lips …) and the Japanese 発音 folio (か velar, し
+// palatal, ふ bilabial …).
 //
 // Props:
-//   region — velum | ridge | lips | teeth | glottis | null  (the lit place)
+//   region — lips | teeth | ridge | palate | velum | glottis | null  (the lit place)
 //   labels — show the place captions (default true)
 //
-// Schematic, not anatomical: five hotspots on the tract, the active one lit
+// Schematic, not anatomical: six hotspots on the tract, the active one lit
 // gold with a halo, the rest faint. Tongue + palate drawn as simple curves.
 
 const PLACE_POINTS = {
   lips:    { x: 36,  y: 110, label: 'lips' },
   teeth:   { x: 60,  y: 116, label: 'teeth' },
   ridge:   { x: 78,  y: 104, label: 'ridge' },
+  palate:  { x: 108, y: 84,  label: 'hard palate' },
   velum:   { x: 138, y: 96,  label: 'soft palate' },
   glottis: { x: 170, y: 158, label: 'throat' },
 }
 
 // Which broad part of the tongue rises for a given place (drawn as an accent).
 const TONGUE_ACCENT = {
-  ridge: 'M 56 122 Q 70 104 84 110',   // tip up to the ridge
-  velum: 'M 120 124 Q 142 104 158 124', // back hump up to the soft palate
+  ridge:  'M 56 122 Q 70 104 84 110',    // tip up to the ridge
+  palate: 'M 72 122 Q 104 98 130 118',   // body up to the hard palate
+  velum:  'M 120 124 Q 142 104 158 124', // back hump up to the soft palate
 }
 
 export default function SagittalMouth({ region = null, labels = true }) {
@@ -44,12 +51,12 @@ export default function SagittalMouth({ region = null, labels = true }) {
       {/* lower jaw / floor line */}
       <path className="sag-jaw" d="M 30 116 L 30 184 Q 100 196 172 184 L 172 178" />
 
-      {/* active-region tongue accent (tip or back hump) */}
+      {/* active-region tongue accent (tip / body / back hump) */}
       {region && TONGUE_ACCENT[region] && (
         <path className="sag-accent-tongue" d={TONGUE_ACCENT[region]} />
       )}
 
-      {/* the five articulation hotspots */}
+      {/* the articulation hotspots */}
       {Object.entries(PLACE_POINTS).map(([id, p]) => {
         const on = id === region
         return (
