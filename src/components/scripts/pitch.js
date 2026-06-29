@@ -21,10 +21,11 @@
 // click, so neither touches a learner who never taps "say it".
 // =====================================================================
 
-// Plausible human voice F0, and the MPM clarity below which a frame is
-// treated as unvoiced (a consonant, a breath, silence) and left as a gap.
-const MIN_HZ = 70, MAX_HZ = 500
-const CLARITY_MIN = 0.9
+// Below this RMS the mic is effectively silent — used only to auto-stop a take a
+// beat after the speaker finishes. The voiced/clarity decision (and its
+// thresholds) now lives in the component, which also surfaces the live input
+// level and clarity so a no-response take is never a mystery.
+const SILENCE_RMS = 0.005
 
 /** Is live pitch tracking possible here? (mic + Web Audio present) */
 export function pitchSupported() {
@@ -49,8 +50,9 @@ function loadPitchy() {
  * returns a stop() for manual teardown / unmount.
  *
  * @param {object} h
- * @param {(f:{hz:?number,clarity:number,t:number,voiced:boolean})=>void} h.onFrame
- *        t is ms since tracking began
+ * @param {(f:{hz:number,clarity:number,level:number,t:number})=>void} h.onFrame
+ *        per frame: raw MPM pitch (Hz) + clarity (0–1) + input RMS level + ms
+ *        since start. The component decides voiced/unvoiced and shows the rest.
  * @param {(err:any)=>void} [h.onError]
  * @param {(reason:string)=>void} [h.onStop]
  * @param {number} [h.silenceMs=650]  quiet after speech that auto-stops
@@ -67,6 +69,9 @@ export async function startPitchTrack({ onFrame, onError, onStop, silenceMs = 65
   let ctx, stream
   try {
     ctx = new AC()
+    // A context can start suspended (autoplay policy) — then the analyser only
+    // ever sees silence and the take looks dead. Resume it inside the gesture.
+    if (ctx.state === 'suspended') await ctx.resume()
     stream = await navigator.mediaDevices.getUserMedia({ audio: true })
   } catch (err) {
     try { ctx?.close() } catch { /* ignore */ }
@@ -83,7 +88,7 @@ export async function startPitchTrack({ onFrame, onError, onStop, silenceMs = 65
   const sampleRate = ctx.sampleRate
 
   let raf = 0, stopped = false
-  let anyVoiced = false, lastVoicedAt = 0
+  let anyLoud = false, lastLoudAt = 0
   const t0 = performance.now()
 
   function teardown(reason) {
@@ -101,12 +106,17 @@ export async function startPitchTrack({ onFrame, onError, onStop, silenceMs = 65
     const now = performance.now()
     const t = now - t0
     analyser.getFloatTimeDomainData(buf)
+    let sum = 0
+    for (let i = 0; i < buf.length; i++) sum += buf[i] * buf[i]
+    const level = Math.sqrt(sum / buf.length)        // RMS of the time-domain frame
     const [hz, clarity] = detector.findPitch(buf, sampleRate)
-    const voiced = clarity >= CLARITY_MIN && hz >= MIN_HZ && hz <= MAX_HZ
-    if (voiced) { anyVoiced = true; lastVoicedAt = now }
-    onFrame?.({ hz: voiced ? hz : null, clarity, t, voiced })
+    onFrame?.({ hz, clarity, level, t })
 
-    if (anyVoiced && !voiced && now - lastVoicedAt > silenceMs) return teardown('silence')
+    // Auto-stop on the speaker falling quiet (level-based, not pitch-based — so
+    // it ends the take even when no clean pitch was ever found).
+    const loud = level >= SILENCE_RMS
+    if (loud) { anyLoud = true; lastLoudAt = now }
+    if (anyLoud && !loud && now - lastLoudAt > silenceMs) return teardown('silence')
     if (t > maxMs) return teardown('max')
     raf = requestAnimationFrame(tick)
   }

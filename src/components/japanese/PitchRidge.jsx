@@ -30,9 +30,31 @@ const Y_LOW = 96
 // gate punches a gap at each voiceless consonant. So we bridge short gaps, fold
 // octave errors toward the median, then median-despike + moving-average smooth.
 const PX_PER_SEC = 150
-const GAP_BRIDGE_MS = 200   // unvoiced gaps shorter than this are drawn through
-const MED_WIN = 5           // median despike window (samples)
-const SMOOTH_WIN = 7        // moving-average window (samples)
+const MIN_HZ = 70, MAX_HZ = 500   // fixed plausible voice range
+const LEVEL_SILENT = 0.005        // below ≈ no sound reaching the mic at all
+const LEVEL_QUIET = 0.02          // below ≈ too quiet to read reliably
+const LEVEL_FULL = 0.15           // RMS that fills the input meter
+
+// The pitch-read knobs are LIVE — exposed as sliders below the ridge — because
+// the right values depend on the mic, the room, and the voice, so no single
+// hardcoded set works everywhere. These defaults are a sane starting point;
+// each is persisted per-browser.
+const PARAM_DEFS = [
+  { key: 'clarity',    label: 'pitch sensitivity', min: 0.30, max: 0.95, step: 0.01,  def: 0.70,  hint: 'lower picks up fainter / noisier pitch — more takes register, but more noise slips in' },
+  { key: 'levelFloor', label: 'volume floor',      min: 0,    max: 0.04, step: 0.001, def: 0.008, hint: 'frames quieter than this don’t count as pitch' },
+  { key: 'gapMs',      label: 'bridge gaps',       min: 0,    max: 500,  step: 20,    def: 200, unit: 'ms', hint: 'draw the line across silences shorter than this (voiceless consonants)' },
+  { key: 'median',     label: 'despike',           min: 1,    max: 15,   step: 2,     def: 5,     hint: 'median window — removes octave spikes · 1 = off' },
+  { key: 'smooth',     label: 'smoothing',         min: 1,    max: 21,   step: 2,     def: 7,     hint: 'moving-average window — flattens jitter · 1 = off' },
+]
+const PARAM_DEFAULTS = Object.fromEntries(PARAM_DEFS.map(p => [p.key, p.def]))
+const PARAMS_KEY = 'atlas.pitch.params'
+function loadParams() {
+  try { const r = JSON.parse(window.localStorage.getItem(PARAMS_KEY)); return (r && typeof r === 'object') ? { ...PARAM_DEFAULTS, ...r } : { ...PARAM_DEFAULTS } }
+  catch { return { ...PARAM_DEFAULTS } }
+}
+function saveParams(p) { try { window.localStorage.setItem(PARAMS_KEY, JSON.stringify(p)) } catch { /* ignore */ } }
+
+const isVoiced = (f, p) => f.clarity >= p.clarity && f.hz >= MIN_HZ && f.hz <= MAX_HZ && f.level >= p.levelFloor
 
 function median(arr) {
   const s = [...arr].sort((a, b) => a - b)
@@ -44,8 +66,8 @@ function windowed(xs, win, fn) {
   return xs.map((_, i) => fn(xs.slice(Math.max(0, i - half), Math.min(xs.length, i + half + 1))))
 }
 
-function contourFromTrace(trace) {
-  const voiced = trace.filter(f => f.voiced && f.hz)
+function contourFromTrace(trace, p) {
+  const voiced = trace.filter(f => isVoiced(f, p))
   if (voiced.length < 3) return { paths: [], head: null }
 
   // 1) split into segments only at LONG gaps; short ones (voiceless consonants)
@@ -53,7 +75,7 @@ function contourFromTrace(trace) {
   const segs = []
   let cur = [voiced[0]]
   for (let i = 1; i < voiced.length; i++) {
-    if (voiced[i].t - voiced[i - 1].t > GAP_BRIDGE_MS) { segs.push(cur); cur = [] }
+    if (voiced[i].t - voiced[i - 1].t > p.gapMs) { segs.push(cur); cur = [] }
     cur.push(voiced[i])
   }
   if (cur.length) segs.push(cur)
@@ -67,8 +89,8 @@ function contourFromTrace(trace) {
       while (v < med / 1.6) v *= 2
       return v
     })
-    hz = windowed(hz, MED_WIN, median)
-    hz = windowed(hz, SMOOTH_WIN, a => a.reduce((s, v) => s + v, 0) / a.length)
+    hz = windowed(hz, p.median, median)
+    hz = windowed(hz, p.smooth, a => a.reduce((s, v) => s + v, 0) / a.length)
     return seg.map((f, i) => ({ t: f.t, hz: hz[i] }))
   }).filter(s => s.length >= 2)
   if (!smoothed.length) return { paths: [], head: null }
@@ -86,6 +108,35 @@ function contourFromTrace(trace) {
   const lastSeg = smoothed[smoothed.length - 1]
   const lastPt = lastSeg[lastSeg.length - 1]
   return { paths, head: [mapX(lastPt.t), mapY(lastPt.hz)] }
+}
+
+// The mic's live state, read off the recent trace — an input level for the meter
+// and a plain-language status, so a no-response take is never silent again.
+function micReadout(trace, p) {
+  const last = trace.length ? trace[trace.length - 1] : null
+  const recent = trace.slice(-12)
+  const maxRecent = recent.reduce((m, f) => Math.max(m, f.level || 0), 0)
+  const meterPct = Math.min(100, Math.round(((last?.level || 0) / LEVEL_FULL) * 100))
+  let status
+  if (maxRecent < LEVEL_SILENT) status = PITCH_VOICE.diag.silent
+  else if (maxRecent < LEVEL_QUIET) status = PITCH_VOICE.diag.quiet
+  else if (recent.some(f => isVoiced(f, p))) status = PITCH_VOICE.diag.voiced
+  else status = PITCH_VOICE.diag.noPitch
+  return { meterPct, status }
+}
+
+// After a take that drew nothing, the same triage as a sentence: dead mic, too
+// quiet, sound-but-no-pitch, or just too short.
+function takeSummary(trace, drew, p) {
+  if (drew || !trace.length) return null
+  const voicedN = trace.filter(f => isVoiced(f, p)).length
+  const maxLevel = trace.reduce((m, f) => Math.max(m, f.level || 0), 0)
+  if (!voicedN) {
+    if (maxLevel < LEVEL_SILENT) return PITCH_VOICE.summary.silent
+    if (maxLevel < LEVEL_QUIET) return PITCH_VOICE.summary.quiet
+    return PITCH_VOICE.summary.noPitch
+  }
+  return voicedN < 3 ? PITCH_VOICE.summary.short : null
 }
 
 function pitchErrText(err) {
@@ -110,7 +161,11 @@ export default function PitchRidge({ showReadings = true, showJp = true }) {
   const [recording, setRecording] = useState(false)
   const [trace, setTrace] = useState([])
   const [micError, setMicError] = useState(null)
+  const [params, setParams] = useState(loadParams)   // live, persisted read knobs
+  const [tuning, setTuning] = useState(false)         // tuning panel open?
   const stopPitchRef = useRef(null)
+  const setParam = (k, v) => setParams(prev => { const next = { ...prev, [k]: v }; saveParams(next); return next })
+  const resetParams = () => { setParams({ ...PARAM_DEFAULTS }); saveParams(PARAM_DEFAULTS) }
 
   const w = PITCH_WORDS.find(x => x.id === sel)
   const acc = ACCENT_TYPES[w.type]
@@ -187,7 +242,9 @@ export default function PitchRidge({ showReadings = true, showJp = true }) {
     { key: null, items: PITCH_WORDS.filter(x => !x.pair) },
   ]
 
-  const userContour = contourFromTrace(trace)
+  const userContour = contourFromTrace(trace, params)
+  const micLive = recording ? micReadout(trace, params) : null
+  const summary = !recording ? takeSummary(trace, userContour.paths.length > 0, params) : null
 
   return (
     <div className="pr-stage" data-screen-label="pitch ridge">
@@ -280,9 +337,49 @@ export default function PitchRidge({ showReadings = true, showJp = true }) {
                 {trace.length > 0 && !recording && (
                   <button className="pr-voice-btn ghost" onClick={clearVoice}>{PITCH_VOICE.clear}</button>
                 )}
-                <span className="pr-voice-note">{recording ? PITCH_VOICE.listening : PITCH_VOICE.experimental}</span>
+                <button className={'pr-voice-btn ghost' + (tuning ? ' on' : '')} onClick={() => setTuning(t => !t)}
+                        aria-expanded={tuning}>⚙ tune</button>
+                {!recording && <span className="pr-voice-note">{PITCH_VOICE.experimental}</span>}
               </div>
-              {trace.length > 0 && !recording && <p className="pr-voice-hint">{PITCH_VOICE.hint}</p>}
+
+              {/* live mic legibility — input meter + plain-language status */}
+              {recording && micLive && (
+                <div className="pr-mic" aria-live="polite">
+                  <span className="pr-mic-cap">{PITCH_VOICE.level}</span>
+                  <div className="pr-mic-meter"><span className="pr-mic-fill" style={{ width: micLive.meterPct + '%' }} /></div>
+                  <span className={'pr-mic-status' +
+                    (micLive.status === PITCH_VOICE.diag.voiced ? ' ok'
+                      : micLive.status === PITCH_VOICE.diag.silent ? ' bad' : ' warn')}>
+                    {micLive.status}
+                  </span>
+                </div>
+              )}
+
+              {summary && <p className="pr-voice-summary">{summary}</p>}
+              {!recording && userContour.paths.length > 0 && <p className="pr-voice-hint">{PITCH_VOICE.hint}</p>}
+
+              {/* live tuning — the read knobs depend on mic / room / voice, so they
+                  are the learner's to turn rather than baked in */}
+              {tuning && (
+                <div className="pr-tune">
+                  {PARAM_DEFS.map(d => (
+                    <div className="pr-tune-row" key={d.key}>
+                      <label className="pr-tune-label" htmlFor={'tune-' + d.key} title={d.hint}>{d.label}</label>
+                      <input className="pr-tune-range" id={'tune-' + d.key} type="range"
+                             min={d.min} max={d.max} step={d.step} value={params[d.key]}
+                             onChange={e => setParam(d.key, Number(e.target.value))} />
+                      <input className="pr-tune-num" type="number"
+                             min={d.min} max={d.max} step={d.step} value={params[d.key]}
+                             onChange={e => setParam(d.key, Number(e.target.value))} />
+                      {d.unit && <span className="pr-tune-unit">{d.unit}</span>}
+                    </div>
+                  ))}
+                  <div className="pr-tune-foot">
+                    <button className="pr-voice-btn ghost" onClick={resetParams}>reset</button>
+                    <span className="pr-tune-hint">hover a label for what it does · saved per browser</span>
+                  </div>
+                </div>
+              )}
             </>
           ) : (
             <div className="cn-novoice" style={{ marginTop: 12 }}>{PITCH_VOICE.noMic}</div>

@@ -413,6 +413,23 @@ export const PITCH_VOICE = {
   hint: 'Your voice traces in sky over the target. Watch whether your pitch drops where the accent does — the shape is the point, not the exact spot.',
   noMic: 'No microphone here — the ridge still plays its tones; the live trace needs mic access over a secure (https / localhost) connection.',
   experimental: 'experimental · read live and lined up by shape, not snapped to each mora',
+  level: 'mic',
+  // Live status while recording — so a dead take is never a mystery: is the mic
+  // even hearing anything, is it too quiet, is there sound but no clean pitch, or
+  // is the pitch landing.
+  diag: {
+    silent: 'no sound reaching the mic — is it the right input, and unmuted?',
+    quiet: 'very quiet — speak up, or move closer to the mic',
+    noPitch: 'hearing sound, but no clear pitch yet — hold the vowels',
+    voiced: 'got your pitch',
+  },
+  // After a take that drew nothing, the same triage as a sentence.
+  summary: {
+    silent: 'The mic sent no sound that take — check it’s the right input device and isn’t muted.',
+    quiet: 'It came through very quiet — try speaking up or moving closer to the mic.',
+    noPitch: 'I heard sound but never locked onto a steady pitch. Say the word drawn-out and even, somewhere with less background noise.',
+    short: 'Only caught a flash of pitch — give the word a little more length.',
+  },
 }
 
 /** The 한국어 bridge for the consonants — the reverse of the Korean folio's

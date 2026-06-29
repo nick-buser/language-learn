@@ -385,6 +385,43 @@
 .pr-voice-note { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.06em; color: var(--ink-faded); }
 .pr-voice-hint { margin: 9px 0 0; font-family: var(--font-body); font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); }
 
+/* live mic legibility — input level meter + plain-language status while recording */
+.pr-mic { display: flex; align-items: center; gap: 9px; margin-top: 12px; flex-wrap: wrap; }
+.pr-mic-cap { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faded); }
+.pr-mic-meter { width: 90px; height: 6px; border-radius: 999px; background: var(--paper-deep); border: 1px solid var(--rule); overflow: hidden; }
+.pr-mic-fill { display: block; height: 100%; background: var(--st-travel); border-radius: 999px; transition: width 80ms linear; }
+.pr-mic-status { font-family: var(--font-body); font-size: 12px; color: var(--ink-soft); }
+.pr-mic-status.ok { color: var(--st-travel); }
+.pr-mic-status.warn { color: var(--amber); }
+.pr-mic-status.bad { color: var(--signal-lit); }
+
+/* post-take triage when nothing drew */
+.pr-voice-summary {
+  margin: 11px 0 0; padding: 9px 13px;
+  border-left: 2px solid var(--amber); background: color-mix(in srgb, var(--amber) 7%, transparent);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+  font-family: var(--font-body); font-size: 12.5px; line-height: 1.5; color: var(--ink-soft);
+}
+
+/* the live tuning panel — knobs that depend on mic / room / voice */
+.pr-voice-btn.ghost.on { color: var(--accent); border-color: var(--gilt-line); background: var(--abu-current-wash); }
+.pr-tune {
+  margin-top: 12px; padding: 12px 14px;
+  border: 1px solid var(--rule); border-radius: var(--radius-md); background: var(--paper-deep);
+  display: flex; flex-direction: column; gap: 9px;
+}
+.pr-tune-row { display: grid; grid-template-columns: 92px 1fr 56px auto; align-items: center; gap: 9px; }
+.pr-tune-label { font-family: var(--font-body); font-size: 12px; color: var(--ink-soft); cursor: help; }
+.pr-tune-range { width: 100%; accent-color: var(--accent); cursor: pointer; }
+.pr-tune-num {
+  width: 56px; font-family: var(--font-mono); font-size: 11px; color: var(--ink);
+  background: var(--paper); border: 1px solid var(--rule); border-radius: var(--radius-sm); padding: 3px 6px;
+}
+.pr-tune-num:focus-visible { outline: none; box-shadow: var(--abu-focus-ring); border-color: var(--gilt-line); }
+.pr-tune-unit { font-family: var(--font-mono); font-size: 9px; color: var(--ink-faded); }
+.pr-tune-foot { display: flex; align-items: center; gap: 12px; margin-top: 2px; }
+.pr-tune-hint { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.04em; color: var(--ink-faded); }
+
 @media (max-width: 720px) {
   .pr-kanji { font-size: 48px; }
   .jvc-note { padding-left: 56px; }
