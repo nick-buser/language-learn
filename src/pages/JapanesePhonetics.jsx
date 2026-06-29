@@ -90,7 +90,7 @@ export default function JapanesePhonetics({ showReadings = true, showJp = true }
         <div className="latin">母音 · five pure vowels on the real trapezoid — then what they do when they combine</div>
       </div>
       <div className="try-strip">
-        <span className="dot"></span> switch between <b>the five</b> and their <b>combinations</b> · in the five, tap a vowel (う is close-back but unrounded) and compare against Korean’s ten or Spanish’s near-identical five · in combinations, see whether a pair holds long (えい→ē) or stays two beats (あい)
+        <span className="dot"></span> switch between <b>the five</b>, their <b>combinations</b>, and <b>your voice</b> · in the five, tap a vowel (う is close-back but unrounded) and compare against Korean’s ten or Spanish’s near-identical five · in combinations, see whether a pair holds long (えい→ē) or stays two beats (あい) · in your voice, calibrate to your mouth and watch your own vowels land on the trapezoid live
       </div>
       <JapaneseVowelChart showReadings={showReadings} showJp={showJp} />
 
