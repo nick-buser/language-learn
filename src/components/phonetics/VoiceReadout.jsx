@@ -1,10 +1,12 @@
 import React from 'react'
+import { ENGINES } from '../scripts/formants.js'
 
 // =====================================================================
 // The voice-mode readout column, shared by the Japanese 発声 and Korean 발성
 // vowel compasses. Pure presentation over the useVoiceCompass hook's state:
-// the calibrate / listen / recalibrate controls, the three-vowel calibration
-// walk, the live reading prose, and the calibration-quality panel.
+// the engine toggle, the calibrate / listen / recalibrate controls, the
+// three-vowel calibration walk, the live reading prose, and the
+// calibration-quality panel.
 //
 // Everything language-specific arrives as props — `copy` (the folio's
 // VOICE_CALIBRATION strings + anchors), `glyphOf(vowel)` to render a kana or
@@ -14,6 +16,7 @@ import React from 'react'
 export default function VoiceReadout({
   formantsOk, cal, calInfo, listening, calStep, reading, micError,
   startMic, stopMic, copy, vowels, glyphOf, glyphClass = 'jp',
+  engine, setEngine,
 }) {
   const byId = React.useMemo(() => Object.fromEntries(vowels.map(v => [v.id, v])), [vowels])
   const anchorVowel = calStep !== null ? byId[copy.anchors[calStep].vowel] : null
@@ -25,6 +28,22 @@ export default function VoiceReadout({
         <div className="cn-novoice">{copy.noMic}</div>
       ) : (
         <>
+          {/* engine A/B — each keeps its own calibration; switching drops the mic */}
+          {setEngine && (
+            <div className="vc-engine" role="group" aria-label="formant engine">
+              <span className="vc-engine-label">engine</span>
+              {ENGINES.map(e => (
+                <button key={e.id} type="button"
+                        className={'vc-engine-btn' + (engine === e.id ? ' on' : '')}
+                        onClick={() => setEngine(e.id)} disabled={listening}
+                        aria-pressed={engine === e.id}>
+                  <span className="vc-engine-name">{e.label}</span>
+                  <span className="vc-engine-sub">{e.sub}</span>
+                </button>
+              ))}
+            </div>
+          )}
+
           <div className="vc-voice-controls">
             {!cal ? (
               <button className={'vc-voice-btn primary' + (listening ? ' rec' : '')}

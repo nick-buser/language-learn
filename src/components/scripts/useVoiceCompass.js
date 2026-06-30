@@ -23,6 +23,7 @@ import { useEffect, useMemo, useRef, useState } from 'react'
 import {
   formantsSupported, startListening,
   fitCalibration, mapFormants, calibrationQuality, flog,
+  loadEngine, saveEngine,
 } from './formants.js'
 
 const clamp01 = v => Math.max(0, Math.min(1, v))
@@ -107,8 +108,14 @@ export function useVoiceCompass({ vowels, anchors, glyphOf, noMic, calKey, calqK
   const formantsOk = formantsSupported()
   const byId = useMemo(() => Object.fromEntries(vowels.map(v => [v.id, v])), [vowels])
 
-  const [cal, setCal] = useState(() => loadCal(calKey))            // fitted affine map, or null
-  const [calInfo, setCalInfo] = useState(() => loadCalInfo(calqKey)) // calibration separation quality, or null
+  // Each engine has its OWN voice space (Hz vs mel bins), so calibration keys are
+  // suffixed by the active engine; switching engines loads that engine's own map.
+  const [engine, setEngineState] = useState(() => loadEngine())
+  const ckey = `${calKey}.${engine}`
+  const cqkey = `${calqKey}.${engine}`
+
+  const [cal, setCal] = useState(() => loadCal(ckey))            // fitted affine map, or null
+  const [calInfo, setCalInfo] = useState(() => loadCalInfo(cqkey)) // calibration separation quality, or null
   const [listening, setListening] = useState(false)
   const [calStep, setCalStep] = useState(null)       // null, or 0..anchors-1 during calibration
   const [dots, setDots] = useState([])               // trail of mapped {x,y}
@@ -130,6 +137,21 @@ export function useVoiceCompass({ vowels, anchors, glyphOf, noMic, calKey, calqK
     setListening(false)
   }
 
+  // Switch engines: drop the mic, persist the choice, clear the live trail, and
+  // load the new engine's OWN calibration map (each engine fits its own, since
+  // their units differ). Loaded synchronously so the controls never flash the
+  // previous engine's calibration state for a frame.
+  const setEngine = (e) => {
+    if (e === engine) return
+    stopMic()
+    saveEngine(e)
+    setDots([]); setReading(null); setMicError(null)
+    const c = loadCal(`${calKey}.${e}`), ci = loadCalInfo(`${calqKey}.${e}`)
+    calRef.current = c
+    setCal(c); setCalInfo(ci)
+    setEngineState(e)
+  }
+
   // One reading per voiced segment. During calibration we collect the corner
   // vowels and fit; otherwise we map the reading and drop a dot.
   const handleReading = (r) => {
@@ -137,7 +159,7 @@ export function useVoiceCompass({ vowels, anchors, glyphOf, noMic, calKey, calqK
     if (job) {
       const anchor = anchors[job.step]
       const n = anchors.length
-      flog(`capture ${job.step + 1}/${n} [${anchor.vowel}] → F1=${Math.round(r.f1)}Hz F2=${Math.round(r.f2)}Hz (F3=${r.f3 ? Math.round(r.f3) + 'Hz' : '–'})`)
+      flog(`capture ${job.step + 1}/${n} [${anchor.vowel}] → F1=${Math.round(r.f1)} F2=${Math.round(r.f2)}${r.f3 ? ' F3=' + Math.round(r.f3) : ''} (${engine})`)
       const samples = [...job.samples, { vowel: anchor.vowel, f1: r.f1, f2: r.f2 }]
       const nextStep = job.step + 1
       if (nextStep >= n) {
@@ -147,8 +169,8 @@ export function useVoiceCompass({ vowels, anchors, glyphOf, noMic, calKey, calqK
         const quality = calibrationQuality(samples)
         stopMic()
         if (coeffs) {
-          calRef.current = coeffs; setCal(coeffs); saveCal(calKey, coeffs)
-          setCalInfo(quality); saveCalInfo(calqKey, quality)
+          calRef.current = coeffs; setCal(coeffs); saveCal(ckey, coeffs)
+          setCalInfo(quality); saveCalInfo(cqkey, quality)
           setReading(null); setDots([])
         } else {
           setMicError('Calibration couldn’t fit those three — open the console (filter “発声”) to see what was captured.')
@@ -163,7 +185,7 @@ export function useVoiceCompass({ vowels, anchors, glyphOf, noMic, calKey, calqK
     const p = mapFormants(calRef.current, r.f1, r.f2)
     if (!p) return
     const x = clamp01(p.x), y = clamp01(p.y)
-    flog(`reading → F1=${Math.round(r.f1)}Hz F2=${Math.round(r.f2)}Hz → x=${p.x.toFixed(2)} y=${p.y.toFixed(2)}${(x !== p.x || y !== p.y) ? ' (clamped)' : ''}`)
+    flog(`reading → F1=${Math.round(r.f1)} F2=${Math.round(r.f2)} → x=${p.x.toFixed(2)} y=${p.y.toFixed(2)}${(x !== p.x || y !== p.y) ? ' (clamped)' : ''}`)
     setDots(prev => [...prev, { x, y }].slice(-6))
     setReading(describePlacement(vowels, glyphOf, x, y))
     if (!litRef.current) { litRef.current = true; setLit(true) }
@@ -177,6 +199,7 @@ export function useVoiceCompass({ vowels, anchors, glyphOf, noMic, calKey, calqK
     setListening(true)
     try {
       const stop = await startListening({
+        engine,
         onReading: handleReading,
         onError: (err) => { setMicError(micErrText(err, noMic)); stopMic() },
         onStop: () => setListening(false),
@@ -191,5 +214,5 @@ export function useVoiceCompass({ vowels, anchors, glyphOf, noMic, calKey, calqK
   useEffect(() => () => { try { stopRef.current?.() } catch { /* ignore */ } }, [])
   useEffect(() => { if (!active) stopMic() }, [active]) // eslint-disable-line react-hooks/exhaustive-deps
 
-  return { formantsOk, cal, calInfo, listening, calStep, dots, reading, micError, lit, startMic, stopMic }
+  return { formantsOk, cal, calInfo, listening, calStep, dots, reading, micError, lit, startMic, stopMic, engine, setEngine }
 }
