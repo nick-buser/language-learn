@@ -270,19 +270,42 @@ const KO_CABINET = {
 //   the point — so the prompt withholds RR; the options carry it on reveal.
 //   Built from the SAME specimens the cabinet cards display (clozeSegments
 //   strips the <m>…</m> the folio uses to highlight the particle), so the
-//   sentence and its blank can never disagree with the live card.
+//   sentence and its blank can never disagree with the live card. Beyond each
+//   particle's primary specimen, the cabinet's example FACES join in — 에/에서/
+//   (으)로/(이)나 each carry several (destination·time·rate, venue·origin,
+//   tool·material…) — so a particle is drilled across its real senses, not one
+//   frozen sentence. A face joins only when its tag reads "<function> · <twin>"
+//   (the function becomes the gloss, no answer leak); faces whose tag names the
+//   answer (…→ 를) or are bare fragments (든지) sit the quiz out.
 // ---------------------------------------------------------------------
+const faceGloss = (tag) => tag.split(' · ')[0].trim()
+
 const clozeCards = PARTICLE_FAMILIES.flatMap(fam =>
-  fam.entries.map(p => ({
-    id: `pc.${fam.id}.${p.id}`,
-    group: fam.id,
-    near: fam.id,
-    prompt: {
-      cloze: clozeSegments(p.ex.kr), lang: 'kr',
-      gloss: p.ex.en, tag: DRAWER_LABEL[fam.id], jp: p.ex.jp,
-    },
-    answer: { main: p.forms, lang: 'kr', sub: p.rr },
-  })),
+  fam.entries.flatMap(p => {
+    const answer = { main: p.forms, lang: 'kr', sub: p.rr }
+    const cards = [{
+      id: `pc.${fam.id}.${p.id}`,
+      group: fam.id, near: fam.id,
+      prompt: {
+        cloze: clozeSegments(p.ex.kr), lang: 'kr',
+        gloss: p.ex.en, tag: DRAWER_LABEL[fam.id], jp: p.ex.jp,
+      },
+      answer,
+    }]
+    ;(p.faces || []).forEach((face, i) => {
+      if (!face.kr || !face.tag.includes(' · ')) return
+      cards.push({
+        id: `pc.${fam.id}.${p.id}.f${i}`,
+        group: fam.id, near: fam.id,
+        prompt: {
+          cloze: clozeSegments(face.kr), lang: 'kr',
+          gloss: faceGloss(face.tag), tag: DRAWER_LABEL[fam.id], jp: face.jp,
+        },
+        answer,
+      })
+    })
+    return cards
+  }),
 )
 
 const KO_CLOZE = {
