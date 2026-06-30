@@ -54,28 +54,30 @@ export default function KoreanSong({ showReadings, showJp }) {
         <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>diction bench</b>{' '}
         catches the seams that re-sound when sung; the{' '}
         <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>harvest</b>{' '}
-        files what you’ve learned back into the atlas. Two songs are on the shelf — a folk standard
-        that roams the scale, and a rap hook that barely moves; switch between them and watch the
-        instruments answer differently.
+        files what you’ve learned back into the atlas. The song on the shelf is{' '}
+        <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>아리랑</b> — the
+        folk standard that roams the pentatonic scale.
       </p>
 
-      {/* the shelf */}
-      <div className="specimen-row" style={{ marginTop: 22 }}>
-        <span className="lbl">song</span>
-        {KO_SONGS.map((s) => (
-          <button
-            key={s.id}
-            className={'specimen-chip' + (s.id === song.id ? ' active' : '')}
-            onClick={() => setSongId(s.id)}
-            aria-pressed={s.id === song.id}
-          >
-            <span className="kr" style={{ fontFamily: 'var(--font-kr-serif)', fontSize: 14, marginRight: 7, letterSpacing: 0 }}>
-              {s.title.han}
-            </span>
-            {s.title.rr}
-          </button>
-        ))}
-      </div>
+      {/* the shelf — shown only once there's more than one song to switch between */}
+      {KO_SONGS.length > 1 && (
+        <div className="specimen-row" style={{ marginTop: 22 }}>
+          <span className="lbl">song</span>
+          {KO_SONGS.map((s) => (
+            <button
+              key={s.id}
+              className={'specimen-chip' + (s.id === song.id ? ' active' : '')}
+              onClick={() => setSongId(s.id)}
+              aria-pressed={s.id === song.id}
+            >
+              <span className="kr" style={{ fontFamily: 'var(--font-kr-serif)', fontSize: 14, marginRight: 7, letterSpacing: 0 }}>
+                {s.title.han}
+              </span>
+              {s.title.rr}
+            </button>
+          ))}
+        </div>
+      )}
 
       {/* the studio — remounts cleanly per song (fresh transport) */}
       <SongStudio key={song.id} song={song} showReadings={showReadings} showJp={showJp} />
@@ -101,9 +103,9 @@ export default function KoreanSong({ showReadings, showJp }) {
               a pitch, a duration, and a delivery (sung or rapped), inside a context that makes a
               learner want to repeat it. That shape is written here exactly as a future songs
               backend would serve it — one data module, payload-blind instruments, one shared clock.
-              Add a song by editing data; the components never notice. (Copyrighted songs are kept
-              to short, attributed teaching excerpts — Arirang, being public-domain, carries its
-              whole verse.)
+              Add a song by editing data; the components never notice. (The shelf ships only
+              <b> 아리랑</b>, public-domain, in full — any song added later just drops into the same
+              module.)
             </p>
             <blockquote>
               A tune you can’t get out of your head is a sentence you’ll never have to revise.
