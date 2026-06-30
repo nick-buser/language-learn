@@ -181,6 +181,12 @@ async function main() {
     lang: 'ko',
     generatedAt: new Date().toISOString().slice(0, 10),
     source: '국립국어원 한국어기초사전 (KRDICT) Open API + atlas hand-checked bank',
+    license:
+      "Entries whose `source` includes 'krdict' are derived from 국립국어원 한국어기초사전 " +
+      '(National Institute of Korean Language, Basic Korean Dictionary — https://krdict.korean.go.kr) ' +
+      'and are licensed CC BY-SA 2.0 KR (https://creativecommons.org/licenses/by-sa/2.0/kr/): ' +
+      "attribution required, adaptations share-alike. Hand-checked entries (source 'atlas-seed') " +
+      "and the Japanese bridges / specimen sentences are the atlas author's, under the project's MIT license.",
     count: entries.length,
     entries,
   };
