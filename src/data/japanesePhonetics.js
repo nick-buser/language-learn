@@ -348,6 +348,7 @@ export const VOICE_CALIBRATION = {
     { vowel: 'u', say: 'a long “うー” — tongue high and back, lips flat (don’t purse!)' },
   ],
   intro: 'The dot means nothing until the compass learns YOUR voice — the same vowel sits at very different frequencies for a low voice and a high one. Say the three corner vowels once and it pins your vowel space onto the trapezoid.',
+  calibrate: 'calibrate to my voice',
   hold: 'hold it steady for about a second, then pause',
   done: 'Calibrated to your voice. Say any vowel now and watch where it lands among the five.',
   recalibrate: 'recalibrate',
