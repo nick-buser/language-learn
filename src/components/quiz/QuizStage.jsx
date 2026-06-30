@@ -18,12 +18,19 @@ import { makeQuestion as makeQ } from './quizEngine.js'
 
 // Render a card face: a slot tag, the main line (in script font when the
 // face names one), the reading (gated), an English gloss, and a bridge cue.
+// A `cloze` face renders a sentence with styled blanks in place of `main` —
+// the segments around the missing particle, a gap drawn between each pair.
 function PromptFace({ face, showReadings, showJp }) {
   const sameAsMain = face.gloss && face.gloss === face.main
   return (
     <div className="quiz-prompt-face">
       {face.tag && <div className="qp-tag">{face.tag}</div>}
-      <div className={'qp-main' + (face.lang ? ' ' + face.lang : '')} lang={face.lang}>{face.main}</div>
+      <div className={'qp-main' + (face.cloze ? ' cloze' : '') + (face.lang ? ' ' + face.lang : '')} lang={face.lang}>
+        {face.cloze
+          ? face.cloze.flatMap((seg, i) =>
+              i === 0 ? [seg] : [<span key={i} className="qp-blank" aria-label="blank">▢</span>, seg])
+          : face.main}
+      </div>
       <div className="qp-meta">
         {face.gloss && !sameAsMain && <span className="qp-gloss">{face.gloss}</span>}
         {showReadings && face.sub && <span className="qp-rr">{face.sub}</span>}

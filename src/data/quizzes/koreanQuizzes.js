@@ -11,10 +11,14 @@
 //   3. 이·그·저    — the pointer grid inverted: a meaning, which pointer?
 //   4. 조사        — the 받침 gate inverted: a noun + a role, which particle SHAPE?
 //   5. 서랍        — the cabinet inverted: a job (+ JP twin), which particle?
+//   6. 빈칸        — the cabinet's specimen, the particle blanked: fill the slot.
 //
-// The two particle decks split the folio's two axes: 조사 (the gate) drills
-// the 받침 ALLOMORPHY of the skeleton few; 서랍 (the drawers) drills WHICH of
-// the cabinet's 33 particles does a job, scoped by the folio's own drawers.
+// The three particle decks split the folio's axes: 조사 (the gate) drills the
+// 받침 ALLOMORPHY of the skeleton few; 서랍 (the drawers) drills WHICH of the
+// cabinet's 33 particles does a job, abstractly; 빈칸 (the blank) drills the
+// same WHICH, but in the wild — the particle gone from its own specimen
+// sentence, the Japanese twin riding the bridge as the transfer cue. All
+// three scope by the folio's own five drawers.
 //
 // See ./schema.js for the deck/card contract.
 // =====================================================================
@@ -25,7 +29,7 @@ import {
 } from '../koreanData.js'
 import { SERIES, CATEGORIES, GRID } from '../koreanDeixis.js'
 import { PARTICLE_FAMILIES } from '../koreanParticles.js'
-import { joinRr, groupsBy } from './schema.js'
+import { joinRr, groupsBy, clozeSegments } from './schema.js'
 
 // ---------------------------------------------------------------------
 // 1 · 동사 활용 — verb conjugation (the forge, inverted)
@@ -253,4 +257,44 @@ const KO_CABINET = {
   cards: cabinetCards,
 }
 
-export const KO_DECKS = [KO_VERBS, KO_CONJ, KO_DEIXIS, KO_PARTICLES, KO_CABINET]
+// ---------------------------------------------------------------------
+// 6 · 빈칸 — fill the blank (the cabinet's specimen, the particle gone)
+//   The 서랍 deck names the job in the abstract; this one shows the job in
+//   the wild. Each card is a particle's OWN specimen sentence with the
+//   particle lifted out — 커피▢ 마시지만 차▢ 안 마셔요 — under the English
+//   translation, with the Japanese specimen riding the showJp bridge (it
+//   carries the twin は/が/より, so the bridge IS the disambiguator when a
+//   slot could take more than one). The answer is the particle, shape-pair
+//   and all; near = the drawer, so the distractors are drawer-mates, the
+//   same confusable cohort as 서랍. No sentence reading is shown — the gap is
+//   the point — so the prompt withholds RR; the options carry it on reveal.
+//   Built from the SAME specimens the cabinet cards display (clozeSegments
+//   strips the <m>…</m> the folio uses to highlight the particle), so the
+//   sentence and its blank can never disagree with the live card.
+// ---------------------------------------------------------------------
+const clozeCards = PARTICLE_FAMILIES.flatMap(fam =>
+  fam.entries.map(p => ({
+    id: `pc.${fam.id}.${p.id}`,
+    group: fam.id,
+    near: fam.id,
+    prompt: {
+      cloze: clozeSegments(p.ex.kr), lang: 'kr',
+      gloss: p.ex.en, tag: DRAWER_LABEL[fam.id], jp: p.ex.jp,
+    },
+    answer: { main: p.forms, lang: 'kr', sub: p.rr },
+  })),
+)
+
+const KO_CLOZE = {
+  id: 'cloze', glyph: '빈칸', label: 'fill the blank',
+  blurb: 'A real sentence, the particle gone — drop it back in. 커피▢ 마시지만 차▢ … → 은 / 는.',
+  promptLabel: 'which particle fills the blank?',
+  hint: 'tap the particle the sentence is missing',
+  groups: PARTICLE_FAMILIES.map(fam => ({
+    id: fam.id, label: DRAWER_LABEL[fam.id],
+    ids: clozeCards.filter(c => c.group === fam.id).map(c => c.id),
+  })),
+  cards: clozeCards,
+}
+
+export const KO_DECKS = [KO_VERBS, KO_CONJ, KO_DEIXIS, KO_PARTICLES, KO_CABINET, KO_CLOZE]

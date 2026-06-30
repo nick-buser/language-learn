@@ -52,11 +52,15 @@
 //
 //   QuizFace = {
 //     main,                        // the big line (a glyph/word, or a gloss)
+//     cloze?,                      // string[] — text segments AROUND a blank, in
+//                                  // place of `main`: the cloze prompt renders a
+//                                  // styled gap between each pair (['커피',' 마시지만
+//                                  // 차',' …'] → 커피▢ 마시지만 차▢ …). Carries `lang`.
 //     sub?,                        // the reading (RR / romaji) — gated by showReadings
 //     gloss?,                      // an always-shown English line (prompts)
 //     tag?,                        // a small caps slot-label ("past · 해요체")
 //     jp?,                         // a bridge cue (the twin form) — gated by showJp
-//     lang?,                       // 'kr' | 'jp' → render `main` in that script font
+//     lang?,                       // 'kr' | 'jp' → render `main`/`cloze` in that font
 //   }
 //
 //   ScopeGroup = { id, label, ids: [cardId…] }
@@ -73,6 +77,15 @@
  *  string. Join the triple into the spoken syllable (책이 → chaegi). */
 export function joinRr(rr) {
   return Array.isArray(rr) ? rr.join('') : rr
+}
+
+/** Split a cabinet specimen (hangul with the particle wrapped in <m>…</m>)
+ *  into the text segments AROUND the particle — the cloze prompt's gaps.
+ *  '커피<m>는</m> 마시지만 차<m>는</m> 안 마셔요.'
+ *    → ['커피', ' 마시지만 차', ' 안 마셔요.']  (two gaps, both the same particle).
+ *  PromptFace renders a styled blank between each pair of segments. */
+export function clozeSegments(kr) {
+  return kr.split(/<m>.*?<\/m>/g)
 }
 
 /** Build a ScopeGroup from a list of cards by reading each card's field.
