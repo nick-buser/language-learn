@@ -95,6 +95,18 @@
 .qp-main { font-size: 2.5rem; line-height: 1.1; color: var(--ink); }
 .qp-main.kr { font-family: var(--font-kr-serif); }
 .qp-main.jp { font-family: var(--font-cjk-serif); }
+/* a cloze prompt is a whole sentence, not a headword — drop to reading size
+   and let it wrap; the blank is a gilt slot the eye lands on */
+.qp-main.cloze { font-size: 1.55rem; line-height: 1.6; max-width: 30ch; font-weight: 400; }
+.qp-blank {
+  display: inline-block;
+  min-width: 1.4em;
+  text-align: center;
+  color: var(--accent);
+  border-bottom: 2px solid var(--gilt-line);
+  line-height: 1;
+  margin: 0 0.04em;
+}
 .qp-meta { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; justify-content: center; }
 .qp-gloss { font-size: 1.02rem; color: var(--ink-soft); font-style: italic; }
 .qp-rr { font-family: var(--font-mono); font-size: 0.82rem; color: var(--ink-faded); }
