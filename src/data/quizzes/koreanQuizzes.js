@@ -1,15 +1,20 @@
 // =====================================================================
 // The Polyglot's Atlas — Korean · the proving ground (단련) · decks
 //
-// Three of the Korean folios, run backwards into questions. Each deck is
-// assembled here from the SAME hand-checked module the live instrument
-// reads, so a card can never disagree with the forge or the gate — the
+// The Korean folios, run backwards into questions. Each deck is assembled
+// here from the SAME hand-checked module the live instrument reads, so a
+// card can never disagree with the forge, the gate, or the cabinet — the
 // surface forms are never re-typed, only re-pointed.
 //
 //   1. 동사 활용  — the verb forge inverted: a verb + a tense, which form?
 //   2. 활용표      — the conjugation table: one verb across register × tense
 //   3. 이·그·저    — the pointer grid inverted: a meaning, which pointer?
-//   4. 조사        — the 받침 gate inverted: a noun + a role, which particle?
+//   4. 조사        — the 받침 gate inverted: a noun + a role, which particle SHAPE?
+//   5. 서랍        — the cabinet inverted: a job (+ JP twin), which particle?
+//
+// The two particle decks split the folio's two axes: 조사 (the gate) drills
+// the 받침 ALLOMORPHY of the skeleton few; 서랍 (the drawers) drills WHICH of
+// the cabinet's 33 particles does a job, scoped by the folio's own drawers.
 //
 // See ./schema.js for the deck/card contract.
 // =====================================================================
@@ -19,6 +24,7 @@ import {
   CONJ_VERBS, CONJ_REGISTERS, CONJ_TENSES,
 } from '../koreanData.js'
 import { SERIES, CATEGORIES, GRID } from '../koreanDeixis.js'
+import { PARTICLE_FAMILIES } from '../koreanParticles.js'
 import { joinRr, groupsBy } from './schema.js'
 
 // ---------------------------------------------------------------------
@@ -202,4 +208,49 @@ const KO_PARTICLES = {
   cards: particleCards,
 }
 
-export const KO_DECKS = [KO_VERBS, KO_CONJ, KO_DEIXIS, KO_PARTICLES]
+// ---------------------------------------------------------------------
+// 5 · 서랍 — the particle drawers (the cabinet, inverted)
+//   The 조사 folio sorts 33 particles into five semantic drawers; this deck
+//   runs that sort backwards. The prompt names the JOB (the role, in
+//   English) with the particle's Japanese twin riding the showJp bridge as
+//   the transfer cue — hide it and you are testing recall on the meaning
+//   alone; show it and it is a straight より→보다 transfer drill. The answer
+//   is the Korean particle, shape-pair and all (은 / 는).
+//   near = the drawer → the three distractors are the target's DRAWER-MATES,
+//   the genuinely confusable cohort: the three registers of "and" (와·하고·
+//   랑), the focus set's even/only family (도·만·밖에·조차·마저). The scope
+//   chips ARE the folio's drawers — its own groupings, reused as the quiz's.
+//   Pairs with the 조사 gate: that deck drills which SHAPE, this which WORD.
+// ---------------------------------------------------------------------
+const DRAWER_LABEL = {
+  skeleton: '뼈대 (skeleton)',
+  place: '자리 (place)',
+  pairing: '짝 (pairing)',
+  focus: '초점 (focus)',
+  social: '사람 (social)',
+}
+const cabinetCards = PARTICLE_FAMILIES.flatMap(fam =>
+  fam.entries.map(p => ({
+    id: `pf.${fam.id}.${p.id}`,
+    group: fam.id,
+    near: fam.id,
+    prompt: {
+      main: p.role, tag: DRAWER_LABEL[fam.id], jp: p.jp,
+    },
+    answer: { main: p.forms, lang: 'kr', sub: p.rr },
+  })),
+)
+
+const KO_CABINET = {
+  id: 'cabinet', glyph: '서랍', label: 'the particle drawers',
+  blurb: 'A job and its Japanese twin — name the Korean particle. “than” (より) → 보다.',
+  promptLabel: 'which particle?',
+  hint: 'tap the particle that does this job',
+  groups: PARTICLE_FAMILIES.map(fam => ({
+    id: fam.id, label: DRAWER_LABEL[fam.id],
+    ids: cabinetCards.filter(c => c.group === fam.id).map(c => c.id),
+  })),
+  cards: cabinetCards,
+}
+
+export const KO_DECKS = [KO_VERBS, KO_CONJ, KO_DEIXIS, KO_PARTICLES, KO_CABINET]
