@@ -221,6 +221,49 @@ export const HARMONY = {
 }
 
 // =====================================================================
+// 발성 — the live-voice view: the learner's own vowel, measured off the mic
+// and dropped onto the SAME trapezoid the ideal ten sit on. Formants are
+// speaker-relative, so the dot is anchored to your voice first: say the three
+// corner vowels (the calibration walk) and an affine fit pins your vowel space
+// onto the frame. The mic + fit live in the formants seam; the state machine in
+// useVoiceCompass; this is just the copy + the three anchors. UI strings mirror
+// the Japanese 発声 view so the shared <VoiceReadout> reads them unchanged.
+// =====================================================================
+export const VOICE_CALIBRATION = {
+  // The three EXTREME corners — non-collinear on the trapezoid, so three
+  // measured points fix the affine map exactly: ㅣ (front, close), ㅏ (open,
+  // low), ㅜ (back, close, rounded). Targets (x,y) are read from VOWELS by id.
+  // Anchoring the back corner on rounded ㅜ is deliberate: then unrounded ㅡ
+  // reads a touch more FRONT (higher F2) — exactly the 5→10 split this folio
+  // teaches — instead of the two collapsing.
+  anchors: [
+    { vowel: 'i', say: 'a long, bright “이—” — tongue high and forward, lips spread' },
+    { vowel: 'a', say: 'an open “아—” — jaw dropped, tongue low and slack' },
+    { vowel: 'u', say: 'a rounded “우—” — tongue high and back, lips pushed forward and pursed' },
+  ],
+  intro: 'The dot means nothing until the compass learns YOUR voice — the same vowel sits at very different frequencies for a low voice and a high one. Say the three corner vowels once and it pins your vowel space onto the trapezoid.',
+  calibrate: 'calibrate to my voice',
+  hold: 'hold it steady for about a second, then pause',
+  done: 'Calibrated to your voice. Say any vowel now and watch where it lands among the ten.',
+  recalibrate: 'recalibrate',
+  needCal: 'Calibrate first so the dot lands in the right place.',
+  noMic: 'No microphone available here — the chart and the geometry work; the live dot needs mic access over a secure (https / localhost) connection.',
+  listen: 'listen',
+  stop: 'stop',
+  listening: 'listening — say a vowel',
+  // Set expectations up front: round one rides a lightweight in-browser formant
+  // detector, which is rough. Honest about the limits, never down on the learner.
+  disclaimer: 'Rough edges. This first pass rides a lightweight in-browser formant detector, so the dot drifts, the close vowels (ㅣ/ㅡ/ㅜ) can blur, and ㅐ/ㅔ are hard to catch. Read it as a playful compass, not a verdict on your mouth — proper, reliable vowel coaching wants its own voice lab, which is a someday project.',
+  qualityLabel: 'calibration',
+  quality: {
+    strong: 'Your three corners came out well separated — the compass can place a vowel confidently.',
+    fair: 'Two of your vowels landed fairly close, so telling those two apart is a little sensitive — readings near that edge may wander.',
+    weak: 'Two vowels came out nearly on top of each other, so the compass can barely separate them. This is usually the microphone or the formant detection, not your pronunciation — recalibrating, exaggerating the vowels, or a better mic tends to help.',
+  },
+  closest: 'closest pair',
+}
+
+// =====================================================================
 // Lantern notes — the eureka panels (markup goes through dangerouslySetInnerHTML,
 // so <b>…</b> is allowed and matches the .lantern-note .body styling).
 // =====================================================================
@@ -231,4 +274,8 @@ export const CONSONANT_LANTERN = {
 export const VOWEL_LANTERN = {
   head: 'the dot is not a tongue — it is the sky',
   body: 'Tempting to read ㅏ/ㅓ/ㅗ/ㅜ as a tongue-position map (front/back/up/down). It is not. The dot\'s side encodes <b>음양 (yin-yang)</b>, not height: dot out/up = <b>bright</b> (ㅏ ㅗ), dot in/down = <b>dark</b> (ㅓ ㅜ). That split <i>is</i> Korean <b>vowel harmony</b> — the very 아/어 fork the verb forge runs on. What the geometry <i>does</i> encode cleanly is composition: a <b>doubled dot</b> = a y-glide (ㅏ→ㅑ), an added <b>ㅣ</b> = the front vowels ㅐ/ㅔ, and a rounded horizontal vowel on a vertical one = a <b>w-glide</b> (ㅗ+ㅏ=ㅘ). Lay the real IPA trapezoid underneath and you can see exactly where shape and mouth rhyme — and where they politely part ways.',
+}
+export const VOICE_LANTERN = {
+  head: 'the trapezoid was never a diagram — it’s a map of your own mouth',
+  body: 'The frame you’ve been reading is a plot of two resonances of your vocal tract. <b>F1</b> rises as your jaw drops, so it falls down the page from close to open; <b>F2</b> rises as your tongue comes forward, so it runs front-to-back across it. When your dot lands on a vowel, that’s your mouth and the ideal sharing the same two numbers. Now make the script’s hardest claim audible — the back vowels Korean splits where a Japanese ear hears one. Say <b>ㅡ</b> then <b>ㅜ</b>: same height, but <i>rounding</i> your lips drops F2 and the dot slides back. Say <b>ㅓ</b> then <b>ㅗ</b> for the other unrounded/rounded back pair. Four back vowels, four different landing spots — the very gaps (ㅡ/ㅜ, ㅓ/ㅗ) the <a href="#/ja/phonetics">仮名 reader</a> must learn to <i>hear</i>. The dot doesn’t lie about your lips: round, and watch it move.',
 }
