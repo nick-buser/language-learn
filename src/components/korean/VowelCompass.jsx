@@ -26,8 +26,10 @@ const MONOS = VOWELS.filter(v => v.mono)
 // Korean calibration is its OWN voice space — separate localStorage keys from
 // the Japanese 発声 compass on purpose (see the note in koreanPhonetics.js):
 // anchoring on rounded ㅜ here would misplace Japanese's unrounded う there.
-const CAL_KEY = 'atlas.ko.formant.cal.v1'
-const CALQ_KEY = 'atlas.ko.formant.calq.v1'
+// v2: the engine now reports Hz (was mel bins); a v1 map fitted on bins is
+// meaningless against Hz, so the bump drops it and the learner re-anchors.
+const CAL_KEY = 'atlas.ko.formant.cal.v2'
+const CALQ_KEY = 'atlas.ko.formant.calq.v2'
 
 // IPA quadrilateral corners (SVG units): close-front, close-back, open-back, open-front.
 const TL = [52, 32], TR = [270, 32], BR = [250, 200], BL = [122, 200]

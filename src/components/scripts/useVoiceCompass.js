@@ -137,11 +137,11 @@ export function useVoiceCompass({ vowels, anchors, glyphOf, noMic, calKey, calqK
     if (job) {
       const anchor = anchors[job.step]
       const n = anchors.length
-      flog(`capture ${job.step + 1}/${n} [${anchor.vowel}] → open=${r.f1} back=${r.f2} (lo=${r.lo ?? '–'})`)
+      flog(`capture ${job.step + 1}/${n} [${anchor.vowel}] → F1=${Math.round(r.f1)}Hz F2=${Math.round(r.f2)}Hz (F3=${r.f3 ? Math.round(r.f3) + 'Hz' : '–'})`)
       const samples = [...job.samples, { vowel: anchor.vowel, f1: r.f1, f2: r.f2 }]
       const nextStep = job.step + 1
       if (nextStep >= n) {
-        flog('calibration triple:', samples.map(s => `${s.vowel}(${s.f1},${s.f2})`).join('  '))
+        flog('calibration triple:', samples.map(s => `${s.vowel}(${Math.round(s.f1)},${Math.round(s.f2)})`).join('  '))
         const fitPts = samples.map(s => { const t = byId[s.vowel]; return { f1: s.f1, f2: s.f2, x: t.x, y: t.y } })
         const coeffs = fitCalibration(fitPts)
         const quality = calibrationQuality(samples)
@@ -163,7 +163,7 @@ export function useVoiceCompass({ vowels, anchors, glyphOf, noMic, calKey, calqK
     const p = mapFormants(calRef.current, r.f1, r.f2)
     if (!p) return
     const x = clamp01(p.x), y = clamp01(p.y)
-    flog(`reading → F1=${r.f1} F2=${r.f2} → x=${p.x.toFixed(2)} y=${p.y.toFixed(2)}${(x !== p.x || y !== p.y) ? ' (clamped)' : ''}`)
+    flog(`reading → F1=${Math.round(r.f1)}Hz F2=${Math.round(r.f2)}Hz → x=${p.x.toFixed(2)} y=${p.y.toFixed(2)}${(x !== p.x || y !== p.y) ? ' (clamped)' : ''}`)
     setDots(prev => [...prev, { x, y }].slice(-6))
     setReading(describePlacement(vowels, glyphOf, x, y))
     if (!litRef.current) { litRef.current = true; setLit(true) }
