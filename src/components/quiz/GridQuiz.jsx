@@ -33,6 +33,10 @@ const norm = (s) => s.replace(/\s+/g, '')
 export default function GridQuiz({ deck, store, showReadings, showJp }) {
   const { grid } = deck
   const [mode, setMode] = useState('choose')
+  // The row prefixes (이/こ) and column suffixes (것/の) are the assembly hints —
+  // priceless for practice, but they hand you the answer in a real quiz (이 × 렇게
+  // = 이렇게). This hides the script on the axes; the English role/label stays.
+  const [axisScript, setAxisScript] = useState(true)
   const [q, setQ] = useState(null)
   const [nonce, setNonce] = useState(0)
   const [status, setStatus] = useState('asking') // asking | right | wrong
@@ -111,14 +115,21 @@ export default function GridQuiz({ deck, store, showReadings, showJp }) {
   return (
     <div className="grid-quiz" data-screen-label="grid quiz">
       <div className="gq-head">
-        <div className="gq-modes" role="tablist" aria-label="grid quiz mode">
-          {MODES.map(m => (
-            <button key={m.id} role="tab" aria-selected={m.id === mode}
-              className={'gq-mode' + (m.id === mode ? ' active' : '')} onClick={() => setMode(m.id)}>
-              <span className="gq-mode-label">{m.label}</span>
-              <span className="gq-mode-sub">{m.sub}</span>
-            </button>
-          ))}
+        <div className="gq-head-left">
+          <div className="gq-modes" role="tablist" aria-label="grid quiz mode">
+            {MODES.map(m => (
+              <button key={m.id} role="tab" aria-selected={m.id === mode}
+                className={'gq-mode' + (m.id === mode ? ' active' : '')} onClick={() => setMode(m.id)}>
+                <span className="gq-mode-label">{m.label}</span>
+                <span className="gq-mode-sub">{m.sub}</span>
+              </button>
+            ))}
+          </div>
+          <button className={'gq-toggle' + (axisScript ? ' on' : '')} role="switch" aria-checked={axisScript}
+            onClick={() => setAxisScript(v => !v)} title="show or hide the script on the grid axes (이/그/저, 것/기/…)">
+            <span className="box" aria-hidden="true"></span>
+            axis script
+          </button>
         </div>
         <div className="quiz-score" aria-live="off">
           <span className="qs-item"><span className="qs-n">{streak}</span> streak</span>
@@ -155,7 +166,7 @@ export default function GridQuiz({ deck, store, showReadings, showJp }) {
               <th className="qg-corner" scope="col"><span className={grid.script} lang={grid.script}>？</span></th>
               {grid.cols.map(c => (
                 <th key={c.id} scope="col" className={'qg-colhead' + (c.id === q.target.col && mode !== 'locate' ? ' lit' : '')}>
-                  <span className={'qg-suffix ' + grid.script} lang={grid.script}>{c.suffix === '—' || c.suffix === '' ? '∅' : c.suffix}</span>
+                  {axisScript && <span className={'qg-suffix ' + grid.script} lang={grid.script}>{c.suffix === '—' || c.suffix === '' ? '∅' : c.suffix}</span>}
                   <span className="qg-collabel">{c.label}</span>
                 </th>
               ))}
@@ -165,7 +176,7 @@ export default function GridQuiz({ deck, store, showReadings, showJp }) {
             {grid.rows.map(r => (
               <tr key={r.id}>
                 <th scope="row" className={'qg-rowhead' + (r.id === q.target.row && mode !== 'locate' ? ' lit' : '')}>
-                  <span className={'qg-prefix ' + grid.script} lang={grid.script}>{r.glyph}</span>
+                  {axisScript && <span className={'qg-prefix ' + grid.script} lang={grid.script}>{r.glyph}</span>}
                   <span className="qg-role">{r.role}</span>
                 </th>
                 {grid.cols.map(c => {

@@ -190,7 +190,26 @@
 .format-tab.active { color: var(--accent); background: var(--paper-deep); }
 
 .grid-quiz { display: flex; flex-direction: column; gap: 16px; }
-.gq-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+.gq-head { display: flex; justify-content: space-between; align-items: center; gap: 16px 20px; flex-wrap: wrap; }
+.gq-head-left { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+/* hide the script on the axes (이/그/저 · 것/기/…) for a real quiz; English stays */
+.gq-toggle {
+  display: inline-flex; align-items: center; gap: 7px;
+  font-family: var(--font-mono); font-size: 0.74rem; color: var(--ink-faded); letter-spacing: 0.03em;
+  background: transparent; border: none; cursor: pointer;
+  transition: color 0.3s var(--ease-drift);
+}
+.gq-toggle:hover { color: var(--ink-soft); }
+.gq-toggle .box {
+  width: 14px; height: 14px; border: 1px solid var(--rule); border-radius: 3px;
+  transition: background 0.3s var(--ease-drift), border-color 0.3s var(--ease-drift), box-shadow 0.4s var(--ease-drift);
+}
+.gq-toggle.on { color: var(--ink-soft); }
+.gq-toggle.on .box {
+  background: var(--accent); border-color: var(--accent-deep);
+  box-shadow: 0 0 8px -2px rgba(242, 166, 90, 0.5);
+}
 
 /* mode toggle — choose / type / locate, each with its direction under it */
 .gq-modes { display: flex; gap: 4px; background: var(--plate-bg); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--rule); }
