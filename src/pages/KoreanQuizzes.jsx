@@ -102,8 +102,10 @@ export default function KoreanQuizzes({ showReadings, showJp }) {
             </div>
             <div className="note">
               <span className="date">more decks for the rack</span>
-              활용 (connectives -고 / -아서), 활용 (the conditional family), the cognate sound-bridge, the
-              honorific particles — every selector folio has a back-run.
+              the 조사 cabinet just landed as <b style={{ fontStyle: 'normal', fontWeight: 500 }}>서랍</b> —
+              its five drawers reused as scope chips, a job + its Japanese twin asking for the particle.
+              Still to back-run: 활용 (connectives -고 / -아서), 활용 (the conditional family), the cognate
+              sound-bridge — every selector folio has one.
             </div>
             <div className="note">
               <span className="date">listen &amp; produce</span>
