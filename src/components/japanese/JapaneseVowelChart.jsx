@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useRef, useState } from 'react'
 import {
   VOWELS, VOWEL_NOTES, VOWEL_LANTERN,
   VOWEL_COMBOS, COMBO_GROUPS, VOWEL_COMBO_LANTERN,
@@ -6,7 +6,8 @@ import {
   VOICE_CALIBRATION, VOICE_LANTERN,
 } from '../../data/japanesePhonetics.js'
 import { speak, primeSpeech, speechSupported, hasVoice } from '../scripts/speech.js'
-import { formantsSupported, startListening, fitCalibration, mapFormants, calibrationQuality, flog } from '../scripts/formants.js'
+import { useVoiceCompass } from '../scripts/useVoiceCompass.js'
+import VoiceReadout from '../phonetics/VoiceReadout.jsx'
 
 // INSTRUMENT II — 母音 the vowel compass.
 // One trapezoid, three views the learner switches between:
@@ -34,62 +35,6 @@ const MACRON = { a: 'ā', i: 'ī', u: 'ū', e: 'ē', o: 'ō' }
 // through stale coefficients.
 const CAL_KEY = 'atlas.formant.cal.v2'
 const CALQ_KEY = 'atlas.formant.calq.v2'
-const clamp01 = v => Math.max(0, Math.min(1, v))
-
-function loadCal() {
-  try {
-    const raw = window.localStorage.getItem(CAL_KEY)
-    if (!raw) return null
-    const c = JSON.parse(raw)
-    return (c && typeof c.ax === 'number') ? c : null
-  } catch { return null }
-}
-function saveCal(c) {
-  try {
-    if (c) window.localStorage.setItem(CAL_KEY, JSON.stringify(c))
-    else window.localStorage.removeItem(CAL_KEY)
-  } catch { /* private mode: this session only */ }
-}
-// The calibration's separation quality, persisted alongside the coeffs so the
-// readout can keep explaining how trustworthy the mapping is across reloads.
-function loadCalInfo() {
-  try { const r = window.localStorage.getItem(CALQ_KEY); return r ? JSON.parse(r) : null } catch { return null }
-}
-function saveCalInfo(q) {
-  try { q ? window.localStorage.setItem(CALQ_KEY, JSON.stringify(q)) : window.localStorage.removeItem(CALQ_KEY) } catch { /* ignore */ }
-}
-
-// Turn a mic error into one plain sentence for the quiet note.
-function micErrText(err) {
-  const tag = (err && (err.name || err.message)) || ''
-  if (/NotAllowed|Permission|denied/i.test(tag)) return 'Microphone blocked — allow mic access for this site, then try again.'
-  if (/NotFound|NotReadable|Devices/i.test(tag)) return 'No microphone found to listen with.'
-  if (/already/i.test(tag)) return 'Already listening.'
-  if (/unsupported/i.test(tag)) return VOICE_CALIBRATION.noMic
-  return 'Could not start the microphone — ' + (tag || 'unknown error') + '.'
-}
-
-// Nearest of the five to a mapped (x,y), plus a short positional read of how
-// the learner's dot sits relative to that ideal vowel.
-function describePlacement(x, y) {
-  let best = VOWELS[0], bd = Infinity
-  for (const v of VOWELS) {
-    const d = Math.hypot(x - v.x, y - v.y)
-    if (d < bd) { bd = d; best = v }
-  }
-  const dx = x - best.x, dy = y - best.y
-  const back = Math.abs(dx) < 0.06 ? null
-    : dx > 0 ? (dx > 0.16 ? 'well back' : 'a touch back')
-    : (dx < -0.16 ? 'well forward' : 'a touch forward')
-  const open = Math.abs(dy) < 0.06 ? null
-    : dy > 0 ? (dy > 0.16 ? 'much more open' : 'a little more open')
-    : (dy < -0.16 ? 'much closer' : 'a little closer')
-  const parts = [back, open].filter(Boolean)
-  const text = parts.length
-    ? `sitting ${parts.join(' and ')} than ${best.kana}.`
-    : `landing right on ${best.kana} — clean.`
-  return { vowel: best, text }
-}
 
 // IPA quadrilateral corners (SVG units) — shared geometry with the Korean compass.
 const TL = [52, 32], TR = [270, 32], BR = [250, 200], BL = [122, 200]
@@ -234,21 +179,15 @@ export default function JapaneseVowelChart({ showReadings = true, showJp = true 
   const primed = useRef(false)
   const noVoice = !(speechSupported() && hasVoice('ja'))
 
-  // ── voice (発声) state ──
-  const formantsOk = formantsSupported()
-  const [cal, setCal] = useState(loadCal)            // fitted affine map, or null
-  const [calInfo, setCalInfo] = useState(loadCalInfo) // calibration separation quality, or null
-  const [listening, setListening] = useState(false)
-  const [calStep, setCalStep] = useState(null)       // null, or 0..anchors-1 during calibration
-  const [dots, setDots] = useState([])               // trail of mapped {x,y}
-  const [reading, setReading] = useState(null)       // { vowel, text } of the latest dot
-  const [micError, setMicError] = useState(null)
-  const [litVoice, setLitVoice] = useState(false)
-  const stopRef = useRef(null)                       // the startListening() teardown
-  const calRef = useRef(cal)                         // fresh value for the mic callback
-  const calibratingRef = useRef(null)                // { step, samples } during calibration
-  const litVoiceRef = useRef(false)
-  useEffect(() => { calRef.current = cal }, [cal])
+  // ── voice (発声) — the live-mic vowel mode, behind the shared seam ──
+  const voice = useVoiceCompass({
+    vowels: VOWELS,
+    anchors: VOICE_CALIBRATION.anchors,
+    glyphOf: vw => vw.kana,
+    noMic: VOICE_CALIBRATION.noMic,
+    calKey: CAL_KEY, calqKey: CALQ_KEY,
+    active: mode === 'voice',
+  })
 
   const v = byId[sel]
   const combo = comboById[selCombo]
@@ -276,77 +215,7 @@ export default function JapaneseVowelChart({ showReadings = true, showJp = true 
 
   const comboResult = (c) => (c.kind === 'long' ? MACRON[c.held] : byId[c.from].rr + '·' + byId[c.to].rr)
 
-  // ── voice (発声) mic control ──
-  const stopMic = () => {
-    try { stopRef.current?.() } catch { /* ignore */ }
-    stopRef.current = null
-    calibratingRef.current = null
-    setCalStep(null)
-    setListening(false)
-  }
-
-  // One reading per voiced segment. During calibration we collect the corner
-  // vowels and fit; otherwise we map the reading and drop a dot.
-  const handleReading = (r) => {
-    const job = calibratingRef.current
-    if (job) {
-      const anchor = VOICE_CALIBRATION.anchors[job.step]
-      const n = VOICE_CALIBRATION.anchors.length
-      flog(`capture ${job.step + 1}/${n} [${anchor.vowel}] → open=${r.f1} back=${r.f2} (lo=${r.lo ?? '–'})`)
-      const samples = [...job.samples, { vowel: anchor.vowel, f1: r.f1, f2: r.f2 }]
-      const nextStep = job.step + 1
-      if (nextStep >= n) {
-        flog('calibration triple:', samples.map(s => `${s.vowel}(${s.f1},${s.f2})`).join('  '))
-        const fitPts = samples.map(s => { const t = byId[s.vowel]; return { f1: s.f1, f2: s.f2, x: t.x, y: t.y } })
-        const coeffs = fitCalibration(fitPts)
-        const quality = calibrationQuality(samples)
-        stopMic()
-        if (coeffs) {
-          calRef.current = coeffs; setCal(coeffs); saveCal(coeffs)
-          setCalInfo(quality); saveCalInfo(quality)
-          setReading(null); setDots([])
-        } else {
-          setMicError('Calibration couldn’t fit those three — open the console (filter “発声”) to see what was captured.')
-        }
-      } else {
-        calibratingRef.current = { step: nextStep, samples }
-        setCalStep(nextStep)
-      }
-      return
-    }
-    if (!calRef.current) return
-    const p = mapFormants(calRef.current, r.f1, r.f2)
-    if (!p) return
-    const x = clamp01(p.x), y = clamp01(p.y)
-    flog(`reading → F1=${r.f1} F2=${r.f2} → x=${p.x.toFixed(2)} y=${p.y.toFixed(2)}${(x !== p.x || y !== p.y) ? ' (clamped)' : ''}`)
-    setDots(prev => [...prev, { x, y }].slice(-6))
-    setReading(describePlacement(x, y))
-    if (!litVoiceRef.current) { litVoiceRef.current = true; setLitVoice(true) }
-  }
-
-  const startMic = async (calibrating) => {
-    if (listening) return
-    setMicError(null)
-    if (calibrating) { calibratingRef.current = { step: 0, samples: [] }; setCalStep(0); setReading(null); setDots([]) }
-    else { calibratingRef.current = null }
-    setListening(true)
-    try {
-      const stop = await startListening({
-        onReading: handleReading,
-        onError: (err) => { setMicError(micErrText(err)); stopMic() },
-        onStop: () => setListening(false),
-      })
-      stopRef.current = stop
-    } catch (err) {
-      setMicError(micErrText(err)); stopMic()
-    }
-  }
-
-  // Tear the mic down on unmount, and whenever we leave the voice view.
-  useEffect(() => () => { try { stopRef.current?.() } catch { /* ignore */ } }, [])
-  useEffect(() => { if (mode !== 'voice') stopMic() }, [mode]) // eslint-disable-line react-hooks/exhaustive-deps
-
-  const lit = mode === 'pure' ? litPure : mode === 'combo' ? litCombo : litVoice
+  const lit = mode === 'pure' ? litPure : mode === 'combo' ? litCombo : voice.lit
   const lantern = mode === 'pure' ? VOWEL_LANTERN : mode === 'combo' ? VOWEL_COMBO_LANTERN : VOICE_LANTERN
 
   return (
@@ -446,7 +315,7 @@ export default function JapaneseVowelChart({ showReadings = true, showJp = true 
             ) : (
               <>
                 {VOWELS.map(m => <Anchor key={m.id} v={m} />)}
-                <VoiceTrail dots={dots} listening={listening} />
+                <VoiceTrail dots={voice.dots} listening={voice.listening} />
               </>
             )}
           </svg>
@@ -571,78 +440,15 @@ export default function JapaneseVowelChart({ showReadings = true, showJp = true 
           </div>
         )}
 
-        {/* readout — your voice (発声) */}
+        {/* readout — your voice (発声) — the shared voice panel */}
         {mode === 'voice' && (
-          <div className="vc-readout vc-voice" key="voice">
-            {!formantsOk ? (
-              <div className="cn-novoice">{VOICE_CALIBRATION.noMic}</div>
-            ) : (
-              <>
-                <div className="vc-voice-controls">
-                  {!cal ? (
-                    <button className={'vc-voice-btn primary' + (listening ? ' rec' : '')}
-                            onClick={() => listening ? stopMic() : startMic(true)}>
-                      <span className="vc-voice-led" aria-hidden="true" />
-                      {listening ? 'cancel' : 'calibrate to my voice'}
-                    </button>
-                  ) : (
-                    <>
-                      <button className={'vc-voice-btn primary' + (listening && calStep === null ? ' rec' : '')}
-                              onClick={() => listening ? stopMic() : startMic(false)}>
-                        <span className="vc-voice-led" aria-hidden="true" />
-                        {listening ? VOICE_CALIBRATION.stop : VOICE_CALIBRATION.listen}
-                      </button>
-                      <button className="vc-voice-btn ghost" onClick={() => startMic(true)} disabled={listening}>
-                        {VOICE_CALIBRATION.recalibrate}
-                      </button>
-                    </>
-                  )}
-                </div>
-
-                {calStep !== null ? (
-                  <div className="vc-voice-cal">
-                    <div className="vc-voice-cal-step">{calStep + 1} / {VOICE_CALIBRATION.anchors.length}</div>
-                    <div className="vc-voice-cal-kana jp">{byId[VOICE_CALIBRATION.anchors[calStep].vowel].kana}</div>
-                    <div className="vc-voice-cal-say">{VOICE_CALIBRATION.anchors[calStep].say}</div>
-                    <div className="vc-voice-cal-hold">{VOICE_CALIBRATION.hold}</div>
-                  </div>
-                ) : !cal ? (
-                  <p className="vc-voice-intro">{VOICE_CALIBRATION.intro}</p>
-                ) : reading ? (
-                  <div className="vc-voice-read">
-                    <div className="vc-voice-read-head">
-                      <span className="vc-voice-read-label">closest to</span>
-                      <span className="vc-big jp">{reading.vowel.kana}</span>
-                      <span className="vc-big-ipa">[{reading.vowel.ipa}]</span>
-                    </div>
-                    <p className="vc-voice-read-desc">Your vowel is {reading.text}</p>
-                  </div>
-                ) : (
-                  <p className="vc-voice-ready">{listening ? VOICE_CALIBRATION.listening : VOICE_CALIBRATION.done}</p>
-                )}
-
-                {cal && calStep === null && calInfo && (
-                  <div className={'vc-voice-qual ' + calInfo.rating}>
-                    <div className="vc-voice-qual-head">
-                      <span className="vc-voice-qual-label">{VOICE_CALIBRATION.qualityLabel}</span>
-                      <span className="vc-voice-qual-rating">{calInfo.rating}</span>
-                      {calInfo.closest && (
-                        <span className="vc-voice-qual-pair">
-                          {VOICE_CALIBRATION.closest}{' '}
-                          <span className="jp">{byId[calInfo.closest[0]]?.kana}</span>
-                          <span className="vc-voice-qual-dot">·</span>
-                          <span className="jp">{byId[calInfo.closest[1]]?.kana}</span>
-                        </span>
-                      )}
-                    </div>
-                    <p className="vc-voice-qual-note">{VOICE_CALIBRATION.quality[calInfo.rating]}</p>
-                  </div>
-                )}
-
-                {micError && <div className="cn-novoice">{micError}</div>}
-              </>
-            )}
-          </div>
+          <VoiceReadout
+            {...voice}
+            copy={VOICE_CALIBRATION}
+            vowels={VOWELS}
+            glyphOf={vw => vw.kana}
+            glyphClass="jp"
+          />
         )}
       </div>
 

@@ -271,3 +271,137 @@
   .cn-big, .vc-big { font-size: 60px; }
   .vc-rack-head { flex-basis: 100%; }
 }
+
+/* =====================================================================
+   The vowel compass — live voice (発声 / 발성), SHARED by both folios.
+   The mode switch, the faint-anchor backdrop, the learner's mic dot, and the
+   calibration readout are language-blind (driven by the useVoiceCompass hook +
+   <VoiceReadout>), so they live here in the shared compass sheet — Korean
+   reads them on 모음, Japanese on 母音. Colour: --st-travel (the "voiced" sky
+   pigment) marks the learner's own voice; gold stays rationed to the targets.
+   ===================================================================== */
+
+/* ---- the view switch (모음 / 발성 · 五母音 / 組合せ / 発声) + compare picker -- */
+.vc-modebar { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin: 2px 0 14px; }
+.vc-seg {
+  display: inline-flex; align-items: center; gap: 2px;
+  padding: 3px; background: var(--paper-deep);
+  border: 1px solid var(--rule); border-radius: 999px;
+}
+.vc-seg-label {
+  font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.12em;
+  text-transform: uppercase; color: var(--ink-faded); padding: 0 6px 0 8px;
+}
+.vc-seg-btn {
+  display: inline-flex; align-items: center; gap: 5px;
+  font-family: var(--font-body); font-size: 12px; color: var(--ink-soft);
+  background: transparent; border: none; border-radius: 999px;
+  padding: 5px 13px; cursor: pointer;
+  transition: color var(--dur-quick), background var(--dur-quick);
+}
+.vc-seg-btn .jp { font-family: var(--font-cjk-serif); font-size: 14px; letter-spacing: 0.02em; }
+.vc-seg-btn .kr { font-family: var(--font-kr-serif); font-size: 14px; }
+.vc-seg-btn:hover { color: var(--accent); }
+.vc-seg-btn.on { background: var(--abu-current-wash); color: var(--accent); box-shadow: 0 0 16px -8px rgba(242,166,90,0.5); }
+
+/* ---- the ideal vowels, faint, as a backdrop (voice + combinations views) -- */
+.vc-anchor-dot { fill: none; stroke: var(--rule); stroke-width: 1; opacity: 0.55; }
+.vc-anchor-glyph { font-size: 12px; fill: var(--ink-faded); opacity: 0.6; pointer-events: none; }
+
+/* ---- the learner's dot + its fading trail, plotted on the same trapezoid -- */
+.vc-voicedot { fill: var(--st-travel); }
+.vc-voicedot.trail { fill: var(--st-travel); }
+.vc-voicedot.live { stroke: var(--paper); stroke-width: 1.5; filter: drop-shadow(0 0 7px color-mix(in srgb, var(--st-travel) 70%, transparent)); }
+.vc-voicehalo { fill: var(--st-travel); opacity: 0.16; }
+.vc-voicedot-live.listening .vc-voicehalo { animation: vc-voice-pulse 1.6s var(--ease-drift) infinite; }
+@keyframes vc-voice-pulse {
+  0%, 100% { opacity: 0.10; r: 13px; }
+  50%      { opacity: 0.26; r: 18px; }
+}
+
+/* WIP disclaimer — the whole live-voice view is a rough first pass; a dashed
+   amber keyline reads "provisional" without shouting error. */
+.vc-voice-wip {
+  margin: 12px 0 4px; padding: 10px 13px;
+  border: 1px dashed var(--gilt-line); border-radius: var(--radius-sm);
+  background: rgba(242,166,90,0.05);
+  font-family: var(--font-body); font-size: 12.5px; line-height: 1.55; color: var(--ink-soft);
+}
+.vc-voice-wip-tag {
+  display: inline-block; margin-right: 7px; vertical-align: 1px;
+  font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.14em; text-transform: uppercase;
+  color: var(--amber);
+}
+.vc-voice-wip-tag.jp { font-family: var(--font-cjk-serif); font-size: 13px; letter-spacing: 0.04em; text-transform: none; }
+.vc-voice-wip-tag.kr { font-family: var(--font-kr-serif); font-size: 13px; letter-spacing: 0.04em; text-transform: none; }
+
+/* the readout column in voice mode */
+.vc-voice { display: flex; flex-direction: column; gap: 14px; }
+
+.vc-voice-controls { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.vc-voice-btn {
+  display: inline-flex; align-items: center; gap: 8px;
+  font-family: var(--font-body); font-size: 13px; color: var(--ink);
+  padding: 7px 15px; border-radius: 999px; cursor: pointer;
+  border: 1px solid var(--rule); background: var(--paper-deep);
+  transition: color var(--dur-quick), border-color var(--dur-quick), background var(--dur-quick);
+}
+.vc-voice-btn:hover { border-color: var(--gilt-line); color: var(--accent); }
+.vc-voice-btn:focus-visible { outline: none; box-shadow: var(--abu-focus-ring); }
+.vc-voice-btn:disabled { opacity: 0.45; cursor: default; }
+.vc-voice-btn:disabled:hover { color: var(--ink); border-color: var(--rule); }
+.vc-voice-btn.primary { border-color: var(--gilt-line); color: var(--accent); background: var(--abu-current-wash); }
+.vc-voice-btn.ghost { color: var(--ink-soft); }
+
+/* the recording LED inside the primary button — sky at rest, signal while live */
+.vc-voice-led {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--st-travel); box-shadow: 0 0 6px -1px var(--st-travel);
+}
+.vc-voice-btn.rec { color: var(--signal-lit); border-color: color-mix(in srgb, var(--signal) 55%, transparent); background: rgba(178,58,46,0.07); }
+.vc-voice-btn.rec .vc-voice-led { background: var(--signal-lit); box-shadow: 0 0 8px -1px var(--signal-lit); animation: vc-voice-blink 1.1s steps(1, end) infinite; }
+@keyframes vc-voice-blink { 0%, 60% { opacity: 1; } 61%, 100% { opacity: 0.25; } }
+
+/* the calibration walk — say the three corner vowels */
+.vc-voice-cal {
+  display: flex; flex-direction: column; align-items: center; text-align: center; gap: 7px;
+  padding: 18px 16px; border: 1px solid var(--gilt-line); border-radius: var(--radius-md);
+  background: radial-gradient(120% 100% at 50% 0%, rgba(242,166,90,0.06) 0%, transparent 65%), var(--paper-deep);
+}
+.vc-voice-cal-step { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.14em; text-transform: uppercase; color: var(--ink-faded); }
+.vc-voice-cal-kana { font-size: 52px; line-height: 1; color: var(--accent); text-shadow: 0 0 24px rgba(242,166,90,0.32); }
+.vc-voice-cal-say { font-family: var(--font-body); font-size: 14px; color: var(--ink); max-width: 30ch; }
+.vc-voice-cal-hold { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.06em; color: var(--ink-faded); }
+
+.vc-voice-intro { font-family: var(--font-body); font-size: 13.5px; line-height: 1.6; color: var(--ink-soft); margin: 0; }
+
+/* the live reading — which ideal vowel it's closest to, and how it sits */
+.vc-voice-read { display: flex; flex-direction: column; gap: 8px; }
+.vc-voice-read-head { display: flex; align-items: baseline; gap: 10px; }
+.vc-voice-read-label { font-family: var(--font-mono); font-size: 9px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faded); }
+.vc-voice-read-head .vc-big { font-size: 40px; }
+.vc-voice-read-desc { font-family: var(--font-body); font-size: 14px; line-height: 1.55; color: var(--ink); margin: 0; }
+
+.vc-voice-ready { font-family: var(--font-body); font-size: 13.5px; line-height: 1.55; color: var(--ink-soft); margin: 0; }
+
+/* calibration quality — how cleanly the three corners separated. Colour rides
+   the rating: sky (strong), amber (fair), vermilion (weak) — signal, not body. */
+.vc-voice-qual {
+  margin-top: 2px; padding: 10px 13px;
+  border-left: 2px solid var(--rule); background: var(--paper-deep);
+  border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+}
+.vc-voice-qual.strong { border-left-color: var(--st-travel); }
+.vc-voice-qual.fair   { border-left-color: var(--amber); }
+.vc-voice-qual.weak   { border-left-color: var(--signal); }
+.vc-voice-qual-head { display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; }
+.vc-voice-qual-label { font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ink-faded); }
+.vc-voice-qual-rating { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.06em; text-transform: uppercase; }
+.vc-voice-qual.strong .vc-voice-qual-rating { color: var(--st-travel); }
+.vc-voice-qual.fair   .vc-voice-qual-rating { color: var(--amber); }
+.vc-voice-qual.weak   .vc-voice-qual-rating { color: var(--signal-lit); }
+.vc-voice-qual-pair { font-family: var(--font-body); font-size: 11px; color: var(--ink-faded); margin-left: auto; }
+.vc-voice-qual-pair .jp { font-family: var(--font-cjk-serif); font-size: 14px; color: var(--ink-soft); }
+.vc-voice-qual-pair .kr { font-family: var(--font-kr-serif); font-size: 14px; color: var(--ink-soft); }
+.vc-voice-qual-dot { color: var(--ink-faded); margin: 0 1px; }
+.vc-voice-qual-note { margin: 6px 0 0; font-family: var(--font-body); font-size: 12.5px; line-height: 1.5; color: var(--ink-soft); }
