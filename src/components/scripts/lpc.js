@@ -16,8 +16,8 @@
 //   2. pre-emphasis (+6 dB/oct) — lift the higher formants the glottal source
 //      rolls off, so they aren't drowned by F1's energy.
 //   3. Hamming window — tame the frame edges before the autocorrelation.
-//   4. Burg LPC — fit the all-pole filter (Numerical Recipes' `memcof`; Burg's
-//      method is what gives clean, low-variance poles from a short frame).
+//   4. Burg LPC — fit the all-pole filter; Burg's method gives clean,
+//      low-variance, stable poles from a short frame.
 //   5. roots of the LPC polynomial (Durand–Kerner) — each complex-conjugate
 //      pole pair is one resonance.
 //   6. pole → (frequency, bandwidth): angle → Hz, radius → bandwidth. Keep the
@@ -26,6 +26,16 @@
 // Why this and not the old mel-bin spectral-peak reader: spectral peaks smear
 // and F2 read bimodally (the WIP note). LPC poles are the resonances directly,
 // in Hz, far steadier — which is the whole point of the swap.
+//
+// LINEAGE & LICENSING. The pipeline mirrors Praat's "Sound → To Formant (burg)"
+// (Boersma & Weenink, Praat, praat.org). The underlying math is all long-
+// published, public-domain algorithm: Burg's method for the LPC coefficients
+// (J. P. Burg, 1975), Durand–Kerner for the polynomial roots, and textbook
+// windowed-sinc decimation / pre-emphasis / Hamming windowing. Every routine
+// below is an independent implementation written from those algorithm
+// definitions — no code is copied or ported from Praat (which is GPL) or from
+// any other licensed implementation. Algorithms themselves aren't copyrightable;
+// we owe (and gladly give) credit, not a license.
 //
 // Everything here is deterministic and side-effect-free, so it tests in plain
 // Node against synthesized vowels (see the scratchpad harness). frameFormants()
@@ -83,52 +93,75 @@ export function decimate(x, factor) {
 
 // ---- Burg LPC ---------------------------------------------------------------
 /**
- * Burg's method for the AR (all-pole) coefficients of a frame. A direct port of
- * Numerical Recipes' `memcof` (maximum-entropy / Burg) — chosen because it gives
- * low-variance poles from a SHORT frame, exactly what formant tracking needs.
- * @param {ArrayLike<number>} data  windowed frame
- * @param {number} m  model order (≈ 2·#formants + 2)
- * @returns {?{a:Float64Array, xms:number}}  a = [1, a1…am] for A(z)=Σ a_i z^-i; null if degenerate
+ * Burg's method for the all-pole (AR) coefficients of a frame.
+ *
+ * Burg's method (J. P. Burg, 1975) builds the linear predictor order by order,
+ * at each step choosing the reflection coefficient that minimizes the combined
+ * forward + backward prediction error. It yields low-variance, guaranteed-stable
+ * poles from a SHORT frame — exactly what formant tracking wants. This is an
+ * independent implementation of that public-domain algorithm in its standard
+ * textbook form: explicit forward/backward error arrays advanced each order,
+ * with the Levinson-style symmetric coefficient update. It is not derived from
+ * any licensed implementation.
+ *
+ * @param {ArrayLike<number>} samples  windowed frame
+ * @param {number} order  model order (≈ 2·#formants + 2)
+ * @returns {?{a:Float64Array, error:number}}  a = [1, a1…a_order] for
+ *          A(z) = 1 + Σ a_k z^-k (its roots are the poles); null if degenerate
  */
-export function burgLPC(data, m) {
-  const n = data.length
-  if (n <= m + 1) return null
-  const d = new Float64Array(m + 1)        // d[1..m]: prediction coeffs (NR convention)
-  const wk1 = new Float64Array(n)
-  const wk2 = new Float64Array(n)
-  const wkm = new Float64Array(m + 1)
-  let p = 0
-  for (let j = 0; j < n; j++) p += data[j] * data[j]
-  let xms = p / n
-  if (!(xms > 0)) return null
+export function burgLPC(samples, order) {
+  const N = samples.length
+  if (N <= order + 1) return null
 
-  wk1[0] = data[0]
-  wk2[n - 2] = data[n - 1]
-  for (let j = 1; j < n - 1; j++) { wk1[j] = data[j]; wk2[j - 1] = data[j] }
+  // Forward / backward prediction errors, seeded with the signal itself.
+  const fwd = Float64Array.from(samples)
+  const bwd = Float64Array.from(samples)
 
-  for (let k = 1; k <= m; k++) {
-    let num = 0, denom = 0
-    for (let j = 0; j < n - k; j++) {
-      num += wk1[j] * wk2[j]
-      denom += wk1[j] * wk1[j] + wk2[j] * wk2[j]
+  // Prediction-error filter A(z) = 1 + Σ a_k z^-k, grown one order at a time.
+  const a = new Float64Array(order + 1)
+  a[0] = 1
+
+  // Running error power: starts at the frame energy, shrinks by (1 − k²) per
+  // order. Used only to bail on a silent/degenerate frame.
+  let err = 0
+  for (let n = 0; n < N; n++) err += samples[n] * samples[n]
+  if (!(err > 0)) return null
+
+  for (let m = 1; m <= order; m++) {
+    // Reflection coefficient: the forward error at n correlated with the
+    // backward error one sample back, normalized by their combined energy.
+    let num = 0, den = 0
+    for (let n = m; n < N; n++) {
+      num += fwd[n] * bwd[n - 1]
+      den += fwd[n] * fwd[n] + bwd[n - 1] * bwd[n - 1]
     }
-    if (!(denom > 0)) return null
-    d[k] = (2 * num) / denom
-    xms *= 1 - d[k] * d[k]
-    for (let i = 1; i <= k - 1; i++) d[i] = wkm[i] - d[k] * wkm[k - i]
-    if (k === m) break
-    for (let i = 1; i <= k; i++) wkm[i] = d[i]
-    for (let j = 0; j < n - k - 1; j++) {
-      wk1[j] -= wkm[k] * wk2[j]
-      wk2[j] = wk2[j + 1] - wkm[k] * wk1[j + 1]
+    if (!(den > 0)) break
+    const k = (-2 * num) / den
+
+    // Fold k into the coefficients: the new vector is the old one plus k times
+    // its own reverse. Update each symmetric pair (lo, m−lo) from its old values
+    // at once; for even m the centre coefficient pairs with itself.
+    a[m] = k
+    for (let lo = 1, hi = m - 1; lo < hi; lo++, hi--) {
+      const al = a[lo], ah = a[hi]
+      a[lo] = al + k * ah
+      a[hi] = ah + k * al
+    }
+    if (m % 2 === 0) a[m / 2] += k * a[m / 2]
+
+    err *= 1 - k * k
+    if (m === order) break
+
+    // Advance the errors for the next order. Walk high→low so each value read is
+    // still from the current order when we overwrite it.
+    for (let n = N - 1; n >= m; n--) {
+      const f = fwd[n], b = bwd[n - 1]
+      fwd[n] = f + k * b
+      bwd[n] = b + k * f
     }
   }
 
-  // Prediction is data[j] ≈ Σ d[i]·data[j-i], so A(z) = 1 − Σ d[i] z^-i.
-  const a = new Float64Array(m + 1)
-  a[0] = 1
-  for (let i = 1; i <= m; i++) a[i] = -d[i]
-  return { a, xms }
+  return { a, error: err }
 }
 
 // ---- polynomial roots (Durand–Kerner / Weierstrass) -------------------------

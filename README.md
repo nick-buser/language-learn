@@ -286,6 +286,17 @@ so it plays independent of any installed system voice. The vowel-combination con
 comparison are broad standard values, hand-authored; the IPA, allophony, and bridge content are
 hand-authored too.
 
+The **live-voice vowel mode** (발성 / 発声 — the learner's own vowels read off the mic and dropped
+onto the trapezoid) estimates formants with Linear Predictive Coding, mirroring **Praat**'s
+"Sound → To Formant (burg)" (Boersma & Weenink, <https://www.praat.org>). The signal-processing
+kernel (`src/components/scripts/lpc.js`) — **Burg's method** (J. P. Burg, 1975) for the LPC fit,
+**Durand–Kerner** for the polynomial roots, plus textbook windowed-sinc decimation, pre-emphasis,
+and Hamming windowing — is an **independent implementation** of those long-published, public-domain
+algorithms, written from their definitions. No code is copied or ported from Praat (which is GPL) or
+from any other licensed implementation; algorithms aren't copyrightable, so what's owed is credit,
+given here. Pitch tracking (the 発音 ridge's "say it") uses the **McLeod Pitch Method** via the
+MIT-licensed [`pitchy`](https://github.com/ianprime0509/pitchy).
+
 ## Design system
 
 The canonical Aburaya design system lives in **`design_system.zip`**
