@@ -7,13 +7,17 @@
 // surface forms are never re-typed, only re-pointed.
 //
 //   1. 동사 활용  — the verb forge inverted: a verb + a tense, which form?
-//   2. 이·그·저    — the pointer grid inverted: a meaning, which pointer?
-//   3. 조사        — the 받침 gate inverted: a noun + a role, which particle?
+//   2. 활용표      — the conjugation table: one verb across register × tense
+//   3. 이·그·저    — the pointer grid inverted: a meaning, which pointer?
+//   4. 조사        — the 받침 gate inverted: a noun + a role, which particle?
 //
 // See ./schema.js for the deck/card contract.
 // =====================================================================
 
-import { FORGE_VERBS, FORGE_TENSES, GATE_NOUNS, GATE_PAIRS } from '../koreanData.js'
+import {
+  FORGE_VERBS, FORGE_TENSES, GATE_NOUNS, GATE_PAIRS,
+  CONJ_VERBS, CONJ_REGISTERS, CONJ_TENSES,
+} from '../koreanData.js'
 import { SERIES, CATEGORIES, GRID } from '../koreanDeixis.js'
 import { joinRr, groupsBy } from './schema.js'
 
@@ -52,7 +56,60 @@ const KO_VERBS = {
 }
 
 // ---------------------------------------------------------------------
-// 2 · 이·그·저 — the pointer grid (deixis, inverted)
+// 2 · 활용표 — the conjugation table (the forge × the register dial)
+//   One verb, the whole grid: register (rows) × tense (cols). The card's
+//   prompt names the verb + the slot (past · 해요체); the answer is that cell.
+//   near = verb id → the three distractors are the SAME verb's OTHER cells,
+//   so a right answer means you placed the register AND the tense, not just
+//   recognized the verb. Scope chips (flashcards) and the grid's verb picker
+//   both select one verb at a time — "a quiz within verb," the pattern drilled.
+// ---------------------------------------------------------------------
+const conjCards = CONJ_VERBS.flatMap(v =>
+  CONJ_REGISTERS.flatMap(r =>
+    CONJ_TENSES.map(t => {
+      const cell = v.table[r.id][t.id]
+      return {
+        id: `c.${v.id}.${r.id}.${t.id}`,
+        group: v.id,
+        near: v.id,
+        pick: v.id, row: r.id, col: t.id,
+        prompt: {
+          main: v.kr, lang: 'kr', sub: `${v.rr}-`, gloss: v.gloss,
+          tag: `${t.label} · ${r.kr}`, jp: v.jp,
+        },
+        answer: { main: cell.kr, lang: 'kr', sub: cell.rr },
+      }
+    }),
+  ),
+)
+
+const KO_CONJ = {
+  id: 'conj', glyph: '활용표', label: 'the conjugation table',
+  blurb: 'One verb, the whole table — register × tense. 가다 → 갑니다 · 가요 · 갈 거야.',
+  promptLabel: 'which form fits the slot?',
+  hint: 'tap the form for that register & tense',
+  groups: CONJ_VERBS.map(v => ({
+    id: v.id, label: v.kr, ids: conjCards.filter(c => c.group === v.id).map(c => c.id),
+  })),
+  // the per-verb table as a grid surface: register rows × tense cols, with a
+  // verb PICKER on top (the third dial, handled as a selector not an axis).
+  // choose (cell → form) and locate (form → cell); type is omitted — the
+  // conjugated forms carry 받침/liaison spelling the romaja IME can't fairly
+  // grade (갔다 needs ㅆ, not the pronounced [t]).
+  grid: {
+    script: 'kr', imeScript: 'hangul', modes: ['choose', 'locate'],
+    pick: {
+      label: 'verb',
+      options: CONJ_VERBS.map(v => ({ id: v.id, glyph: v.kr, gloss: v.gloss, sub: v.rr, jp: v.jp, note: v.pattern })),
+    },
+    rows: CONJ_REGISTERS.map(r => ({ id: r.id, glyph: r.kr, role: r.en })),
+    cols: CONJ_TENSES.map(t => ({ id: t.id, label: t.label, latin: t.latin, suffix: t.marker })),
+  },
+  cards: conjCards,
+}
+
+// ---------------------------------------------------------------------
+// 3 · 이·그·저 — the pointer grid (deixis, inverted)
 //   prompt: the meaning (gloss) + the slot it sits in (pointer × category)
 //   answer: the pointer word; the Japanese twin rides showJp as a cue
 //   near = category → distractors are the same category's other pointers
@@ -97,7 +154,7 @@ const KO_DEIXIS = {
 }
 
 // ---------------------------------------------------------------------
-// 3 · 조사 — the 받침 gate (particle allomorphy, inverted)
+// 4 · 조사 — the 받침 gate (particle allomorphy, inverted)
 //   prompt: a noun + the role its slot wants (role named, particle hidden)
 //   answer: the noun wearing the right particle (책 → 책은), shape and all
 //   near = noun id → distractors are the SAME noun's other five forms, so
@@ -145,4 +202,4 @@ const KO_PARTICLES = {
   cards: particleCards,
 }
 
-export const KO_DECKS = [KO_VERBS, KO_DEIXIS, KO_PARTICLES]
+export const KO_DECKS = [KO_VERBS, KO_CONJ, KO_DEIXIS, KO_PARTICLES]

@@ -193,6 +193,27 @@
 .gq-head { display: flex; justify-content: space-between; align-items: center; gap: 16px 20px; flex-wrap: wrap; }
 .gq-head-left { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
 
+/* the pick strip — the third dial as a selector (the verbs), one salient */
+.gq-pick { display: flex; flex-wrap: wrap; align-items: stretch; gap: 6px; }
+.gq-pick-label {
+  align-self: center; font-family: var(--font-mono); font-size: 0.7rem;
+  color: var(--ink-faded); letter-spacing: 0.05em; margin-right: 4px; text-transform: uppercase;
+}
+.gq-pick-chip {
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  padding: 5px 13px; background: var(--plate-bg); border: 1px solid var(--rule);
+  border-radius: var(--radius-md); cursor: pointer; opacity: 0.66;
+  transition: opacity 0.4s var(--ease-drift), border-color 0.4s var(--ease-drift), background 0.4s var(--ease-drift);
+}
+.gq-pick-chip:hover { opacity: 0.9; border-color: var(--gilt-line); }
+.gq-pick-chip.active { opacity: 1; border-color: var(--accent-deep); background: var(--abu-hover-wash); }
+.gq-pick-glyph { font-size: 1.15rem; line-height: 1.1; color: var(--ink-soft); }
+.gq-pick-glyph.kr { font-family: var(--font-kr-serif); }
+.gq-pick-glyph.jp { font-family: var(--font-cjk-serif); }
+.gq-pick-chip.active .gq-pick-glyph { color: var(--accent); }
+.gq-pick-gloss { font-family: var(--font-mono); font-size: 0.56rem; color: var(--ink-faded); letter-spacing: 0.02em; }
+.gq-coord-pick { color: var(--accent); }
+
 /* hide the script on the axes (이/그/저 · 것/기/…) for a real quiz; English stays */
 .gq-toggle {
   display: inline-flex; align-items: center; gap: 7px;
@@ -280,6 +301,10 @@
 .qg-cell-word { font-size: 1.05rem; line-height: 1.15; color: var(--ink); }
 .qg-cell-word.kr { font-family: var(--font-kr-serif); }
 .qg-cell-word.jp { font-family: var(--font-cjk-serif); }
+
+/* the verb table runs longer forms (먹었습니다 · 들을 거예요) — give cells room */
+.qgrid.wide .qg-btn, .qgrid.wide .qg-static { min-width: 112px; height: 66px; }
+.qgrid.wide .qg-cell-word { font-size: 0.98rem; }
 .qg-cell-rr { font-family: var(--font-mono); font-size: 0.6rem; color: var(--ink-faded); }
 .qg-mark { font-family: var(--font-display); font-size: 1.5rem; color: var(--accent); }
 .qg-dot { color: var(--ink-faded); opacity: 0.25; font-size: 1rem; }
