@@ -13,6 +13,7 @@ import KoreanReading from './pages/KoreanReading.jsx'
 import KoreanSong from './pages/KoreanSong.jsx'
 import KoreanCustom from './pages/KoreanCustom.jsx'
 import KoreanRoadmap from './pages/KoreanRoadmap.jsx'
+import KoreanQuizzes from './pages/KoreanQuizzes.jsx'
 import JapaneseKana from './pages/JapaneseKana.jsx'
 import JapanesePhonetics from './pages/JapanesePhonetics.jsx'
 import JapaneseDeixis from './pages/JapaneseDeixis.jsx'
@@ -21,6 +22,7 @@ import JapaneseForms from './pages/JapaneseForms.jsx'
 import JapaneseAdjectives from './pages/JapaneseAdjectives.jsx'
 import JapaneseParticles from './pages/JapaneseParticles.jsx'
 import JapaneseVocab from './pages/JapaneseVocab.jsx'
+import JapaneseQuizzes from './pages/JapaneseQuizzes.jsx'
 import './styles/base.css'
 import './styles/aburaya.css'
 import './styles/grammar.css'
@@ -37,6 +39,7 @@ import './styles/scripts.css'
 import './styles/deixis.css'
 import './styles/phonetics.css'
 import './styles/jphonetics.css'
+import './styles/quiz.css'
 
 // Two-level atlas: language → folio pages within it.
 const LANGS = [
@@ -50,6 +53,7 @@ const LANGS = [
       { id: 'verbs',     glyph: '동사', label: 'verb forge',       component: KoreanVerbs },
       { id: 'forms',     glyph: '활용', label: 'constructions',    component: KoreanForms },
       { id: 'particles', glyph: '조사', label: 'particle cabinet', component: KoreanParticles },
+      { id: 'quiz',      glyph: '단련', label: 'proving ground',   component: KoreanQuizzes },
       { id: 'cognates',  glyph: '한자어', label: 'cognate bridge',  component: KoreanCognates },
       { id: 'vocab',     glyph: '어휘', label: 'word bank',        component: KoreanVocab },
       { id: 'reading',   glyph: '다독', label: 'the reading room', component: KoreanReading },
@@ -69,6 +73,7 @@ const LANGS = [
       { id: 'forms',      glyph: '活用', label: 'constructions',   component: JapaneseForms },
       { id: 'adjectives', glyph: '形容詞', label: 'adjectives',     component: JapaneseAdjectives },
       { id: 'particles',  glyph: '助詞', label: 'particle cabinet', component: JapaneseParticles },
+      { id: 'quiz',       glyph: '鍛錬', label: 'proving ground',   component: JapaneseQuizzes },
       { id: 'vocab',      glyph: '語彙', label: 'word bank',        component: JapaneseVocab },
     ],
   },
