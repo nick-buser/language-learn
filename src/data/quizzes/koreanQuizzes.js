@@ -66,6 +66,7 @@ const deixisCards = SERIES.flatMap(s =>
       id: `d.${s.id}.${cat.id}`,
       group: cat.id,
       near: cat.id,
+      row: s.id, col: cat.id,
       prompt: {
         main: cell.gloss, gloss: `${SERIES_ROLE[s.id]} · ${cat.label}`,
         tag: cat.latin, jp: `${cell.bridge} (${cell.bridgeRr})`,
@@ -83,6 +84,15 @@ const KO_DEIXIS = {
   groups: CATEGORIES.map(cat => ({
     id: cat.id, label: cat.label, ids: deixisCards.filter(c => c.group === cat.id).map(c => c.id),
   })),
+  // the 4×6 grid as a quiz surface: prefix rows × category columns, run
+  // forward (cell → word) or reverse (word → cell). imeScript names the
+  // free-entry engine; readings are pronunciation-RR so the typed answer is
+  // graded against the WORD the IME composes, never the reading.
+  grid: {
+    script: 'kr', imeScript: 'hangul',
+    rows: SERIES.map(s => ({ id: s.id, glyph: s.prefix, role: s.role })),
+    cols: CATEGORIES.map(c => ({ id: c.id, label: c.label, latin: c.latin, suffix: c.suffix })),
+  },
   cards: deixisCards,
 }
 

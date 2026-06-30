@@ -1,5 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import { MASTERY_MAX, LEARNED_AT } from './useQuizStore.js'
+import { makeQuestion as makeQ } from './quizEngine.js'
 
 // =====================================================================
 // The proving ground's cycle — one active deck, run as a gamified
@@ -14,12 +15,6 @@ import { MASTERY_MAX, LEARNED_AT } from './useQuizStore.js'
 // glows; clearing a scope (every card past the learned lamp) or a streak of
 // ten lights a lantern. Mastery accrues per card across deck switches.
 // =====================================================================
-
-const shuffle = (a) => {
-  const r = a.slice()
-  for (let i = r.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[r[i], r[j]] = [r[j], r[i]] }
-  return r
-}
 
 // Render a card face: a slot tag, the main line (in script font when the
 // face names one), the reading (gated), an English gloss, and a bridge cue.
@@ -62,34 +57,7 @@ export default function QuizStage({ deck, store, showReadings, showJp }) {
 
   const scopeIds = useMemo(() => pool.map(c => c.id), [pool])
 
-  const makeQuestion = useCallback((from) => {
-    const list = from.length >= 4 ? from : deck.cards
-    // weight toward the least-mastered cards (MASTERY_MAX − level + 1)
-    const weights = list.map(c => MASTERY_MAX - store.levelOf(c.id) + 1)
-    const total = weights.reduce((a, b) => a + b, 0)
-    let roll = Math.random() * total
-    let target = list[0]
-    for (let i = 0; i < list.length; i++) { roll -= weights[i]; if (roll <= 0) { target = list[i]; break } }
-
-    // distractors: prefer the same `near` cohort, then the rest of the scope,
-    // then the whole deck; dedupe by the answer's surface form.
-    const used = new Set([target.answer.main])
-    const take = (cands) => {
-      for (const c of cands) {
-        if (out.length >= 3) break
-        if (used.has(c.answer.main)) continue
-        used.add(c.answer.main); out.push(c)
-      }
-    }
-    const out = []
-    const others = list.filter(c => c.id !== target.id)
-    const isNear = (c) => target.near != null && c.near === target.near
-    take(shuffle(others.filter(isNear)))
-    take(shuffle(others.filter(c => !isNear(c))))
-    take(shuffle(deck.cards.filter(c => c.id !== target.id)))
-
-    return { target, options: shuffle([target, ...out]) }
-  }, [deck, store])
+  const makeQuestion = useCallback((from) => makeQ(deck, from, store), [deck, store])
 
   const next = useCallback(() => {
     setPicked(null); setStatus('asking'); setQ(makeQuestion(pool))

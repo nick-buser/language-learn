@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import useQuizStore from './useQuizStore.js'
 import DeckRack from './DeckRack.jsx'
-import QuizStage from './QuizStage.jsx'
+import ActiveDeck from './ActiveDeck.jsx'
 
 // =====================================================================
 // The proving ground — the language-blind apparatus the quiz folios mount.
@@ -19,7 +19,7 @@ export default function ProvingGround({ lang, decks, showReadings, showJp }) {
   return (
     <div className="proving-ground" data-screen-label="proving ground">
       <DeckRack decks={decks} activeId={activeId} onPick={setActiveId} store={store} lang={lang} />
-      <QuizStage
+      <ActiveDeck
         key={deck.id}
         deck={deck}
         store={store}

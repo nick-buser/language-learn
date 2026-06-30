@@ -168,10 +168,125 @@
 .qlamp.lvl-5 { color: var(--accent); border-color: var(--accent-deep); background: var(--abu-hover-wash); }
 .qlamp.learned { box-shadow: 0 0 12px -5px rgba(242, 166, 90, 0.4); }
 
+/* =====================================================================
+   The grid format — the こそあど / 이·그·저 deck on its native 4×6 machine.
+   Format toggle (flashcards | the grid) over a mode toggle (choose / type /
+   locate), then the grid itself as the quiz surface.
+   ===================================================================== */
+.active-deck { display: flex; flex-direction: column; gap: 18px; }
+
+/* format toggle — flashcards vs the grid */
+.deck-format {
+  display: inline-flex; gap: 4px; align-self: flex-start;
+  background: var(--plate-bg); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--rule);
+}
+.format-tab {
+  font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-faded);
+  background: transparent; border: none; border-radius: var(--radius-sm);
+  padding: 6px 16px; cursor: pointer; letter-spacing: 0.03em;
+  transition: color 0.3s var(--ease-drift), background 0.3s var(--ease-drift);
+}
+.format-tab:hover { color: var(--ink-soft); }
+.format-tab.active { color: var(--accent); background: var(--paper-deep); }
+
+.grid-quiz { display: flex; flex-direction: column; gap: 16px; }
+.gq-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; flex-wrap: wrap; }
+
+/* mode toggle — choose / type / locate, each with its direction under it */
+.gq-modes { display: flex; gap: 4px; background: var(--plate-bg); padding: 4px; border-radius: var(--radius-md); border: 1px solid var(--rule); }
+.gq-mode {
+  display: flex; flex-direction: column; align-items: center; gap: 1px;
+  background: transparent; border: none; border-radius: var(--radius-sm);
+  padding: 5px 14px; cursor: pointer;
+  transition: color 0.3s var(--ease-drift), background 0.3s var(--ease-drift);
+}
+.gq-mode-label { font-family: var(--font-mono); font-size: 0.82rem; color: var(--ink-faded); letter-spacing: 0.03em; }
+.gq-mode-sub { font-family: var(--font-mono); font-size: 0.58rem; color: var(--ink-faded); opacity: 0.7; letter-spacing: 0.02em; }
+.gq-mode:hover .gq-mode-label { color: var(--ink-soft); }
+.gq-mode.active { background: var(--paper-deep); }
+.gq-mode.active .gq-mode-label { color: var(--accent); }
+.gq-mode.active .gq-mode-sub { color: var(--accent); opacity: 0.8; }
+
+/* prompt — the named word (locate) or an instruction (choose / type) */
+.gq-prompt { min-height: 56px; display: flex; align-items: center; justify-content: center; text-align: center; }
+.gq-word { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+.gq-word-main { font-size: 2.2rem; line-height: 1.1; color: var(--ink); }
+.gq-word-main.kr { font-family: var(--font-kr-serif); }
+.gq-word-main.jp { font-family: var(--font-cjk-serif); }
+.gq-word-meta { display: flex; align-items: baseline; gap: 12px; flex-wrap: wrap; justify-content: center; }
+.gq-word-gloss { font-size: 1rem; color: var(--ink-soft); font-style: italic; }
+.gq-word-rr { font-family: var(--font-mono); font-size: 0.8rem; color: var(--ink-faded); }
+.gq-word-bridge { font-size: 0.88rem; color: var(--ink-soft); }
+.gq-instruction { display: flex; flex-direction: column; gap: 5px; font-family: var(--font-mono); font-size: 0.92rem; color: var(--ink-soft); }
+.gq-coord { font-size: 0.74rem; color: var(--accent); letter-spacing: 0.06em; text-transform: uppercase; }
+
+/* the machine */
+.qgrid-wrap { overflow-x: auto; }
+.qgrid { border-collapse: separate; border-spacing: 6px; margin: 0 auto; }
+.qg-corner { width: 1%; }
+.qg-corner .kr, .qg-corner .jp { color: var(--ink-faded); opacity: 0.4; font-size: 1.1rem; }
+
+.qg-colhead, .qg-rowhead {
+  background: transparent; padding: 6px 8px; vertical-align: middle;
+  transition: color 0.3s var(--ease-drift);
+}
+.qg-colhead { text-align: center; }
+.qg-suffix { display: block; font-size: 1.05rem; color: var(--ink-soft); }
+.qg-collabel { display: block; font-family: var(--font-mono); font-size: 0.62rem; color: var(--ink-faded); letter-spacing: 0.02em; margin-top: 2px; }
+.qg-rowhead { text-align: right; white-space: nowrap; }
+.qg-prefix { font-size: 1.4rem; color: var(--ink-soft); margin-right: 7px; vertical-align: middle; }
+.qg-role { font-family: var(--font-mono); font-size: 0.6rem; color: var(--ink-faded); letter-spacing: 0.02em; }
+.qg-colhead.lit .qg-suffix, .qg-colhead.lit .qg-collabel,
+.qg-rowhead.lit .qg-prefix, .qg-rowhead.lit .qg-role { color: var(--accent); }
+
+.qg-cell { padding: 0; }
+.qg-btn, .qg-static {
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+  width: 100%; min-width: 84px; height: 60px; box-sizing: border-box;
+  background: var(--plate-bg); border: 1px solid var(--rule-soft); border-radius: var(--radius-md);
+  transition: border-color 0.25s var(--ease-drift), background 0.25s var(--ease-drift), box-shadow 0.4s var(--ease-drift);
+}
+.qg-btn { cursor: pointer; }
+.qg-btn:hover { border-color: var(--accent-deep); background: var(--abu-hover-wash); }
+.qg-cell.target .qg-static, .qg-cell.target .qg-btn {
+  border-color: var(--accent-deep); background: var(--abu-hover-wash);
+  box-shadow: 0 0 18px -5px rgba(242, 166, 90, 0.45);
+}
+.qg-cell.is-answer .qg-static, .qg-cell.is-answer .qg-btn {
+  border-color: var(--st-active); background: color-mix(in srgb, var(--st-active) 16%, transparent);
+}
+.qg-cell.is-wrong .qg-static, .qg-cell.is-wrong .qg-btn {
+  border-color: var(--signal); background: var(--abu-current-wash);
+}
+.qg-cell-word { font-size: 1.05rem; line-height: 1.15; color: var(--ink); }
+.qg-cell-word.kr { font-family: var(--font-kr-serif); }
+.qg-cell-word.jp { font-family: var(--font-cjk-serif); }
+.qg-cell-rr { font-family: var(--font-mono); font-size: 0.6rem; color: var(--ink-faded); }
+.qg-mark { font-family: var(--font-display); font-size: 1.5rem; color: var(--accent); }
+.qg-dot { color: var(--ink-faded); opacity: 0.25; font-size: 1rem; }
+
+/* answer zone */
+.gq-options { margin: 4px auto 0; }
+.gq-type { display: flex; flex-direction: column; align-items: center; gap: 12px; }
+.gq-type .ime { width: 100%; max-width: 360px; }
+.gq-check {
+  font-family: var(--font-mono); font-size: 0.82rem; color: var(--accent);
+  background: transparent; border: 1px solid var(--accent-deep); border-radius: var(--radius-sm);
+  padding: 6px 18px; cursor: pointer; transition: background 0.2s var(--ease-drift);
+}
+.gq-check:hover:not(:disabled) { background: var(--abu-hover-wash); }
+.gq-check:disabled { opacity: 0.4; cursor: default; }
+.gq-answer-reveal { font-family: var(--font-mono); font-size: 0.86rem; color: var(--ink-soft); display: flex; align-items: baseline; gap: 8px; }
+.gq-answer-reveal .kr { font-family: var(--font-kr-serif); font-size: 1.3rem; color: var(--st-active); }
+.gq-answer-reveal .jp { font-family: var(--font-cjk-serif); font-size: 1.3rem; color: var(--st-active); }
+.gq-answer-rr { color: var(--ink-faded); }
+
 @media (max-width: 560px) {
   .quiz-options { max-width: 100%; }
   .qp-main { font-size: 2.1rem; }
   .deck-rack { grid-template-columns: 1fr; }
+  .qg-btn, .qg-static { min-width: 60px; height: 50px; }
+  .qg-cell-word { font-size: 0.9rem; }
 }
 @media (prefers-reduced-motion: reduce) {
   .deck-card, .quiz-stage, .quiz-opt, .qlamp, .deck-glyph { transition: none; }

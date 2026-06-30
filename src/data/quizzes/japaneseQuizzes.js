@@ -67,6 +67,7 @@ const deixisCards = SERIES.flatMap(s =>
       id: `d.${s.id}.${cat.id}`,
       group: cat.id,
       near: cat.id,
+      row: s.id, col: cat.id,
       prompt: {
         main: cell.gloss, gloss: `${SERIES_ROLE[s.id]} · ${cat.label}`,
         tag: cat.latin, jp: `${cell.bridge} (${cell.bridgeRr})`,
@@ -84,6 +85,14 @@ const JA_DEIXIS = {
   groups: CATEGORIES.map(cat => ({
     id: cat.id, label: cat.label, ids: deixisCards.filter(c => c.group === cat.id).map(c => c.id),
   })),
+  // the 4×6 grid as a quiz surface (see koreanQuizzes.js). Japanese words
+  // are kana, so the free-entry engine is hiragana; readings roundtrip when
+  // typed as spelling (kou → こう), the long-vowel macron being display-only.
+  grid: {
+    script: 'jp', imeScript: 'hiragana',
+    rows: SERIES.map(s => ({ id: s.id, glyph: s.prefix, role: s.role })),
+    cols: CATEGORIES.map(c => ({ id: c.id, label: c.label, latin: c.latin, suffix: c.suffix })),
+  },
   cards: deixisCards,
 }
 
