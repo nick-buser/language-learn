@@ -10,7 +10,6 @@
     "gen:api": "openapi-typescript backend/openapi.json -o src/api/schema.d.ts"
   },
   "dependencies": {
-    "formantanalyzer": "^1.1.8",
     "openapi-fetch": "^0.17.0",
     "pitchy": "^4.1.0",
     "react": "^18.3.1",
