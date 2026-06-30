@@ -88,10 +88,10 @@ export default function KoreanPhonetics({ showReadings = true, showJp = true }) 
       <div className="instr-head" style={{ marginTop: 56 }}>
         <div className="no">II</div>
         <h2>The vowel compass</h2>
-        <div className="latin">모음 · the IPA trapezoid under the dot-and-line geometry</div>
+        <div className="latin">모음 · the IPA trapezoid under the dot-and-line geometry — and your own voice on it</div>
       </div>
       <div className="try-strip">
-        <span className="dot"></span> tap a vowel on the real mouth-space, then read its letter built from ·/ㅡ/ㅣ · the dot’s side is vowel harmony, not tongue height · doubled dot = +y, added ㅣ = the front vowels, stacked pair = +w
+        <span className="dot"></span> tap a vowel on the real mouth-space, then read its letter built from ·/ㅡ/ㅣ · the dot’s side is vowel harmony, not tongue height · doubled dot = +y, added ㅣ = the front vowels, stacked pair = +w · switch to 발성 to speak your own vowel onto the trapezoid (calibrate to your voice first)
       </div>
       <VowelCompass showReadings={showReadings} />
 
