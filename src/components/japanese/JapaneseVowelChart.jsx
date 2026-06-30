@@ -29,12 +29,12 @@ const comboById = Object.fromEntries(VOWEL_COMBOS.map(c => [c.id, c]))
 const esByJp = Object.fromEntries(SPANISH_VOWELS.map(s => [s.jp, s]))
 const MACRON = { a: 'ā', i: 'ī', u: 'ū', e: 'ē', o: 'ō' }
 
-// v2: the formant-index pick changed (we now read peaks 2+3, dropping the dead
-// low band), so a calibration saved against the old signals is meaningless —
-// bumping the key retires it and prompts a fresh calibration instead of mapping
-// through stale coefficients.
-const CAL_KEY = 'atlas.formant.cal.v2'
-const CALQ_KEY = 'atlas.formant.calq.v2'
+// v3: the engine was replaced — real LPC/Burg formants in Hz, where v2 read
+// mel-bin spectral peaks. A calibration saved against the old units is
+// meaningless against Hz, so bumping the key retires it and prompts a fresh
+// calibration instead of mapping through stale coefficients.
+const CAL_KEY = 'atlas.formant.cal.v3'
+const CALQ_KEY = 'atlas.formant.calq.v3'
 
 // IPA quadrilateral corners (SVG units) — shared geometry with the Korean compass.
 const TL = [52, 32], TR = [270, 32], BR = [250, 200], BL = [122, 200]
