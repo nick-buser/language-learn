@@ -5,9 +5,9 @@ import RomajiInput from '../scripts/RomajiInput.jsx'
 import { engineFor } from '../scripts/ime.js'
 
 // =====================================================================
-// The grid cycle — the こそあど / 이·그·저 deck run on its native 4×6 machine
-// instead of flashcards. The grid (prefix rows × category columns) is the
-// whole interface; the quiz runs it in three modes:
+// The grid cycle — a deck run on its native 2-axis machine instead of
+// flashcards. The grid (prefix rows × category columns) is the whole
+// interface; the quiz runs it in three modes:
 //
 //   choose  — cell → word, multiple choice: a cell lights, pick its word
 //   type    — cell → word, free entry: a cell lights, TYPE its word on the
@@ -16,13 +16,21 @@ import { engineFor } from '../scripts/ime.js'
 //             WORD the IME composes (whitespace-stripped), never the reading.
 //   locate  — word → cell: a word is named, click the square it sits in
 //
+// Two grids feed it. The deixis 4×6 (이·그·저 / こそあど) is one static board.
+// The verb 활용표 adds a third dial as a SELECTOR, not an axis: `grid.pick`
+// names a list (the verbs), and the board redraws per pick — register rows ×
+// tense cols for the chosen verb. `grid.modes` lets a deck offer a subset
+// (the verb table omits `type`: conjugated forms carry spelling the romaja
+// IME can't fairly grade). Everything below scopes to the picked item, so a
+// streak, the mastery strip, and the "whole table lit" lantern are per-verb.
+//
 // Cells stay blank in every mode (showing the words would hand over the
-// answer); the row prefixes and column suffixes are the coordinates you
-// read. Mastery is the SAME per-card lamp the flashcards feed — a cell
-// learned here is learned everywhere.
+// answer); the row/column axes are the coordinates you read. Mastery is the
+// SAME per-card lamp the flashcards feed — a cell learned here is learned
+// everywhere.
 // =====================================================================
 
-const MODES = [
+const ALL_MODES = [
   { id: 'choose', label: 'choose', sub: 'cell → word' },
   { id: 'type',   label: 'type',   sub: 'cell → word' },
   { id: 'locate', label: 'locate', sub: 'word → cell' },
@@ -32,10 +40,16 @@ const norm = (s) => s.replace(/\s+/g, '')
 
 export default function GridQuiz({ deck, store, showReadings, showJp }) {
   const { grid } = deck
-  const [mode, setMode] = useState('choose')
-  // The row prefixes (이/こ) and column suffixes (것/の) are the assembly hints —
-  // priceless for practice, but they hand you the answer in a real quiz (이 × 렇게
-  // = 이렇게). This hides the script on the axes; the English role/label stays.
+  const hasPick = !!grid.pick
+  const modes = useMemo(
+    () => (grid.modes ? ALL_MODES.filter(m => grid.modes.includes(m.id)) : ALL_MODES),
+    [grid],
+  )
+  const [mode, setMode] = useState(modes[0].id)
+  const [pickId, setPickId] = useState(hasPick ? grid.pick.options[0].id : null)
+  // The row/column axes (이/그/저 · 것/기 — or 합쇼체/해요체 · 았/었) are the assembly
+  // hints — priceless for practice, but they hand you the answer in a real
+  // quiz. This hides the script on the axes; the English role/label stays.
   const [axisScript, setAxisScript] = useState(true)
   const [q, setQ] = useState(null)
   const [nonce, setNonce] = useState(0)
@@ -49,27 +63,35 @@ export default function GridQuiz({ deck, store, showReadings, showJp }) {
   const clearedRef = useRef(false)
   const advanceRef = useRef(null)
 
+  // The cards in play: one pick's cells (verb table), or the whole board.
+  const pool = useMemo(
+    () => (hasPick ? deck.cards.filter(c => c.pick === pickId) : deck.cards),
+    [deck, hasPick, pickId],
+  )
+
   const cardByCell = useMemo(() => {
     const m = new Map()
-    for (const c of deck.cards) m.set(`${c.row}.${c.col}`, c)
+    for (const c of pool) m.set(`${c.row}.${c.col}`, c)
     return m
-  }, [deck])
+  }, [pool])
 
   const next = useCallback(() => {
     setPicked(null); setTyped(''); setStatus('asking')
-    setQ(mode === 'choose' ? makeQuestion(deck, deck.cards, store) : { target: weightedTarget(deck, deck.cards, store) })
+    setQ(mode === 'choose' ? makeQuestion(deck, pool, store) : { target: weightedTarget(deck, pool, store) })
     setNonce(n => n + 1)
-  }, [deck, store, mode])
+  }, [deck, pool, store, mode])
 
-  // Fresh question + reset tallies on mode change.
+  // Fresh question + reset tallies on mode OR pick change.
   useEffect(() => {
     setPicked(null); setTyped(''); setStatus('asking')
     setStreak(0); setSeen(0); setCorrect(0); setLantern(null); clearedRef.current = false
-    setQ(mode === 'choose' ? makeQuestion(deck, deck.cards, store) : { target: weightedTarget(deck, deck.cards, store) })
+    setQ(mode === 'choose' ? makeQuestion(deck, pool, store) : { target: weightedTarget(deck, pool, store) })
     setNonce(n => n + 1)
     return () => { if (advanceRef.current) clearTimeout(advanceRef.current) }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [deck.id, mode])
+  }, [deck.id, mode, pickId])
+
+  const pickGlyph = hasPick ? grid.pick.options.find(o => o.id === pickId)?.glyph : null
 
   const settle = (isRight) => {
     store.record(q.target.id, isRight)
@@ -80,13 +102,15 @@ export default function GridQuiz({ deck, store, showReadings, showJp }) {
     if (isRight) setCorrect(c => c + 1)
     store.recordDeck(deck.id, ns)
 
+    const axisName = hasPick ? 'register × tense' : 'prefix × suffix'
     if (isRight && ns > 0 && ns % 10 === 0) {
-      setLantern({ head: `${ns} in a row`, body: 'The grid is becoming a reflex — prefix × suffix, exceptions and all. That muscle is the whole point of the machine.' })
+      setLantern({ head: `${ns} in a row`, body: `The grid is becoming a reflex — ${axisName}, exceptions and all. That muscle is the whole point of the machine.` })
     } else if (isRight) {
-      const sum = store.summarize(deck.cards.map(c => c.id))
+      const sum = store.summarize(pool.map(c => c.id))
       if (sum.learned === sum.total && !clearedRef.current) {
         clearedRef.current = true
-        setLantern({ head: 'the whole grid — lit', body: 'Every square is past the learned mark, in every direction. Try the harder mode (type is the real test), or come back tomorrow and prove it stuck.' })
+        const what = hasPick ? `the whole ${pickGlyph} table` : 'the whole grid'
+        setLantern({ head: `${what} — lit`, body: 'Every square is past the learned mark, in every direction. Switch to the next verb, try locate, or come back tomorrow and prove it stuck.' })
       }
     }
     if (isRight) { advanceRef.current = setTimeout(next, 900) }
@@ -108,16 +132,29 @@ export default function GridQuiz({ deck, store, showReadings, showJp }) {
   if (!q) return null
   const acc = seen ? Math.round((correct / seen) * 100) : 0
   const best = store.deckBest(deck.id)
-  const summary = store.summarize(deck.cards.map(c => c.id))
+  const summary = store.summarize(pool.map(c => c.id))
   const targetCellId = `${q.target.row}.${q.target.col}`
   const reveal = status !== 'asking'
 
   return (
     <div className="grid-quiz" data-screen-label="grid quiz">
+      {hasPick && (
+        <div className="gq-pick" role="tablist" aria-label={grid.pick.label}>
+          <span className="gq-pick-label">{grid.pick.label}</span>
+          {grid.pick.options.map(o => (
+            <button key={o.id} role="tab" aria-selected={o.id === pickId}
+              className={'gq-pick-chip' + (o.id === pickId ? ' active' : '')} onClick={() => setPickId(o.id)}>
+              <span className={'gq-pick-glyph ' + grid.script} lang={grid.script}>{o.glyph}</span>
+              <span className="gq-pick-gloss">{o.gloss}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
       <div className="gq-head">
         <div className="gq-head-left">
           <div className="gq-modes" role="tablist" aria-label="grid quiz mode">
-            {MODES.map(m => (
+            {modes.map(m => (
               <button key={m.id} role="tab" aria-selected={m.id === mode}
                 className={'gq-mode' + (m.id === mode ? ' active' : '')} onClick={() => setMode(m.id)}>
                 <span className="gq-mode-label">{m.label}</span>
@@ -126,7 +163,7 @@ export default function GridQuiz({ deck, store, showReadings, showJp }) {
             ))}
           </div>
           <button className={'gq-toggle' + (axisScript ? ' on' : '')} role="switch" aria-checked={axisScript}
-            onClick={() => setAxisScript(v => !v)} title="show or hide the script on the grid axes (이/그/저, 것/기/…)">
+            onClick={() => setAxisScript(v => !v)} title="show or hide the script on the grid axes">
             <span className="box" aria-hidden="true"></span>
             axis script
           </button>
@@ -153,14 +190,17 @@ export default function GridQuiz({ deck, store, showReadings, showJp }) {
         ) : (
           <div className="gq-instruction">
             {mode === 'choose' ? 'which word sits in the lit square?' : 'type the word in the lit square'}
-            <span className="gq-coord">{grid.rows.find(r => r.id === q.target.row)?.role} × {grid.cols.find(c => c.id === q.target.col)?.label}</span>
+            <span className="gq-coord">
+              {hasPick && <span className={'gq-coord-pick ' + grid.script} lang={grid.script}>{pickGlyph} · </span>}
+              {grid.rows.find(r => r.id === q.target.row)?.role} × {grid.cols.find(c => c.id === q.target.col)?.label}
+            </span>
           </div>
         )}
       </div>
 
       {/* the machine */}
       <div className="qgrid-wrap">
-        <table className={'qgrid ' + status}>
+        <table className={'qgrid ' + status + (hasPick ? ' wide' : '')}>
           <thead>
             <tr>
               <th className="qg-corner" scope="col"><span className={grid.script} lang={grid.script}>？</span></th>
@@ -192,7 +232,7 @@ export default function GridQuiz({ deck, store, showReadings, showJp }) {
                     + (reveal && isTarget ? ' is-answer' : '')
                     + (reveal && isPicked && !isTarget ? ' is-wrong' : '')
                   const clickable = mode === 'locate' && !reveal
-                  const content = showWord
+                  const content = showWord && card
                     ? <>
                         <span className={'qg-cell-word ' + grid.script} lang={grid.script}>{card.answer.main}</span>
                         {showReadings && <span className="qg-cell-rr">{card.answer.sub}</span>}
@@ -266,7 +306,7 @@ export default function GridQuiz({ deck, store, showReadings, showJp }) {
       </div>
 
       <div className="quiz-mastery" aria-label="mastery">
-        {deck.cards.map(c => {
+        {pool.map(c => {
           const lv = store.levelOf(c.id)
           return (
             <span key={c.id} className={'qlamp lvl-' + lv + (lv >= LEARNED_AT ? ' learned' : '')}

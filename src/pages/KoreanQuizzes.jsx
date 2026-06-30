@@ -79,10 +79,13 @@ export default function KoreanQuizzes({ showReadings, showJp }) {
               data, same hand-checked forms; the arrow of the question simply reverses.
             </p>
             <p>
-              The decks here are all <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>four-option</b> machines,
+              Most decks here are <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>four-option</b> machines,
               because that is what the script drill proved joyful. But the deeper game the user named is
-              the <i>assemble</i> one: set several dials — verb + register + tense — until they pool into
-              the target form. That mode drops into this same rack next, no new page required.
+              the <i>assemble</i> one — set several dials until they pool into the target form. The{' '}
+              <b style={{ fontStyle: 'normal', color: 'var(--accent)', fontWeight: 500 }}>활용표</b> deck is
+              its first turn: pick a verb, and its whole <i>register × tense</i> table becomes the board —
+              every cell a slot, choose the form or locate the named one. The same machine the pointer
+              grid runs, with the verb as a third dial on top.
             </p>
             <blockquote>
               The wrong answers are the lesson. When 갔어요 sits beside 가요 and 갈 거예요, choosing it
@@ -92,9 +95,10 @@ export default function KoreanQuizzes({ showReadings, showJp }) {
           <aside className="marginalia">
             <h4>For the next plate</h4>
             <div className="note">
-              <span className="date">the assemble mode</span>
-              dials that pool: verb + 해요체/반말 + past, turned until the form appears. The register dial,
-              run as a question.
+              <span className="date">more dials on the table</span>
+              the 활용표 board crosses register × tense; the honorific <b style={{ fontStyle: 'normal', fontWeight: 500 }}>-시-</b> and
+              the 안/못 negation are the next dials to pool in — and the Japanese 鍛錬 rack gets the same
+              table (plain｜polite × tense) as a mirror.
             </div>
             <div className="note">
               <span className="date">more decks for the rack</span>

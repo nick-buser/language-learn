@@ -611,3 +611,107 @@ export const AN_MOT = {
           'barely does); when listening practice begins, expect the seams, not the spelling.',
   },
 }
+
+// ---------------------------------------------------------------------
+// THE CONJUGATION TABLE — register × tense, per verb
+// ---------------------------------------------------------------------
+// The forge folio shows the everyday-polite (해요체) tenses; the register
+// dial shows one verb across the four speech levels. This table is the
+// CROSS of the two — the canonical conjugation grid a textbook prints —
+// so the proving ground can drill one verb's whole pattern at once
+// (verb + register + tense, the "assemble" game the quiz coda names).
+//
+// A few REPRESENTATIVE verbs, one per pattern, not the whole dictionary:
+//   가다  bright/open      — vowel fusion (가+아 → 가)
+//   보다  ㅗ-glide         — 보+아 → 봐
+//   먹다  dark/받침        — the buffer (먹+어, 먹+을), no fusion
+//   하다  the 하 wildcard  — 하+여 → 해 (conjugates half the dictionary)
+//   듣다  ㄷ-irregular     — ㄷ→ㄹ BEFORE A VOWEL only (들어요, but 듣습니다)
+//
+// table[registerId][tenseId] = { kr, rr }. rr is pronunciation-reflecting
+// per the file header: nasalization shown (갑니다 → gamnida, 먹는다 →
+// meongneunda), liaison shown (먹어요 → meogeoyo), but tensification after an
+// obstruent is NOT (갔다 → gatda, 먹다 → meokda) — the same RR convention the
+// forge uses. Future uses the 거(=것이) contraction across all four levels
+// (갈 거예요 · 갈 겁니다 = 갈 것입니다 · 갈 거야 · 갈 거다). Hand-checked.
+export const CONJ_REGISTERS = [
+  { id: 'hapsyo', kr: '합쇼체', rr: 'hapsyo-che', en: 'formal',   ending: '-(스)ㅂ니다', jp: 'です/ます' },
+  { id: 'haeyo',  kr: '해요체', rr: 'haeyo-che',  en: 'polite',   ending: '-아/어요',    jp: 'です/ます' },
+  { id: 'hae',    kr: '해체',   rr: 'hae-che',    en: 'intimate', ending: '-아/어',      jp: 'plain' },
+  { id: 'haera',  kr: '해라체', rr: 'haera-che',  en: 'plain',    ending: '-ㄴ/는다',    jp: 'plain' },
+]
+
+// marker — the tense morpheme shared DOWN the column, register-independent:
+// present has none (∅), past is 았/었, future is the ㄹ 거(예요/…) periphrasis.
+export const CONJ_TENSES = [
+  { id: 'present', label: 'present', latin: 'now',  marker: '—' },
+  { id: 'past',    label: 'past',    latin: 'did',  marker: '았/었' },
+  { id: 'future',  label: 'future',  latin: 'will', marker: 'ㄹ 거' },
+]
+
+export const CONJ_VERBS = [
+  {
+    id: 'gada', kr: '가다', rr: 'gada', gloss: 'to go', jp: '行く', pattern: 'bright · open',
+    table: {
+      hapsyo: { present: { kr: '갑니다', rr: 'gamnida' }, past: { kr: '갔습니다', rr: 'gatseumnida' }, future: { kr: '갈 겁니다', rr: 'gal geomnida' } },
+      haeyo:  { present: { kr: '가요',   rr: 'gayo' },    past: { kr: '갔어요',   rr: 'gasseoyo' },    future: { kr: '갈 거예요', rr: 'gal geoyeyo' } },
+      hae:    { present: { kr: '가',     rr: 'ga' },      past: { kr: '갔어',     rr: 'gasseo' },      future: { kr: '갈 거야',   rr: 'gal geoya' } },
+      haera:  { present: { kr: '간다',   rr: 'ganda' },   past: { kr: '갔다',     rr: 'gatda' },       future: { kr: '갈 거다',   rr: 'gal geoda' } },
+    },
+  },
+  {
+    id: 'boda', kr: '보다', rr: 'boda', gloss: 'to see', jp: '見る', pattern: 'ㅗ glide',
+    table: {
+      hapsyo: { present: { kr: '봅니다', rr: 'bomnida' }, past: { kr: '봤습니다', rr: 'bwatseumnida' }, future: { kr: '볼 겁니다', rr: 'bol geomnida' } },
+      haeyo:  { present: { kr: '봐요',   rr: 'bwayo' },   past: { kr: '봤어요',   rr: 'bwasseoyo' },    future: { kr: '볼 거예요', rr: 'bol geoyeyo' } },
+      hae:    { present: { kr: '봐',     rr: 'bwa' },     past: { kr: '봤어',     rr: 'bwasseo' },      future: { kr: '볼 거야',   rr: 'bol geoya' } },
+      haera:  { present: { kr: '본다',   rr: 'bonda' },   past: { kr: '봤다',     rr: 'bwatda' },       future: { kr: '볼 거다',   rr: 'bol geoda' } },
+    },
+  },
+  {
+    id: 'meokda', kr: '먹다', rr: 'meokda', gloss: 'to eat', jp: '食べる', pattern: 'dark · 받침',
+    table: {
+      hapsyo: { present: { kr: '먹습니다', rr: 'meokseumnida' }, past: { kr: '먹었습니다', rr: 'meogeotseumnida' }, future: { kr: '먹을 겁니다', rr: 'meogeul geomnida' } },
+      haeyo:  { present: { kr: '먹어요',   rr: 'meogeoyo' },     past: { kr: '먹었어요',   rr: 'meogeosseoyo' },     future: { kr: '먹을 거예요', rr: 'meogeul geoyeyo' } },
+      hae:    { present: { kr: '먹어',     rr: 'meogeo' },       past: { kr: '먹었어',     rr: 'meogeosseo' },       future: { kr: '먹을 거야',   rr: 'meogeul geoya' } },
+      haera:  { present: { kr: '먹는다',   rr: 'meongneunda' },  past: { kr: '먹었다',     rr: 'meogeotda' },        future: { kr: '먹을 거다',   rr: 'meogeul geoda' } },
+    },
+  },
+  {
+    id: 'hada', kr: '하다', rr: 'hada', gloss: 'to do', jp: 'する', pattern: '하 → 해',
+    table: {
+      hapsyo: { present: { kr: '합니다', rr: 'hamnida' }, past: { kr: '했습니다', rr: 'haetseumnida' }, future: { kr: '할 겁니다', rr: 'hal geomnida' } },
+      haeyo:  { present: { kr: '해요',   rr: 'haeyo' },   past: { kr: '했어요',   rr: 'haesseoyo' },    future: { kr: '할 거예요', rr: 'hal geoyeyo' } },
+      hae:    { present: { kr: '해',     rr: 'hae' },     past: { kr: '했어',     rr: 'haesseo' },      future: { kr: '할 거야',   rr: 'hal geoya' } },
+      haera:  { present: { kr: '한다',   rr: 'handa' },   past: { kr: '했다',     rr: 'haetda' },       future: { kr: '할 거다',   rr: 'hal geoda' } },
+    },
+  },
+  {
+    id: 'deutda', kr: '듣다', rr: 'deutda', gloss: 'to listen', jp: '聞く', pattern: 'ㄷ irregular',
+    table: {
+      // The ㄷ-irregular fires only before a VOWEL: 들어요 / 들었- / 들을-, but the
+      // consonant-initial endings keep the hard stem — 듣습니다, 듣는다 (→ deunneunda).
+      hapsyo: { present: { kr: '듣습니다', rr: 'deutseumnida' }, past: { kr: '들었습니다', rr: 'deureotseumnida' }, future: { kr: '들을 겁니다', rr: 'deureul geomnida' } },
+      haeyo:  { present: { kr: '들어요',   rr: 'deureoyo' },     past: { kr: '들었어요',   rr: 'deureosseoyo' },     future: { kr: '들을 거예요', rr: 'deureul geoyeyo' } },
+      hae:    { present: { kr: '들어',     rr: 'deureo' },       past: { kr: '들었어',     rr: 'deureosseo' },       future: { kr: '들을 거야',   rr: 'deureul geoya' } },
+      haera:  { present: { kr: '듣는다',   rr: 'deunneunda' },   past: { kr: '들었다',     rr: 'deureotda' },        future: { kr: '들을 거다',   rr: 'deureul geoda' } },
+    },
+  },
+]
+
+export const CONJ_EUREKAS = {
+  cross: {
+    head: '활용표 — the two dials, crossed',
+    body: 'One verb, the whole grid: every cell is a <b>register × tense</b> choice. Read down a ' +
+          'column and the tense holds while the politeness ending changes (갑니다 · 가요 · 가 · 간다); ' +
+          'read across a row and the register holds while the tense marker (∅ · 았/었 · ㄹ 거) slides ' +
+          'in. The forge taught the harmony vowel; the register dial taught the four levels — this is ' +
+          'them multiplied.',
+  },
+  irregular: {
+    head: '듣다 — the irregular shows its seam',
+    body: '들어요 / 들었어요 but <b>듣습니다 · 듣는다</b>: the ㄷ→ㄹ shift only fires before a vowel. The ' +
+          'consonant-initial endings (-습니다, -는다) never trigger it, so the hard stem 듣 surfaces ' +
+          'there. Spotting which ending starts with a vowel <i>is</i> the irregular.',
+  },
+}

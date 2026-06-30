@@ -20,7 +20,19 @@
 //     promptLabel,                 // the question over the options ("which form?")
 //     hint,                        // the asking-state footer hint
 //     groups?: ScopeGroup[],       // optional scope chips (filter the pool)
+//     grid?: GridSpec,             // optional: also runnable on a 2-axis board
 //     cards: QuizCard[],
+//   }
+//
+//   GridSpec = {                   // a deck whose cards form a row × col table
+//     script, imeScript,           // render font + free-entry IME engine
+//     modes?: ['choose'|'type'|'locate'],  // which modes to offer (default all)
+//     pick?: {                     // optional THIRD dial, as a selector not an
+//       label,                     // axis: the board redraws per pick (the verb
+//       options: [{ id, glyph, gloss, sub?, jp?, note? }],  // table picks a verb)
+//     },
+//     rows: [{ id, glyph, role }],         // row axis (prefix / register)
+//     cols: [{ id, label, latin?, suffix }],  // col axis (category / tense)
 //   }
 //
 //   QuizCard = {
@@ -31,6 +43,8 @@
 //                                  // so confusions are the useful, near-miss kind
 //                                  // (other tenses of the SAME verb, other
 //                                  //  pointers in the SAME category)
+//     row?, col?,                  // grid coordinates (when the deck has a grid)
+//     pick?,                       // which grid.pick option this card belongs to
 //     prompt: QuizFace,            // what the challenge shows
 //     answer: QuizFace,            // the correct option's face; the three
 //                                  // distractors are other cards' `answer`
